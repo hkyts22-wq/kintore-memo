@@ -113,6 +113,20 @@
   .partexs{display:none;margin-top:8px}
   .partexs.open{display:block}
   .exrow{display:flex;align-items:center;justify-content:space-between;padding:8px 4px;border-bottom:1px solid var(--line)}
+  .eqhead{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--ink);
+    background:var(--bg2);border-radius:9px 9px 0 0;padding:9px 11px;margin:18px 0 6px;
+    letter-spacing:.02em;border-bottom:3px solid var(--line)}
+  .eqhead .eqic{font-size:17px;line-height:1}
+  .eqhead .eqct{margin-left:auto;font-size:12px;font-weight:600;color:var(--sub);
+    background:var(--card);border:1px solid var(--line);border-radius:999px;padding:1px 9px;min-width:22px;text-align:center}
+  /* 器具カテゴリーごとの色分け（区切り線。意味は文字＋アイコンで担保しているので色は装飾） */
+  .eq-barbell{border-bottom-color:#3b82f6}
+  .eq-dumbbell{border-bottom-color:#1f9d57}
+  .eq-machine{border-bottom-color:#8b5cf6}
+  .eq-cable{border-bottom-color:#f59e0b}
+  .eq-body{border-bottom-color:#14b8a6}
+  .eq-other{border-bottom-color:#94a3b8}
+  .dateedit{margin-top:10px;color:var(--sub)}
   .h2{font-size:15px;font-weight:600;margin:14px 4px 4px}
   .pill{font-size:11px;padding:3px 9px;border-radius:999px}
   .pill.amber{background:var(--amber);color:var(--amberink)}
@@ -391,15 +405,61 @@ const PARTS=[
   {k:"legs",label:"脚",type:"strength"},
   {k:"cardio",label:"有酸素",type:"cardio"},
 ];
+// 器具カテゴリー（表示順）。種目選択パネルでこの順に見出し分けする。
+const EQUIPS=[
+  {k:"barbell",label:"バーベル",ic:"🏋️"},
+  {k:"dumbbell",label:"ダンベル",ic:"💪"},
+  {k:"machine",label:"マシン",ic:"⚙️"},
+  {k:"cable",label:"ケーブル",ic:"🔗"},
+  {k:"body",label:"自重",ic:"🤸"},
+  {k:"other",label:"その他",ic:"🏷️"},
+];
+function eqx(e,...names){return names.map(n=>({n,e}));} // 器具e付きの種目データをまとめて作る
 const PRESET={
-  chest:["ベンチプレス","インクラインベンチプレス","デクラインベンチプレス","ダンベルプレス","インクラインダンベルプレス","ダンベルフライ","インクラインダンベルフライ","チェストプレス(マシン)","ペックフライ(マシン)","ケーブルクロスオーバー","ケーブルフライ(ロー)","スミスベンチプレス","ディップス","フロアプレス","プッシュアップ"],
-  shoulder:["ショルダープレス(バーベル)","ダンベルショルダープレス","アーノルドプレス","スミスショルダープレス","ショルダープレス(マシン)","サイドレイズ","ケーブルサイドレイズ","リアレイズ","リアデルトフライ(マシン)","フロントレイズ","アップライトロウ","フェイスプル","ランドマインプレス","シュラッグ"],
-  back:["ラットプルダウン","ビハインドネックラットプルダウン","懸垂(チンニング)","ローイング(バーベル)","ワンハンドダンベルロウ","シーテッドローイング(マシン)","Tバーロウ","デッドリフト","ルーマニアンデッドリフト","ストレートアームプルダウン","プルオーバー","バックエクステンション"],
-  biceps:["バーベルカール","EZバーカール","ダンベルカール","インクラインダンベルカール","ハンマーカール","ケーブルカール","コンセントレーションカール","プリーチャーカール","スパイダーカール","ドラッグカール"],
-  triceps:["プレスダウン(ケーブル)","ローププレスダウン","フレンチプレス","ライイングトライセプスエクステンション","ナローベンチプレス","ディップス(三頭)","キックバック","オーバーヘッドエクステンション","ダンベルトライセプスエクステンション"],
-  abs:["クランチ","レッグレイズ","ハンギングレッグレイズ","アブローラー","プランク","サイドプランク","ケーブルクランチ","ロシアンツイスト","バイシクルクランチ","アブクランチ(マシン)","デッドバグ"],
-  legs:["スクワット","フロントスクワット","スミススクワット","ハックスクワット","レッグプレス","レッグエクステンション","レッグカール","ライイングレッグカール","ヒップスラスト","ブルガリアンスクワット","ランジ","カーフレイズ","シーテッドカーフレイズ","アダクション(マシン)","アブダクション(マシン)"],
-  cardio:["ランニング(トレッドミル)","ランニング(屋外)","ウォーキング","バイク(エアロバイク)","ロウイング(エルゴ)","クロストレーナー","水泳"],
+  chest:[].concat(
+    eqx("barbell","ベンチプレス","インクラインベンチプレス","デクラインベンチプレス","フロアプレス"),
+    eqx("dumbbell","ダンベルプレス","インクラインダンベルプレス","ダンベルフライ","インクラインダンベルフライ"),
+    eqx("machine","チェストプレス(マシン)","ペックフライ(マシン)","スミスベンチプレス"),
+    eqx("cable","ケーブルクロスオーバー","ケーブルフライ(ロー)"),
+    eqx("body","ディップス","プッシュアップ"),
+  ),
+  shoulder:[].concat(
+    eqx("barbell","ショルダープレス(バーベル)","アップライトロウ","ランドマインプレス"),
+    eqx("dumbbell","ダンベルショルダープレス","アーノルドプレス","サイドレイズ","リアレイズ","フロントレイズ","シュラッグ"),
+    eqx("machine","スミスショルダープレス","ショルダープレス(マシン)","リアデルトフライ(マシン)"),
+    eqx("cable","ケーブルサイドレイズ","フェイスプル"),
+  ),
+  back:[].concat(
+    eqx("barbell","ローイング(バーベル)","Tバーロウ","デッドリフト","ルーマニアンデッドリフト"),
+    eqx("dumbbell","ワンハンドダンベルロウ","プルオーバー"),
+    eqx("machine","ラットプルダウン","ビハインドネックラットプルダウン","シーテッドローイング(マシン)"),
+    eqx("cable","ストレートアームプルダウン"),
+    eqx("body","懸垂(チンニング)","バックエクステンション"),
+  ),
+  biceps:[].concat(
+    eqx("barbell","バーベルカール","EZバーカール","プリーチャーカール","ドラッグカール"),
+    eqx("dumbbell","ダンベルカール","インクラインダンベルカール","ハンマーカール","コンセントレーションカール","スパイダーカール"),
+    eqx("cable","ケーブルカール"),
+  ),
+  triceps:[].concat(
+    eqx("barbell","フレンチプレス","ライイングトライセプスエクステンション","ナローベンチプレス"),
+    eqx("dumbbell","キックバック","オーバーヘッドエクステンション","ダンベルトライセプスエクステンション"),
+    eqx("cable","プレスダウン(ケーブル)","ローププレスダウン"),
+    eqx("body","ディップス(三頭)"),
+  ),
+  abs:[].concat(
+    eqx("machine","アブクランチ(マシン)"),
+    eqx("cable","ケーブルクランチ"),
+    eqx("body","クランチ","レッグレイズ","ハンギングレッグレイズ","アブローラー","プランク","サイドプランク","ロシアンツイスト","バイシクルクランチ","デッドバグ"),
+  ),
+  legs:[].concat(
+    eqx("barbell","スクワット","フロントスクワット","ヒップスラスト"),
+    eqx("dumbbell","ブルガリアンスクワット","ランジ"),
+    eqx("machine","スミススクワット","ハックスクワット","レッグプレス","レッグエクステンション","レッグカール","ライイングレッグカール","カーフレイズ","シーテッドカーフレイズ","アダクション(マシン)","アブダクション(マシン)"),
+  ),
+  cardio:[].concat(
+    eqx("cardio","ランニング(トレッドミル)","ランニング(屋外)","ウォーキング","バイク(エアロバイク)","ロウイング(エルゴ)","クロストレーナー","水泳"),
+  ),
 };
 const SHIFTS=["日勤","夜勤","明け","休み"];
 
@@ -423,15 +483,24 @@ function load(){
   syncPresets(s); // 新しく増えたプリセット種目を既存ユーザーにも追加
   return s;
 }
+function guessEquip(name){ // 自作種目の器具を名前から推定（プリセットに無い種目用）
+  if(/ダンベル/.test(name))return "dumbbell";
+  if(/バーベル|ＥＺ|EZ/.test(name))return "barbell";
+  if(/ケーブル|ロープ/.test(name))return "cable";
+  if(/マシン|スミス/.test(name))return "machine";
+  if(/自重|懸垂|プッシュアップ|プランク|ディップス|クランチ/.test(name))return "body";
+  return "other";
+}
 function syncPresets(s){
   let maxId=0;s.exercises.forEach(e=>{if(typeof e.id==="number")maxId=Math.max(maxId,e.id);});
   for(const p of PARTS){
-    for(const n of PRESET[p.k]){
-      if(!s.exercises.some(e=>e.part===p.k&&e.name===n)){
-        s.exercises.push({id:++maxId,name:n,part:p.k,type:p.type,custom:false});
-      }
+    for(const o of PRESET[p.k]){
+      const ex=s.exercises.find(e=>e.part===p.k&&e.name===o.n);
+      if(ex){if(!ex.equip)ex.equip=o.e;} // 既存ユーザーの種目に器具カテゴリを補完
+      else s.exercises.push({id:++maxId,name:o.n,part:p.k,type:p.type,equip:o.e,custom:false});
     }
   }
+  s.exercises.forEach(e=>{if(!e.equip)e.equip=guessEquip(e.name);}); // 自作・旧データの取りこぼしを補完
 }
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
 function uid(){return Date.now()+Math.floor(Math.random()*1000);}
@@ -450,6 +519,7 @@ function daysInRange(days,from,len){ // from から len 日間でトレした日
 }
 function exById(id){return state.exercises.find(e=>e.id===id);}
 function partLabel(k){return (PARTS.find(p=>p.k===k)||{}).label||k;}
+function equipLabel(k){return (EQUIPS.find(x=>x.k===k)||{}).label||"";}
 function e1rm(w,r){return w*(1+r/30);}
 function volumeOf(recs){return recs.reduce((s,r)=>s+r.weight*r.reps,0);}
 function fmtKg(n){return Math.round(n).toLocaleString("ja-JP");} // 1,440 のように3桁区切り（Intl=ローカル・通信なし）
@@ -570,24 +640,37 @@ function renderPartChips(){
   });
   renderPartExs();
 }
+function exRow(e){ // 種目1行（選ぶ／追加済みボタン付き）
+  const r=document.createElement("div");r.className="exrow";
+  r.innerHTML='<span>'+e.name+'</span>';
+  const b=document.createElement("button");b.className="btn sm";b.textContent=activeExIds.includes(e.id)?"追加済み":"選ぶ";
+  b.disabled=activeExIds.includes(e.id);
+  b.onclick=()=>{if(!activeExIds.includes(e.id)){activeExIds.push(e.id);renderExCards();renderPartExs();}};
+  r.appendChild(b);return r;
+}
 function renderPartExs(){
   const box=document.getElementById("partExs");box.innerHTML="";
   if(!pickedPart)return;
-  state.exercises.filter(e=>e.part===pickedPart).forEach(e=>{
-    const r=document.createElement("div");r.className="exrow";
-    r.innerHTML='<span>'+e.name+'</span>';
-    const b=document.createElement("button");b.className="btn sm";b.textContent=activeExIds.includes(e.id)?"追加済み":"選ぶ";
-    b.disabled=activeExIds.includes(e.id);
-    b.onclick=()=>{if(!activeExIds.includes(e.id)){activeExIds.push(e.id);renderExCards();renderPartExs();}};
-    r.appendChild(b);box.appendChild(r);
-  });
+  const list=state.exercises.filter(e=>e.part===pickedPart);
+  if(pickedPart==="cardio"){ // 有酸素は器具分けの意味が薄いので見出しなし
+    list.forEach(e=>box.appendChild(exRow(e)));
+  }else{ // 器具カテゴリーごとに見出し分け
+    EQUIPS.forEach(g=>{
+      const items=list.filter(e=>(e.equip||"other")===g.k);
+      if(!items.length)return;
+      const h=document.createElement("div");h.className="eqhead eq-"+g.k;
+      h.innerHTML='<span class="eqic">'+g.ic+'</span><span>'+g.label+'</span><span class="eqct">'+items.length+'</span>';
+      box.appendChild(h);
+      items.forEach(e=>box.appendChild(exRow(e)));
+    });
+  }
   const add=document.createElement("div");add.className="exrow";
   add.innerHTML='<input id="newExName" placeholder="自作の種目名を追加" style="margin-right:8px">';
   const ab=document.createElement("button");ab.className="btn sm primary";ab.textContent="追加";
   ab.onclick=()=>{
     const v=document.getElementById("newExName").value.trim();if(!v)return;
     const part=PARTS.find(p=>p.k===pickedPart);
-    const ne={id:uid(),name:v,part:pickedPart,type:part.type,custom:true};
+    const ne={id:uid(),name:v,part:pickedPart,type:part.type,equip:guessEquip(v),custom:true};
     state.exercises.push(ne);activeExIds.push(ne.id);save();renderExCards();renderPartExs();
   };
   add.appendChild(ab);box.appendChild(add);
@@ -736,6 +819,39 @@ document.getElementById("saveCond").onclick=()=>{
   setTimeout(()=>document.getElementById("saveCond").textContent="コンディションを保存",1500);
 };
 
+/* ---------- 履歴：日付の修正（入力日を押し間違えたとき用） ---------- */
+function changeDayDate(oldD,newD){ // その日の記録・有酸素・コンディションをまるごと別日付へ移動
+  if(!newD||newD===oldD)return;
+  state.records.forEach(r=>{if(r.date===oldD)r.date=newD;});
+  state.cardio.forEach(r=>{if(r.date===oldD)r.date=newD;});
+  if(state.cond[oldD]){ // メモも一緒に移動（移動先が空のときだけ上書きしない）
+    if(!state.cond[newD])state.cond[newD]=state.cond[oldD];
+    delete state.cond[oldD];
+  }
+  save();renderHist();
+}
+function appendDateEdit(card,d){
+  const ed=document.createElement("button");
+  ed.className="btn sm dateedit";ed.textContent="✎ 日付を修正";
+  ed.onclick=()=>{
+    ed.remove();
+    const panel=document.createElement("div");panel.className="row";
+    panel.style.cssText="gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center";
+    const inp=document.createElement("input");inp.type="date";inp.value=d;inp.style.cssText="flex:1;min-width:150px";
+    const ok=document.createElement("button");ok.className="btn sm primary";ok.textContent="この日付に移動";
+    const cancel=document.createElement("button");cancel.className="btn sm";cancel.textContent="やめる";
+    ok.onclick=()=>{
+      const nd=inp.value;
+      if(!nd||nd===d){renderHist();return;}
+      if(confirm(d+" の記録を "+nd+" に移動します。よろしいですか？"))changeDayDate(d,nd);
+    };
+    cancel.onclick=()=>renderHist();
+    panel.appendChild(inp);panel.appendChild(ok);panel.appendChild(cancel);
+    card.appendChild(panel);inp.focus();
+  };
+  card.appendChild(ed);
+}
+
 /* ---------- history ---------- */
 function renderHist(){
   renderCalendar();
@@ -776,6 +892,7 @@ function renderHist(){
       const m=document.createElement("div");m.className="muted";m.style.marginTop="6px";
       m.textContent="😴 "+(c.sleep||"-")+"h ・ 体調 "+(c.cond||"-")+" ・ "+(c.memo||"");card.appendChild(m);
     }
+    appendDateEdit(card,d);
     list.appendChild(card);
   });
   renderAffil();
