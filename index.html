@@ -333,6 +333,8 @@
       <div id="partExs"></div>
     </div>
   </div>
+
+  <button class="btn" id="endWorkoutBtn" style="width:100%;margin-top:10px">🏁 トレーニング終了（今日のサマリ）</button>
 </section>
 
 <!-- ===== 履歴 ===== -->
@@ -592,6 +594,17 @@
   </div>
 </div>
 
+<!-- ===== 今日のサマリ（トレーニング終了） ===== -->
+<div id="summarySheetBg" class="sheetbg" hidden>
+  <div class="sheet">
+    <div class="between">
+      <h3>今日のサマリ</h3>
+      <button id="summarySheetClose" class="btn sm ghost" type="button">×</button>
+    </div>
+    <div id="summaryBody"></div>
+  </div>
+</div>
+
 <div id="restBar" class="restbar" hidden>
   <button id="restMinus" class="rb-adj" type="button">−15</button>
   <div class="rb-mid">
@@ -795,6 +808,45 @@ function personalBests(){ // 種目ごとの最高推定1RMとその達成セッ
   return Object.keys(best).map(id=>({exId:+id,...best[id]})).sort((a,b)=>a.date<b.date?1:-1);
 }
 
+/* ---------- 今日のサマリ（トレーニング終了ボタン・非破壊＝データは消さない） ---------- */
+function openSummarySheet(){
+  const date=logDate.value;
+  const body=document.getElementById("summaryBody");
+  const strengthToday=state.records.filter(r=>r.date===date);
+  const cardioToday=state.cardio.filter(r=>r.date===date);
+  if(!strengthToday.length&&!cardioToday.length){
+    body.innerHTML='<div class="muted">この日はまだ記録がありません。</div>';
+    document.getElementById("summarySheetBg").hidden=false;return;
+  }
+  const byEx={};
+  strengthToday.forEach(r=>{(byEx[r.exId]=byEx[r.exId]||[]).push(r);});
+  let html=Object.keys(byEx).map(id=>{
+    const ex=exById(+id);
+    return '<div class="between" style="margin:6px 0"><span>'+(ex?ex.name:"?")+'</span><span class="muted">'+byEx[id].length+'セット</span></div>';
+  }).join("");
+  html+=cardioToday.map(r=>{
+    const ex=exById(r.exId),m=Math.floor(r.durSec/60);
+    return '<div class="between" style="margin:6px 0"><span>'+(ex?ex.name:"?")+'</span><span class="muted">'+fmt(r.distance)+'km / '+m+'分</span></div>';
+  }).join("");
+  if(strengthToday.length){
+    if(isStandardUp()){
+      const vol=volumeOf(strengthToday),best=Math.max(...strengthToday.map(r=>e1rm(r.weight,r.reps)));
+      html+='<div class="statline" style="margin-top:10px">💪 計 <b>'+strengthToday.length+'</b>セット ・ 総ボリューム <b>'+fmtKg(vol)+'</b> kg ・ 推定1RM <b>'+fmt(best)+'</b> kg</div>';
+    }else{
+      html+='<a class="vlink" href="#" id="summaryUpsell" style="display:block;margin-top:10px">総ボリューム・推定1RMを見て楽しむなら¥200</a>';
+    }
+  }
+  const pbToday=personalBests().filter(pb=>pb.date===date);
+  if(pbToday.length){
+    const names=pbToday.map(pb=>{const ex=exById(pb.exId);return ex?ex.name:"?";}).join("・");
+    html+='<div style="margin-top:10px;color:var(--accent);font-weight:600">🎉 自己ベスト更新：'+names+'</div>';
+  }
+  body.innerHTML=html;
+  const up=document.getElementById("summaryUpsell");
+  if(up)up.onclick=e=>{e.preventDefault();document.getElementById("summarySheetBg").hidden=true;goToUnlockFromGate();};
+  document.getElementById("summarySheetBg").hidden=false;
+}
+
 /* ---------- シフト×コンディション傾向（¥480・最優先の差別化機能） ----------
    「明け／夜勤」のシフトタグが付いた日（起点日）から+1〜+4日以上の各日について、
    その日に記録された主観的体調スコア（state.cond[date].cond、1〜5）を集計し、
@@ -954,8 +1006,12 @@ function exRow(e){ // 種目1行（選ぶ／追加済みボタン付き）
   r.innerHTML='<span>'+e.name+'</span>';
   const b=document.createElement("button");b.className="btn sm";b.textContent=activeExIds.includes(e.id)?"追加済み":"選ぶ";
   b.disabled=activeExIds.includes(e.id);
-  b.onclick=()=>{if(!activeExIds.includes(e.id)){activeExIds.push(e.id);renderExCards();renderPartExs();}};
+  b.onclick=()=>{if(!activeExIds.includes(e.id)){activeExIds.push(e.id);renderExCards();renderPartExs();scrollToLastExCard();}};
   r.appendChild(b);return r;
+}
+function scrollToLastExCard(){ // 種目選択(筋トレメニュー)はexCardsより下にあるため、追加直後は新しいセット入力が画面外(上)になる→自動スクロールで見せる
+  const cards=document.querySelectorAll("#exCards .card");
+  if(cards.length)cards[cards.length-1].scrollIntoView({behavior:"smooth",block:"start"});
 }
 function renderPartExs(){
   const box=document.getElementById("partExs");box.innerHTML="";
@@ -980,17 +1036,16 @@ function renderPartExs(){
     const v=document.getElementById("newExName").value.trim();if(!v)return;
     const part=PARTS.find(p=>p.k===pickedPart);
     const ne={id:uid(),name:v,part:pickedPart,type:part.type,equip:guessEquip(v),custom:true};
-    state.exercises.push(ne);activeExIds.push(ne.id);save();renderExCards();renderPartExs();
+    state.exercises.push(ne);activeExIds.push(ne.id);save();renderExCards();renderPartExs();scrollToLastExCard();
   };
   add.appendChild(ab);box.appendChild(add);
 }
 
-function lastRecord(exId){
+function lastRecord(exId,date){ // dateを指定すると、その日付以前で直近の1件を返す（カレンダーで過去日を編集中に未来の記録を前回値にしない）
   const ex=exById(exId);
-  if(ex.type==="cardio"){
-    const arr=state.cardio.filter(r=>r.exId===exId).sort((a,b)=>b.ts-a.ts);return arr[0]||null;
-  }
-  const arr=state.records.filter(r=>r.exId===exId).sort((a,b)=>b.ts-a.ts);return arr[0]||null;
+  const src=ex.type==="cardio"?state.cardio:state.records;
+  const arr=src.filter(r=>r.exId===exId&&(!date||r.date<=date)).sort((a,b)=>b.ts-a.ts);
+  return arr[0]||null;
 }
 function bestE1rmBefore(exId,ts){
   let best=0;state.records.filter(r=>r.exId===exId&&r.ts<ts).forEach(r=>{best=Math.max(best,e1rm(r.weight,r.reps));});return best;
@@ -1039,27 +1094,37 @@ function renderExCards(){
   });
   renderCalendar();
 }
+function commentLine(text){
+  const cm=document.createElement("div");cm.className="muted";cm.style.cssText="margin:2px 0 8px 4px;font-size:13px";
+  cm.textContent="💬 "+text;return cm;
+}
 function setLine(r,i){
+  const frag=document.createDocumentFragment();
   const d=document.createElement("div");d.className="setline";
   d.innerHTML='<span class="no">'+(i+1)+'</span><span class="val">'+fmt(r.weight)+'kg × '+r.reps+'</span>';
   const del=document.createElement("button");del.className="del";del.textContent="削除";
   del.onclick=()=>{state.records=state.records.filter(x=>x.id!==r.id);save();renderExCards();};
-  d.appendChild(del);return d;
+  d.appendChild(del);frag.appendChild(d);
+  if(r.comment)frag.appendChild(commentLine(r.comment));
+  return frag;
 }
 function cardioLine(r,i){
+  const frag=document.createDocumentFragment();
   const d=document.createElement("div");d.className="setline";
   const m=Math.floor(r.durSec/60),s=r.durSec%60;
   d.innerHTML='<span class="no">'+(i+1)+'</span><span class="val">'+fmt(r.distance)+'km / '+m+'分'+(s?s+'秒':'')+'</span>';
   const del=document.createElement("button");del.className="del";del.textContent="削除";
   del.onclick=()=>{state.cardio=state.cardio.filter(x=>x.id!==r.id);save();renderExCards();};
-  d.appendChild(del);return d;
+  d.appendChild(del);frag.appendChild(d);
+  if(r.comment)frag.appendChild(commentLine(r.comment));
+  return frag;
 }
 function stepper(id,val,step){
   return '<div class="step"><button data-step="'+id+'" data-d="-'+step+'">−</button>'+
     '<input id="'+id+'" type="number" value="'+val+'" step="'+step+'" inputmode="decimal"><button data-step="'+id+'" data-d="'+step+'">＋</button></div>';
 }
 function strengthInput(exId,date,card){
-  const last=lastRecord(exId);
+  const last=lastRecord(exId,date);
   const w=last?last.weight:20,r=last?last.reps:10;
   const box=document.createElement("div");box.style.marginTop="10px";
   const cbtns=document.createElement("div");cbtns.className="calcbtns";
@@ -1072,6 +1137,9 @@ function strengthInput(exId,date,card){
   grid.innerHTML='<div class="grid2"><div><label class="lbl">重量(kg)</label>'+stepper("w_"+exId,w,2.5)+'</div>'+
     '<div><label class="lbl">回数</label>'+stepper("r_"+exId,r,1)+'</div></div>';
   box.appendChild(grid);
+  const cmtBox=document.createElement("div");cmtBox.style.marginTop="10px";
+  cmtBox.innerHTML='<label class="lbl">コメント（任意）</label><input type="text" id="cmt_'+exId+'" placeholder="例 フォームを意識した">';
+  box.appendChild(cmtBox);
   const btnrow=document.createElement("div");btnrow.className="row";btnrow.style.marginTop="10px";
   const rec=document.createElement("button");rec.className="btn primary";rec.style.flex="1";rec.textContent="このセットを記録";
   const toast=document.createElement("div");
@@ -1079,11 +1147,13 @@ function strengthInput(exId,date,card){
     const wt=parseFloat(document.getElementById("w_"+exId).value)||0;
     const rp=parseInt(document.getElementById("r_"+exId).value)||0;
     if(wt<=0||rp<=0)return;
+    const cmtEl=document.getElementById("cmt_"+exId);
+    const cmt=cmtEl?cmtEl.value.trim():"";
     const ts=Date.now();
     const prevBest=bestE1rmBefore(exId,ts);
     const lastSess=lastSessionBestE1rm(exId,date);
     const cur=e1rm(wt,rp);
-    state.records.push({id:uid(),exId,date,shift:activeShift,weight:wt,reps:rp,ts});save();
+    state.records.push({id:uid(),exId,date,shift:activeShift,weight:wt,reps:rp,comment:cmt,ts});save();
     let kind="none";
     if(prevBest>0&&cur>prevBest)kind="pr";
     else if(lastSess>0&&cur>lastSess)kind="up";
@@ -1099,19 +1169,24 @@ function strengthInput(exId,date,card){
   return box;
 }
 function cardioInput(exId,date,card){
-  const last=lastRecord(exId);
+  const last=lastRecord(exId,date);
   const dist=last?last.distance:3, mins=last?Math.round(last.durSec/60):20;
   const box=document.createElement("div");box.style.marginTop="10px";
   box.innerHTML='<div class="grid2"><div><label class="lbl">距離(km)</label>'+stepper("d_"+exId,dist,0.5)+'</div>'+
     '<div><label class="lbl">時間(分)</label>'+stepper("t_"+exId,mins,1)+'</div></div>';
+  const cmtBox=document.createElement("div");cmtBox.style.marginTop="10px";
+  cmtBox.innerHTML='<label class="lbl">コメント（任意）</label><input type="text" id="cmt_'+exId+'" placeholder="例 ペースを意識した">';
+  box.appendChild(cmtBox);
   const rec=document.createElement("button");rec.className="btn primary";rec.style.marginTop="10px";rec.style.width="100%";rec.textContent="記録";
   rec.onclick=()=>{
     const dd=parseFloat(document.getElementById("d_"+exId).value)||0;
     const mm=parseInt(document.getElementById("t_"+exId).value)||0;
     if(dd<=0||mm<=0)return;
+    const cmtEl=document.getElementById("cmt_"+exId);
+    const cmt=cmtEl?cmtEl.value.trim():"";
     const ts=Date.now();
     const prevMax=Math.max(0,...state.cardio.filter(r=>r.exId===exId&&r.ts<ts).map(r=>r.distance));
-    state.cardio.push({id:uid(),exId,date,shift:activeShift,distance:dd,durSec:mm*60,ts});save();
+    state.cardio.push({id:uid(),exId,date,shift:activeShift,distance:dd,durSec:mm*60,comment:cmt,ts});save();
     let kind=(prevMax===0||dd>prevMax)?"pr":"none";
     const pace=mm/dd;
     const info="ペース "+fmt(pace)+"分/km";
@@ -1251,6 +1326,8 @@ function openCalcLockSheet(kind){
   document.getElementById("calcLockSheetBg").hidden=false;
 }
 document.getElementById("calcLockClose").onclick=()=>{document.getElementById("calcLockSheetBg").hidden=true;};
+document.getElementById("endWorkoutBtn").onclick=()=>{openSummarySheet();};
+document.getElementById("summarySheetClose").onclick=()=>{document.getElementById("summarySheetBg").hidden=true;};
 document.getElementById("calcLockSheetBg").addEventListener("click",e=>{if(e.target.id==="calcLockSheetBg")document.getElementById("calcLockSheetBg").hidden=true;});
 document.getElementById("calcLockGoBtn").onclick=()=>{
   document.getElementById("calcLockSheetBg").hidden=true;
@@ -1590,7 +1667,7 @@ function renderCalendar(){
   let gateNote=document.getElementById("calGateNote");
   if(!gateNote){
     gateNote=document.createElement("div");gateNote.id="calGateNote";gateNote.className="lockcard";gateNote.style.display="none";
-    gateNote.innerHTML='<div>7日より前のカレンダーも、ちゃんと残っています。</div><button class="btn primary" id="calGateBtn" style="margin-top:10px;width:100%">¥200でもっと見る</button>';
+    gateNote.innerHTML='<div>7日より前の月のカレンダーも見られるようになります。</div><button class="btn primary" id="calGateBtn" style="margin-top:10px;width:100%">¥200でもっと見る</button>';
     document.getElementById("calCard").appendChild(gateNote);
   }
   gateNote.style.display=canGoPrevMonth?"none":"block";
