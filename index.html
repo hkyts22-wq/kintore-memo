@@ -325,8 +325,11 @@
     <button class="btn primary" id="addExBtn" style="width:100%">＋ 種目を追加</button>
     <div id="pickerCard" class="card" style="display:none">
       <div id="partBalanceMini" style="margin-bottom:12px"></div>
-      <label class="lbl">部位を選ぶ</label>
-      <div class="chips" id="partChips"></div>
+      <div class="between">
+        <label class="lbl" style="margin:0">部位を選ぶ</label>
+        <button class="btn sm" id="closePickerBtn">閉じる</button>
+      </div>
+      <div class="chips" id="partChips" style="margin-top:8px"></div>
       <div id="partExs"></div>
     </div>
   </div>
@@ -897,9 +900,12 @@ renderShiftChips();
 
 document.getElementById("addExBtn").onclick=()=>{
   const c=document.getElementById("pickerCard");
-  const show=c.style.display==="none";
-  c.style.display=show?"block":"none";
-  if(show){renderPartBalanceMini();renderPartChips();c.scrollIntoView({behavior:"smooth",block:"nearest"});}
+  c.style.display="block";
+  renderPartBalanceMini();renderPartChips();
+  c.scrollIntoView({behavior:"smooth",block:"nearest"});
+};
+document.getElementById("closePickerBtn").onclick=()=>{
+  document.getElementById("pickerCard").style.display="none";
 };
 let pickedPart=null;
 
