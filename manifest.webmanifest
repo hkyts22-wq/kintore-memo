@@ -1,7 +1,7 @@
 {
-  "name": "筋トレメモ",
-  "short_name": "筋トレメモ",
-  "description": "不規則勤務対応のシンプルな筋トレ記録。通信ゼロ・端末内だけに保存。",
+  "name": "あけトレ（明けトレ）",
+  "short_name": "あけトレ",
+  "description": "夜勤明けでも続く、通信ゼロの筋トレメモ。",
   "lang": "ja",
   "dir": "ltr",
   "start_url": "./index.html",

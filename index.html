@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none';">
-<title>筋トレメモ（不規則勤務対応）</title>
+<title>あけトレ ｜ 夜勤明けでも続く筋トレメモ</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0f6e56">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="筋トレメモ">
+<meta name="apple-mobile-web-app-title" content="あけトレ">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <style>
@@ -59,6 +59,15 @@
     --pr:#18181b; --prink:#ffffff;
     --amber:#f4f4f5; --amberink:#3f3f46; --blue:#f4f4f5; --blueink:#3f3f46;
     --green:#f4f4f5; --greenink:#27272a;
+  }
+  /* ===== ゴールドプレート（スチール×ゴールド・本格仕様／明所での視認性優先） ===== */
+  :root[data-theme="gold"]{
+    --bg:#e3e7ea; --card:#f9fafb; --ink:#1b2024; --sub:#5b6470; --line:#cdd3d8;
+    --accent:#835c0f; --accent2:#d4a017; --onAccent:#ffffff;
+    --bg2:#edf0f2; --navbg:#f9fafb; --link:#8a3812;
+    --pr:#f7ecd2; --prink:#6b4a08;
+    --amber:#fbe4cf; --amberink:#92450c; --blue:#e1ecf3; --blueink:#205777;
+    --green:#e9f1de; --greenink:#3c6b16;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
@@ -143,10 +152,11 @@
   .cnav{width:36px;height:36px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:9px;font-size:18px;line-height:1;cursor:pointer}
   .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px}
   .cawd{text-align:center;font-size:11px;color:var(--sub);padding:2px 0}
-  .caday{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:14px;border-radius:8px;color:var(--ink);font-variant-numeric:tabular-nums}
+  .caday{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:14px;border-radius:8px;color:var(--ink);font-variant-numeric:tabular-nums;cursor:pointer}
   .caday.on{background:var(--accent);color:var(--onAccent);font-weight:700}
   .caday.today{box-shadow:inset 0 0 0 2px var(--accent2)}
   .caday.on.today{box-shadow:inset 0 0 0 2px var(--onAccent)}
+  .caday.sel{outline:2px solid var(--ink);outline-offset:1px}
   .calstats{display:flex;gap:8px;margin-top:14px}
   .cstat{flex:1;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:9px 4px}
   .cstat b{display:block;font-size:20px;color:var(--accent);font-variant-numeric:tabular-nums}
@@ -216,24 +226,89 @@
     .restbar .rb-track i{transition:none}
     .restbar.done .rb-time{animation:none}
   }
+  /* ボトムシート（プレート計算機／ウォームアップ計算機） */
+  .sheetbg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+  .sheetbg[hidden]{display:none}
+  .sheet{background:var(--card);border-radius:16px 16px 0 0;width:100%;max-width:520px;max-height:86vh;overflow-y:auto;
+    padding:14px 14px calc(18px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+  .sheet .between{margin-bottom:6px}
+  .sheet h3{font-size:16px;font-weight:600;margin:0}
+  .platecalc-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
+  .platecalc-row:last-child{border-bottom:none}
+  .platecalc-row .pl{font-weight:600;font-variant-numeric:tabular-nums}
+  .platecalc-result{margin-top:10px;padding:10px 11px;border-radius:9px;background:var(--bg2);border:1px solid var(--line);font-variant-numeric:tabular-nums}
+  .warmup-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+  .warmup-row:last-child{border-bottom:none}
+  .warmup-row .wp{font-size:12px;color:var(--sub);width:38px}
+  .warmup-row .wv{font-weight:700;flex:1}
+  .calcbtns{display:flex;gap:8px;margin-top:8px}
+  .calcbtns .btn{flex:1;font-size:13px}
+  .lockcard{padding:12px;border-radius:12px;background:var(--bg2);border:1px solid var(--line);margin-top:8px}
+  .lockcard .pill{margin-left:6px}
+  /* セクション見出し（振り返り画面：記録を見る／自分を理解する） */
+  .sectionhead{font-size:15px;font-weight:600;margin:18px 4px 6px;color:var(--ink)}
+  .sectionhead .pill{margin-left:6px;vertical-align:1px}
+  /* シフト×コンディション傾向（¥480） */
+  .trendbars{display:flex;align-items:flex-end;gap:10px;height:120px;margin-top:14px;padding:0 2px}
+  .trendbar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+  .trendbar .bv{font-size:12px;color:var(--sub);margin-bottom:4px;font-variant-numeric:tabular-nums}
+  .trendbar .bb{width:100%;max-width:40px;background:var(--blue);border-radius:6px 6px 0 0;min-height:3px}
+  .trendbar .bl{font-size:12px;color:var(--sub);margin-top:6px;text-align:center}
+  .medicalnote{font-size:13px;color:var(--sub);line-height:1.5;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+  /* 部位ヒートマップ（¥480・accent-primaryの濃淡のみ） */
+  .heatmap-wrap{display:flex;flex-direction:column;align-items:center;margin-top:10px}
+  .heatmap-wrap svg{width:200px;height:188px}
+  .heatlegend{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;font-size:11px;color:var(--sub)}
+  .heatlegend i{width:14px;height:14px;border-radius:3px;display:inline-block;border:1px solid var(--line)}
+  .heatlist{margin-top:12px}
+  .heatrow{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-top:1px solid var(--line);font-size:13px}
+  .heatrow:first-child{border-top:none}
+  .heatrow .hn{display:flex;align-items:center;gap:8px}
+  .heatrow .hd{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+  .heatrow .hv{color:var(--sub);font-variant-numeric:tabular-nums}
+  /* 部位バランス・ミニ表示（種目選択画面・¥480） */
+  .partbalance-dots{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;font-size:13px}
+  .pbdot{display:flex;align-items:center;gap:4px}
+  .pbdot .d{width:10px;height:10px;border-radius:50%;border:1px solid var(--line);display:inline-block}
+  /* ボディメジャー（¥480） */
+  .measure-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 </style>
 </head>
 <body>
 <header>
-  <h1>筋トレメモ</h1>
+  <h1>あけトレ</h1>
   <div class="sub">不規則勤務対応 ・ 通信ゼロ・端末内だけに保存</div>
 </header>
 
 <!-- ===== 記録 ===== -->
 <section id="s-log" class="screen active">
-  <div class="card">
+  <div class="card" id="calCard">
     <div class="between">
-      <div style="flex:1">
-        <label class="lbl">日付</label>
-        <input type="date" id="logDate">
-      </div>
+      <button id="calPrev" class="cnav" type="button" aria-label="前の月">‹</button>
+      <label class="lbl" id="calTitle" style="margin:0;font-size:15px;color:var(--ink);font-weight:600"></label>
+      <button id="calNext" class="cnav" type="button" aria-label="次の月">›</button>
     </div>
-    <label class="lbl" style="margin-top:12px">シフト（任意・1タップ）</label>
+    <div class="calgrid" id="calGrid"></div>
+    <div class="calstats" id="calStats"></div>
+    <div class="between" style="margin-top:12px">
+      <span class="muted" style="font-size:13px">日付を直接指定</span>
+      <input type="date" id="logDate" style="max-width:170px">
+    </div>
+  </div>
+
+  <div class="card">
+    <label class="lbl">今日のコンディション</label>
+    <div class="grid2" style="margin-top:10px">
+      <div><label class="lbl">睡眠（時間）</label><input type="number" id="cSleep" step="0.5" min="0" placeholder="例 4.5"></div>
+      <div><label class="lbl">体調（1〜5）</label><input type="number" id="cCond" min="1" max="5" placeholder="例 3"></div>
+    </div>
+    <label class="lbl" style="margin-top:10px">ひとことメモ</label>
+    <input type="text" id="cMemo" placeholder="例 夜勤明け、軽めにした">
+    <button class="btn sm" id="saveCond" style="margin-top:10px">コンディションを保存</button>
+  </div>
+
+  <div class="card">
+    <label class="lbl">シフト（任意・1タップ）</label>
     <div class="chips" id="shiftChips"></div>
   </div>
 
@@ -249,38 +324,25 @@
   <div id="addArea" style="margin-top:8px">
     <button class="btn primary" id="addExBtn" style="width:100%">＋ 種目を追加</button>
     <div id="pickerCard" class="card" style="display:none">
+      <div id="partBalanceMini" style="margin-bottom:12px"></div>
       <label class="lbl">部位を選ぶ</label>
       <div class="chips" id="partChips"></div>
       <div id="partExs"></div>
     </div>
   </div>
-
-  <details class="card">
-    <summary>今日のコンディション（任意）</summary>
-    <div class="grid2" style="margin-top:10px">
-      <div><label class="lbl">睡眠（時間）</label><input type="number" id="cSleep" step="0.5" min="0" placeholder="例 4.5"></div>
-      <div><label class="lbl">体調（1〜5）</label><input type="number" id="cCond" min="1" max="5" placeholder="例 3"></div>
-    </div>
-    <label class="lbl" style="margin-top:10px">ひとことメモ</label>
-    <input type="text" id="cMemo" placeholder="例 夜勤明け、軽めにした">
-    <button class="btn sm" id="saveCond" style="margin-top:10px">コンディションを保存</button>
-  </details>
 </section>
 
 <!-- ===== 履歴 ===== -->
 <section id="s-hist" class="screen">
-  <div class="card" id="calCard">
-    <div class="between">
-      <button id="calPrev" class="cnav" type="button" aria-label="前の月">‹</button>
-      <label class="lbl" id="calTitle" style="margin:0;font-size:15px;color:var(--ink);font-weight:600"></label>
-      <button id="calNext" class="cnav" type="button" aria-label="次の月">›</button>
-    </div>
-    <div class="calgrid" id="calGrid"></div>
-    <div class="calstats" id="calStats"></div>
-  </div>
+  <div class="sectionhead">記録を見る</div>
   <div class="card" id="pbCard" hidden>
     <label class="lbl">自己ベスト（推定1RM）</label>
+    <div class="muted" id="pbGateLead" style="font-size:12px;margin:-2px 0 10px;line-height:1.5;display:none"></div>
     <div id="pbList"></div>
+    <div id="pbGateCard" class="lockcard" style="display:none">
+      <div>直近7日より前に更新した自己ベストも、ちゃんと残っています。</div>
+      <button class="btn primary" id="pbGateBtn" style="margin-top:10px;width:100%">¥200でもっと見る</button>
+    </div>
   </div>
   <div class="card">
     <label class="lbl">種目の伸びを見る</label>
@@ -293,14 +355,70 @@
       <span class="best" id="progBest"></span>
     </div>
     <canvas id="progCanvas" width="480" height="160"></canvas>
+    <div class="muted" id="progGateLead" style="font-size:12px;margin-top:8px;line-height:1.5;display:none"></div>
+    <div id="progGateCard" class="lockcard" style="display:none">
+      <div>直近7日より前の記録も、ちゃんと残っています。</div>
+      <button class="btn primary" id="progGateBtn" style="margin-top:10px;width:100%">¥200で全期間を見る</button>
+    </div>
   </div>
+  <div class="sectionhead">自分を理解する<span class="pill blue">¥480</span></div>
   <div class="card" id="shiftCard" hidden>
     <label class="lbl">シフト別のパフォーマンス</label>
     <div class="muted" id="shiftLead" style="font-size:12px;margin:-2px 0 12px;line-height:1.5">あなたの平均（100%）と比べた推定1RMの傾向。種目ごとに補正して比べています。</div>
     <div id="shiftBars"></div>
+    <div id="shiftLockCard" class="lockcard" style="display:none">
+      <div>シフトごとの推定1RMの傾向を、種目ごとに補正して比べられるようになります。</div>
+      <button class="btn primary" id="shiftLockBtn" style="margin-top:10px;width:100%">¥480でもっと知る</button>
+    </div>
   </div>
+
+  <!-- シフト×コンディション傾向（¥480・最優先の差別化機能） -->
+  <div class="card" id="trendCard">
+    <label class="lbl">シフト×体調スコアの統計的傾向</label>
+    <div class="muted" id="trendLead" style="font-size:13px;margin:-2px 0 4px;line-height:1.5"></div>
+    <div id="trendBody"></div>
+    <div id="trendLockCard" class="lockcard" style="display:none">
+      <div>明け／夜勤後、何日空けると体調スコアの統計的傾向が変わりやすいかを見られるようになります。</div>
+      <button class="btn primary" id="trendLockBtn" style="margin-top:10px;width:100%">¥480でもっと知る</button>
+    </div>
+    <div class="medicalnote">※医療的な診断・効能を示すものではありません。あなたの記録に基づく統計的な傾向の参考情報です。</div>
+  </div>
+
+  <!-- 部位ヒートマップ（¥480） -->
+  <div class="card" id="heatCard">
+    <div class="between">
+      <label class="lbl" style="margin-bottom:0">部位バランス（ヒートマップ）</label>
+      <div class="seg" id="heatRange" style="max-width:200px">
+        <button type="button" data-r="7" class="on">7日</button>
+        <button type="button" data-r="30">30日</button>
+        <button type="button" data-r="all">全期間</button>
+      </div>
+    </div>
+    <div id="heatBody"></div>
+    <div id="heatLockCard" class="lockcard" style="display:none">
+      <div>鍛えている部位・まだ伸ばせる部位を、人型のヒートマップで見られるようになります。</div>
+      <button class="btn primary" id="heatLockBtn" style="margin-top:10px;width:100%">¥480でもっと知る</button>
+    </div>
+  </div>
+
+  <!-- ボディメジャー推移（¥480。体組成は別タブ、ここはサイズ推移のグラフのみ） -->
+  <div class="card" id="measureTrendCard">
+    <label class="lbl">ボディメジャーの推移</label>
+    <div class="muted" id="measureTrendLead" style="font-size:13px;margin:-2px 0 4px;line-height:1.5"></div>
+    <div id="measureTrendBody"></div>
+    <div id="measureLockCard" class="lockcard" style="display:none">
+      <div>上腕・ウエスト・腿のサイズの推移を、グラフでも見られるようになります。</div>
+      <button class="btn primary" id="measureLockBtn" style="margin-top:10px;width:100%">¥480でもっと知る</button>
+    </div>
+  </div>
+
   <div class="h2">記録の履歴</div>
+  <div class="muted" id="histGateLead" style="font-size:12px;margin:0 4px 6px;line-height:1.5;display:none"></div>
   <div id="histList"></div>
+  <div id="histGateCard" class="lockcard" style="display:none;margin:12px 4px">
+    <div>7日より前の記録も、ちゃんと残っています。</div>
+    <button class="btn primary" id="histGateBtn" style="margin-top:10px;width:100%">¥200でもっと見る</button>
+  </div>
   <div id="affilSlot"></div>
 </section>
 
@@ -319,6 +437,26 @@
     <canvas id="bodyCanvas" width="480" height="160"></canvas>
   </div>
   <div id="bodyList"></div>
+
+  <!-- ボディメジャー拡張（¥480） -->
+  <div class="card" id="measureCard">
+    <div class="between">
+      <label class="lbl" style="margin-bottom:0">ボディメジャー<span class="pill blue">¥480</span></label>
+    </div>
+    <div id="measureForm" style="display:none">
+      <div class="measure-grid" style="margin-top:10px">
+        <div><label class="lbl">上腕（cm）</label><input type="number" id="mArm" step="0.1" placeholder="例 30"></div>
+        <div><label class="lbl">ウエスト（cm）</label><input type="number" id="mWaist" step="0.1" placeholder="例 78"></div>
+        <div><label class="lbl">腿（cm）</label><input type="number" id="mThigh" step="0.1" placeholder="例 52"></div>
+      </div>
+      <button class="btn primary" id="mSave" style="margin-top:12px;width:100%">今日のサイズを記録</button>
+    </div>
+    <div id="measureBodyLockCard" class="lockcard" style="display:none">
+      <div>上腕・ウエスト・腿のサイズを記録すると、ここに推移が出ます。</div>
+      <button class="btn primary" id="measureBodyLockBtn" style="margin-top:10px;width:100%">¥480でもっと知る</button>
+    </div>
+  </div>
+  <div id="measureList"></div>
 </section>
 
 <!-- ===== 設定 ===== -->
@@ -351,11 +489,34 @@
       </div>
     </div>
   </div>
-  <div class="card">
-    <div class="between">
-      <div><div style="font-weight:600">広告（紹介枠）を消す</div><div class="muted">買い切りのお試し（このプロトタイプは無料で切替）</div></div>
-      <label class="step" style="border:none"><input type="checkbox" id="adsOff" style="width:22px;height:22px"></label>
+  <div class="card" id="unlockCard">
+    <div style="font-weight:600">購入・解除</div>
+    <div class="muted" style="margin-top:2px" id="unlockLead">買い切りで、もっと記録を楽しむ機能を追加できます。購入後に届く解除コードを入力してください。</div>
+    <div id="unlockActiveStandard" style="display:none">
+      <div class="toast up" style="margin-top:10px">✅ スタンダード（¥200）解除済みです。ありがとうございます！</div>
     </div>
+    <div id="unlockActivePremium" style="display:none">
+      <div class="toast up" style="margin-top:10px">✅ プレミアム（¥480）解除済みです。ありがとうございます！</div>
+      <div class="muted" style="margin-top:8px">※データを消去したり機種変更しても、同じ解除コードをもう一度入力すれば元に戻せます。</div>
+    </div>
+    <div id="unlockForm" style="margin-top:10px">
+      <label class="lbl" for="unlockInput">解除コード（スタンダード／プレミアムどちらも、ここに入力できます）</label>
+      <input type="text" id="unlockInput" placeholder="KINTORE-XXXX-XXXX-X" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button class="btn primary" id="unlockBtn" style="margin-top:10px;width:100%">解除する</button>
+      <div id="unlockMsg"></div>
+      <a class="vlink" target="_blank" rel="noopener noreferrer" href="__BOOTH_URL__" style="margin-top:10px">解除コードの購入はこちら ↗</a>
+    </div>
+  </div>
+  <div class="card" id="upgradeCard" style="display:none">
+    <div style="font-weight:600">プレミアムに足す（差額¥280）</div>
+    <div class="muted" style="margin-top:2px">自分を理解する機能（シフト×体調スコアの統計的傾向・体組成・ボディメジャー・部位ヒートマップ）と、ゴールドプレートテーマを追加できます。</div>
+    <div id="upgradeForm" style="margin-top:10px;display:none">
+      <label class="lbl" for="upgradeInput">アップグレード用コード</label>
+      <input type="text" id="upgradeInput" placeholder="KINTORE-XXXX-XXXX-X" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button class="btn primary" id="upgradeBtn" style="margin-top:10px;width:100%">適用する</button>
+      <div id="upgradeMsg"></div>
+    </div>
+    <button class="btn sm" id="upgradeOpenBtn" style="margin-top:10px;width:100%">アップグレードコード入力</button>
   </div>
   <div class="card">
     <div style="font-weight:600;margin-bottom:8px">データ</div>
@@ -374,6 +535,55 @@
     <div class="muted" id="swState">オフライン対応：確認中…</div>
   </div>
 </section>
+
+<!-- ===== プレート計算機（ボトムシート） ===== -->
+<div id="plateSheetBg" class="sheetbg" hidden>
+  <div class="sheet">
+    <div class="between">
+      <h3>プレート計算機</h3>
+      <button id="plateSheetClose" class="btn sm ghost" type="button">×</button>
+    </div>
+    <label class="lbl">目標重量(kg)</label>
+    <div id="plateTargetStep"></div>
+    <label class="lbl" style="margin-top:10px">バーベル重量</label>
+    <div class="chips" id="plateBarChips">
+      <span class="chip" data-bar="20">20kg</span>
+      <span class="chip" data-bar="15">15kg</span>
+      <span class="chip" data-bar="10">10kg</span>
+    </div>
+    <label class="lbl" style="margin-top:10px">所持プレート（タップで枚数を増減）</label>
+    <div id="plateOwnedRows"></div>
+    <div class="platecalc-result" id="plateResult"></div>
+  </div>
+</div>
+
+<!-- ===== ウォームアップ計算機（ボトムシート） ===== -->
+<div id="warmupSheetBg" class="sheetbg" hidden>
+  <div class="sheet">
+    <div class="between">
+      <h3>ウォームアップ計算機</h3>
+      <button id="warmupSheetClose" class="btn sm ghost" type="button">×</button>
+    </div>
+    <label class="lbl">目標重量(kg)</label>
+    <div id="warmupTargetStep"></div>
+    <div id="warmupRows" style="margin-top:10px"></div>
+    <button class="btn primary" id="warmupBackBtn" style="margin-top:12px;width:100%">この種目の記録に戻る</button>
+  </div>
+</div>
+
+<!-- ===== 計算機ロック案内（無料ユーザー向け） ===== -->
+<div id="calcLockSheetBg" class="sheetbg" hidden>
+  <div class="sheet">
+    <div class="between">
+      <h3 id="calcLockTitle">プレート計算機</h3>
+      <button id="calcLockClose" class="btn sm ghost" type="button">×</button>
+    </div>
+    <div class="lockcard">
+      <div id="calcLockBody" style="line-height:1.6"></div>
+      <button class="btn primary" id="calcLockGoBtn" style="margin-top:10px;width:100%">¥200でもっと使う</button>
+    </div>
+  </div>
+</div>
 
 <div id="restBar" class="restbar" hidden>
   <button id="restMinus" class="rb-adj" type="button">−15</button>
@@ -417,45 +627,48 @@ const EQUIPS=[
 function eqx(e,...names){return names.map(n=>({n,e}));} // 器具e付きの種目データをまとめて作る
 const PRESET={
   chest:[].concat(
-    eqx("barbell","ベンチプレス","インクラインベンチプレス","デクラインベンチプレス","フロアプレス"),
-    eqx("dumbbell","ダンベルプレス","インクラインダンベルプレス","ダンベルフライ","インクラインダンベルフライ"),
-    eqx("machine","チェストプレス(マシン)","ペックフライ(マシン)","スミスベンチプレス"),
-    eqx("cable","ケーブルクロスオーバー","ケーブルフライ(ロー)"),
-    eqx("body","ディップス","プッシュアップ"),
+    eqx("barbell","ベンチプレス","インクラインベンチプレス","デクラインベンチプレス","フロアプレス","リバースグリップベンチプレス"),
+    eqx("dumbbell","ダンベルプレス","インクラインダンベルプレス","デクラインダンベルプレス","ダンベルフライ","インクラインダンベルフライ","デクラインダンベルフライ"),
+    eqx("machine","チェストプレス(マシン)","インクラインチェストプレス(マシン)","デクラインチェストプレス(マシン)","ペックフライ(マシン)","スミスベンチプレス","スミスインクラインベンチプレス","スミスデクラインベンチプレス"),
+    eqx("cable","ケーブルクロスオーバー","ケーブルフライ(ハイ)","ケーブルフライ(ミッド)","ケーブルフライ(ロー)","インクラインケーブルフライ","デクラインケーブルフライ","シングルアームケーブルプレス"),
+    eqx("body","ディップス","プッシュアップ","ワイドプッシュアップ","ナロープッシュアップ","デクラインプッシュアップ"),
   ),
   shoulder:[].concat(
     eqx("barbell","ショルダープレス(バーベル)","アップライトロウ","ランドマインプレス"),
-    eqx("dumbbell","ダンベルショルダープレス","アーノルドプレス","サイドレイズ","リアレイズ","フロントレイズ","シュラッグ"),
+    eqx("dumbbell","ダンベルショルダープレス","アーノルドプレス","サイドレイズ","リアレイズ","フロントレイズ","シュラッグ","ライイングリアレイズ"),
     eqx("machine","スミスショルダープレス","ショルダープレス(マシン)","リアデルトフライ(マシン)"),
-    eqx("cable","ケーブルサイドレイズ","フェイスプル"),
+    eqx("cable","ケーブルサイドレイズ","フェイスプル","ケーブルリアレイズ","ケーブルフロントレイズ","ケーブルアップライトロウ","シングルアームケーブルサイドレイズ"),
+    eqx("other","プレートフロントレイズ"),
   ),
   back:[].concat(
-    eqx("barbell","ローイング(バーベル)","Tバーロウ","デッドリフト","ルーマニアンデッドリフト"),
-    eqx("dumbbell","ワンハンドダンベルロウ","プルオーバー"),
+    eqx("barbell","ローイング(バーベル)","Tバーロウ","デッドリフト","ルーマニアンデッドリフト","バーベルシュラッグ","グッドモーニング","メドウズロウ"),
+    eqx("dumbbell","ワンハンドダンベルロウ","プルオーバー","インクラインダンベルロウ"),
     eqx("machine","ラットプルダウン","ビハインドネックラットプルダウン","シーテッドローイング(マシン)"),
-    eqx("cable","ストレートアームプルダウン"),
-    eqx("body","懸垂(チンニング)","バックエクステンション"),
+    eqx("cable","ストレートアームプルダウン","シーテッドケーブルロウ","ワンハンドケーブルロウ","ハイロウ(ケーブル)","ケーブルプルオーバー"),
+    eqx("body","懸垂(チンニング)","バックエクステンション","ワイドグリップ懸垂","ニュートラルグリップ懸垂"),
   ),
   biceps:[].concat(
-    eqx("barbell","バーベルカール","EZバーカール","プリーチャーカール","ドラッグカール"),
-    eqx("dumbbell","ダンベルカール","インクラインダンベルカール","ハンマーカール","コンセントレーションカール","スパイダーカール"),
-    eqx("cable","ケーブルカール"),
+    eqx("barbell","バーベルカール","EZバーカール","プリーチャーカール","ドラッグカール","バーベルリバースカール"),
+    eqx("dumbbell","ダンベルカール","インクラインダンベルカール","デクラインダンベルカール","ハンマーカール","コンセントレーションカール","スパイダーカール","ザットマンカール"),
+    eqx("cable","ケーブルカール","ハイケーブルカール","ケーブルハンマーカール","シングルアームケーブルカール"),
   ),
   triceps:[].concat(
-    eqx("barbell","フレンチプレス","ライイングトライセプスエクステンション","ナローベンチプレス"),
+    eqx("barbell","フレンチプレス","ライイングトライセプスエクステンション","ナローベンチプレス","JMプレス"),
     eqx("dumbbell","キックバック","オーバーヘッドエクステンション","ダンベルトライセプスエクステンション"),
-    eqx("cable","プレスダウン(ケーブル)","ローププレスダウン"),
-    eqx("body","ディップス(三頭)"),
+    eqx("cable","プレスダウン(ケーブル)","ローププレスダウン","シングルアームプレスダウン","リバースグリッププレスダウン","オーバーヘッドケーブルエクステンション"),
+    eqx("body","ディップス(三頭)","ベンチディップス"),
   ),
   abs:[].concat(
     eqx("machine","アブクランチ(マシン)"),
-    eqx("cable","ケーブルクランチ"),
-    eqx("body","クランチ","レッグレイズ","ハンギングレッグレイズ","アブローラー","プランク","サイドプランク","ロシアンツイスト","バイシクルクランチ","デッドバグ"),
+    eqx("cable","ケーブルクランチ","ケーブルウッドチョッパー","サイドベンド(ケーブル)"),
+    eqx("body","クランチ","レッグレイズ","ハンギングレッグレイズ","アブローラー","プランク","サイドプランク","ロシアンツイスト","バイシクルクランチ","デッドバグ","ドラゴンフラッグ","Lシット"),
   ),
   legs:[].concat(
     eqx("barbell","スクワット","フロントスクワット","ヒップスラスト"),
-    eqx("dumbbell","ブルガリアンスクワット","ランジ"),
-    eqx("machine","スミススクワット","ハックスクワット","レッグプレス","レッグエクステンション","レッグカール","ライイングレッグカール","カーフレイズ","シーテッドカーフレイズ","アダクション(マシン)","アブダクション(マシン)"),
+    eqx("dumbbell","ブルガリアンスクワット","ランジ","ダンベルルーマニアンデッドリフト","ステップアップ"),
+    eqx("machine","スミススクワット","ハックスクワット","レッグプレス","レッグエクステンション","レッグカール","ライイングレッグカール","カーフレイズ","シーテッドカーフレイズ","アダクション(マシン)","アブダクション(マシン)","Vスクワット"),
+    eqx("cable","ケーブルキックバック","ケーブルレッグカール","ケーブルスクワット"),
+    eqx("body","ピストルスクワット","ジャンプスクワット","シシースクワット"),
   ),
   cardio:[].concat(
     eqx("cardio","ランニング(トレッドミル)","ランニング(屋外)","ウォーキング","バイク(エアロバイク)","ロウイング(エルゴ)","クロストレーナー","水泳"),
@@ -468,21 +681,34 @@ let activeShift=null;
 let activeExIds=[]; // exIds added to today's session view
 
 function defaultState(){
-  return {exercises:[],records:[],cardio:[],body:[],cond:{},routines:[],settings:{praiseStyle:"hype",adsOff:false,theme:"green",restTimer:true,restSec:90}};
+  return {exercises:[],records:[],cardio:[],body:[],bodyMeasure:[],cond:{},routines:[],
+    settings:{praiseStyle:"hype",tier:"free",theme:"green",restTimer:true,restSec:90,
+      plateBar:20,plateOwned:{20:4,15:0,10:2,5:2,2.5:2,1.25:2}}};
 }
 function load(){
   let s=null;
   try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.exercises)s=d;}catch(e){}
   if(!s)s=defaultState();
   // 旧データの欠けている項目を補う（移行）
-  s.records=s.records||[];s.cardio=s.cardio||[];s.body=s.body||[];s.cond=s.cond||{};
-  s.routines=s.routines||[];s.settings=s.settings||{praiseStyle:"hype",adsOff:false};
+  s.records=s.records||[];s.cardio=s.cardio||[];s.body=s.body||[];s.bodyMeasure=s.bodyMeasure||[];s.cond=s.cond||{};
+  s.routines=s.routines||[];s.settings=s.settings||{praiseStyle:"hype"};
   s.settings.theme=s.settings.theme||"green"; // テーマ未設定の旧データは標準に
   s.settings.restTimer=(s.settings.restTimer===undefined)?true:s.settings.restTimer; // 既定ON（明示OFFは保持）
   s.settings.restSec=s.settings.restSec||90; // 既定90秒
+  // tier移行：旧adsOff(bool)→tier('free'|'standard'|'premium')。adsOff:trueは旧買い切り＝プレミアム相当として救済。
+  if(!s.settings.tier){
+    s.settings.tier=s.settings.adsOff?"premium":"free";
+  }
+  if(!["free","standard","premium"].includes(s.settings.tier))s.settings.tier="free";
+  delete s.settings.adsOff;
+  if(s.settings.plateBar===undefined)s.settings.plateBar=20;
+  if(!s.settings.plateOwned)s.settings.plateOwned={20:4,15:0,10:2,5:2,2.5:2,1.25:2};
   syncPresets(s); // 新しく増えたプリセット種目を既存ユーザーにも追加
   return s;
 }
+function tier(){return state.settings.tier||"free";}
+function isStandardUp(){const t=tier();return t==="standard"||t==="premium";}
+function isPremium(){return tier()==="premium";}
 function guessEquip(name){ // 自作種目の器具を名前から推定（プリセットに無い種目用）
   if(/ダンベル/.test(name))return "dumbbell";
   if(/バーベル|ＥＺ|EZ/.test(name))return "barbell";
@@ -506,6 +732,19 @@ function save(){localStorage.setItem(KEY,JSON.stringify(state));}
 function uid(){return Date.now()+Math.floor(Math.random()*1000);}
 function fmtDate(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function today(){return fmtDate(new Date());}
+/* ---------- 7日ゲート（無料ユーザー）----------
+   「今日を含む直近7暦日」のみ無料で見せる（UX_課金機能設計.md §3-3／PRODUCT_課金モデル.md §5確定事項）。
+   ぼかし・グレーアウトは使わず、7日より前は前向きな案内カードに切り替える。 */
+function sevenDayStartDate(){const d=new Date();d.setDate(d.getDate()-6);return d;} // 今日を含む7日分なので-6日前から
+function isWithinFreeWindow(dateStr){ // dateStr: "YYYY-MM-DD"
+  if(!dateStr)return false;
+  const start=fmtDate(sevenDayStartDate());
+  return dateStr>=start&&dateStr<=today();
+}
+function freeWindowLabel(){
+  const start=sevenDayStartDate();
+  return (start.getMonth()+1)+"/"+start.getDate()+"〜"+"今日";
+}
 function workoutDays(){return new Set([...state.records.map(r=>r.date),...state.cardio.map(r=>r.date)]);}
 function currentStreak(days){ // 今日（未トレなら昨日）から遡る連続トレ日数
   let n=0;const d=new Date();
@@ -549,6 +788,55 @@ function personalBests(){ // 種目ごとの最高推定1RMとその達成セッ
   return Object.keys(best).map(id=>({exId:+id,...best[id]})).sort((a,b)=>a.date<b.date?1:-1);
 }
 
+/* ---------- シフト×コンディション傾向（¥480・最優先の差別化機能） ----------
+   「明け／夜勤」のシフトタグが付いた日（起点日）から+1〜+4日以上の各日について、
+   その日に記録された主観的体調スコア（state.cond[date].cond、1〜5）を集計し、
+   オフセットごとの平均を出す。完全ローカル統計のみ。
+   薬機法対応：「回復」「改善」「治る」等は一切使わず、必ず「主観的体調スコアの統計的傾向」という
+   表現に統一する（文言はUI側のラベル・空状態・注記で一元的にこの表現を使うこと）。 */
+const TREND_MIN_SAMPLES=3; // データ不足判定の閾値（空状態文言の「もう少し」の根拠）
+function addDaysStr(dateStr,n){const d=new Date(dateStr+"T00:00:00");d.setDate(d.getDate()+n);return fmtDate(d);}
+function shiftConditionTrend(){
+  // 起点日＝「明け」または「夜勤」のシフトタグが付いた記録・有酸素がある日（1日1回のみ数える）
+  const originDates=new Set();
+  [...state.records,...state.cardio].forEach(r=>{
+    if(r.shift==="明け"||r.shift==="夜勤")originDates.add(r.date);
+  });
+  const buckets=[{label:"+1日",n:1},{label:"+2日",n:2},{label:"+3日",n:3},{label:"+4日以上",n:4}];
+  const sums=[0,0,0,0],counts=[0,0,0,0];
+  originDates.forEach(od=>{
+    for(let offset=1;offset<=4;offset++){
+      const targetDate=addDaysStr(od,offset);
+      if(targetDate>today())continue; // 未来日は対象外
+      const c=state.cond[targetDate];
+      if(!c||!c.cond)continue;
+      const score=parseFloat(c.cond);if(!score||score<=0)continue;
+      const idx=offset>=4?3:offset-1; // +4日以上は1バケットにまとめる
+      sums[idx]+=score;counts[idx]++;
+    }
+  });
+  const total=counts.reduce((a,b)=>a+b,0);
+  return {
+    total,
+    bars:buckets.map((b,i)=>({label:b.label,avg:counts[i]?sums[i]/counts[i]:null,n:counts[i]})),
+  };
+}
+
+/* ---------- 部位ヒートマップ（¥480） ----------
+   期間内（7日／30日／全期間）の各部位のセット数を集計し、最大値に対する相対量で
+   accent-primaryの濃淡（新色は作らない）を割り当てる。 */
+function partVolumeInRange(rangeDays){ // rangeDays: 7 | 30 | "all"
+  const startStr=rangeDays==="all"?null:fmtDate((()=>{const d=new Date();d.setDate(d.getDate()-(rangeDays-1));return d;})());
+  const counts={};PARTS.forEach(p=>{if(p.k!=="cardio")counts[p.k]=0;});
+  state.records.forEach(r=>{
+    if(startStr&&r.date<startStr)return;
+    if(r.date>today())return;
+    const ex=exById(r.exId);if(!ex||ex.part==="cardio")return;
+    counts[ex.part]=(counts[ex.part]||0)+1;
+  });
+  return counts;
+}
+
 /* ---------- praise ---------- */
 function praiseText(kind,info){
   const s=state.settings.praiseStyle;
@@ -579,7 +867,18 @@ document.getElementById("nav").addEventListener("click",e=>{
 /* ---------- log screen ---------- */
 const logDate=document.getElementById("logDate");
 logDate.value=today();
-logDate.addEventListener("change",renderExCards);
+function loadCondFields(){
+  const c=state.cond[logDate.value]||{};
+  document.getElementById("cSleep").value=c.sleep||"";
+  document.getElementById("cCond").value=c.cond||"";
+  document.getElementById("cMemo").value=c.memo||"";
+}
+function selectLogDate(ds){ // カレンダーの日付タップ／直接指定どちらからも呼ぶ：その日の記録モードへ切り替える
+  logDate.value=ds;
+  loadCondFields();
+  renderExCards();
+}
+logDate.addEventListener("change",()=>selectLogDate(logDate.value));
 
 function renderShiftChips(){
   const wrap=document.getElementById("shiftChips");wrap.innerHTML="";
@@ -596,7 +895,7 @@ document.getElementById("addExBtn").onclick=()=>{
   const c=document.getElementById("pickerCard");
   const show=c.style.display==="none";
   c.style.display=show?"block":"none";
-  if(show){renderPartChips();c.scrollIntoView({behavior:"smooth",block:"nearest"});}
+  if(show){renderPartBalanceMini();renderPartChips();c.scrollIntoView({behavior:"smooth",block:"nearest"});}
 };
 let pickedPart=null;
 
@@ -711,15 +1010,24 @@ function renderExCards(){
       const todays=state.records.filter(r=>r.exId===exId&&r.date===date);
       todays.forEach((r,i)=>card.appendChild(setLine(r,i)));
       if(todays.length){
-        const vol=volumeOf(todays),best=Math.max(...todays.map(r=>e1rm(r.weight,r.reps)));
-        const stat=document.createElement("div");stat.className="statline";
-        stat.innerHTML="💪 "+todays.length+"セット ・ 計 <b>"+fmtKg(vol)+"</b> kg ・ 推定1RM <b>"+fmt(best)+"</b> kg";
-        card.appendChild(stat);
+        if(isStandardUp()){
+          const vol=volumeOf(todays),best=Math.max(...todays.map(r=>e1rm(r.weight,r.reps)));
+          const stat=document.createElement("div");stat.className="statline";
+          stat.innerHTML="💪 "+todays.length+"セット ・ 計 <b>"+fmtKg(vol)+"</b> kg ・ 推定1RM <b>"+fmt(best)+"</b> kg";
+          card.appendChild(stat);
+        }else{
+          const link=document.createElement("a");link.className="vlink";link.href="#";
+          link.style.display="block";link.style.marginTop="4px";
+          link.textContent="セット履歴を見て楽しむなら¥200";
+          link.onclick=e=>{e.preventDefault();goToUnlockFromGate();};
+          card.appendChild(link);
+        }
       }
       card.appendChild(strengthInput(exId,date,card));
     }
     wrap.appendChild(card);
   });
+  renderCalendar();
 }
 function setLine(r,i){
   const d=document.createElement("div");d.className="setline";
@@ -744,8 +1052,16 @@ function strengthInput(exId,date,card){
   const last=lastRecord(exId);
   const w=last?last.weight:20,r=last?last.reps:10;
   const box=document.createElement("div");box.style.marginTop="10px";
-  box.innerHTML='<div class="grid2"><div><label class="lbl">重量(kg)</label>'+stepper("w_"+exId,w,2.5)+'</div>'+
+  const cbtns=document.createElement("div");cbtns.className="calcbtns";
+  const pb=document.createElement("button");pb.type="button";pb.className="btn sm";pb.textContent="⚙ プレート計算";
+  const wb=document.createElement("button");wb.type="button";wb.className="btn sm";wb.textContent="⚙ ウォームアップ";
+  pb.onclick=()=>{if(isStandardUp())openPlateCalc(parseFloat(document.getElementById("w_"+exId).value)||w,exId);else openCalcLockSheet("plate");};
+  wb.onclick=()=>{if(isStandardUp())openWarmupCalc(parseFloat(document.getElementById("w_"+exId).value)||w,exId);else openCalcLockSheet("warmup");};
+  cbtns.appendChild(pb);cbtns.appendChild(wb);box.appendChild(cbtns);
+  const grid=document.createElement("div");
+  grid.innerHTML='<div class="grid2"><div><label class="lbl">重量(kg)</label>'+stepper("w_"+exId,w,2.5)+'</div>'+
     '<div><label class="lbl">回数</label>'+stepper("r_"+exId,r,1)+'</div></div>';
+  box.appendChild(grid);
   const btnrow=document.createElement("div");btnrow.className="row";btnrow.style.marginTop="10px";
   const rec=document.createElement("button");rec.className="btn primary";rec.style.flex="1";rec.textContent="このセットを記録";
   const toast=document.createElement("div");
@@ -800,6 +1116,134 @@ function stepHandler(e){
   let v=parseFloat(inp.value)||0;v+=parseFloat(b.dataset.d);if(v<0)v=0;
   inp.value=Math.round(v*100)/100;
 }
+
+/* ---------- プレート計算機／ウォームアップ計算機（¥200・完全ローカル計算） ----------
+   所持プレート構成・バーベル重量は state.settings.plateBar / plateOwned に保存し、次回も引き継ぐ。
+   ボタン自体は無料ユーザーにも常設表示し、タップ時にtierを見て本体かロック案内かを振り分ける（UX_課金機能設計.md §3-1）。 */
+const PLATE_SIZES=[20,15,10,5,2.5,1.25]; // 片側に使える一般的なプレート重量（大きい順）
+let calcExId=null; // 計算機を開いた時の対象種目（ウォームアップの「記録に戻る」で使う）
+
+function renderCalcButtons(){ /* 将来tierによる見た目変更が必要になった時の拡張ポイント。現状はonclick内でtier判定するため再描画不要。 */ }
+
+function plateTargetVal(){return parseFloat(document.getElementById("plateTarget").value)||0;}
+function openPlateCalc(initWeight,exId){
+  calcExId=exId;
+  const box=document.getElementById("plateTargetStep");
+  box.innerHTML=stepper("plateTarget",initWeight>0?initWeight:(state.settings.plateBar||20),2.5);
+  box.onclick=e=>{stepHandler(e);if(e.target.closest("button[data-step]"))drawPlateResult();};
+  box.querySelector("#plateTarget").oninput=drawPlateResult;
+  renderPlateBarChips();renderPlateOwnedRows();drawPlateResult();
+  document.getElementById("plateSheetBg").hidden=false;
+}
+function renderPlateBarChips(){
+  document.querySelectorAll("#plateBarChips .chip").forEach(c=>{
+    c.classList.toggle("on",+c.dataset.bar===(state.settings.plateBar||20));
+    c.onclick=()=>{state.settings.plateBar=+c.dataset.bar;save();renderPlateBarChips();drawPlateResult();};
+  });
+}
+function renderPlateOwnedRows(){
+  const wrap=document.getElementById("plateOwnedRows");wrap.innerHTML="";
+  PLATE_SIZES.forEach(sz=>{
+    const owned=(state.settings.plateOwned&&state.settings.plateOwned[sz])||0;
+    const row=document.createElement("div");row.className="platecalc-row";
+    row.innerHTML='<span class="pl">'+fmt(sz)+'kg</span>';
+    const step=document.createElement("div");step.className="step";step.style.maxWidth="140px";
+    step.innerHTML='<button type="button" data-psz="'+sz+'" data-pd="-1">−</button>'+
+      '<input id="po_'+sz+'" type="number" value="'+owned+'" readonly inputmode="numeric">'+
+      '<button type="button" data-psz="'+sz+'" data-pd="1">＋</button>';
+    row.appendChild(step);wrap.appendChild(row);
+  });
+  wrap.onclick=e=>{
+    const b=e.target.closest("button[data-psz]");if(!b)return;
+    const sz=b.dataset.psz;
+    if(!state.settings.plateOwned)state.settings.plateOwned={};
+    let v=(state.settings.plateOwned[sz]||0)+parseInt(b.dataset.pd);if(v<0)v=0;
+    state.settings.plateOwned[sz]=v;save();
+    document.getElementById("po_"+sz).value=v;
+    drawPlateResult();
+  };
+}
+function calcPlatesPerSide(target,bar,owned){
+  // 片側に必要な重量 = (目標 − バー)/2。所持枚数の範囲内で、目標重量以下の最も近い組み合わせを大きいプレートから貪欲に積む。
+  let perSide=(target-bar)/2;
+  if(perSide<0)perSide=0;
+  const remainPerSide={};PLATE_SIZES.forEach(sz=>remainPerSide[sz]=Math.floor((owned[sz]||0)/2)); // 両側で使うので片側の使用可能枚数は所持の半分
+  const used={};let left=perSide;
+  PLATE_SIZES.forEach(sz=>{
+    const maxN=remainPerSide[sz];let n=0;
+    while(n<maxN&&left-sz>=-1e-9){left-=sz;n++;}
+    if(n>0)used[sz]=n;
+  });
+  const achieved=bar+2*(perSide-left);
+  return {used,achieved,exact:Math.abs(achieved-target)<1e-6};
+}
+function drawPlateResult(){
+  const target=plateTargetVal();
+  const bar=state.settings.plateBar||20;
+  const owned=state.settings.plateOwned||{};
+  const box=document.getElementById("plateResult");
+  if(target<=0){box.innerHTML='目標重量を入れると、片側に乗せる枚数が出ます。';return;}
+  if(target<bar){box.innerHTML='目標重量がバーベル重量（'+fmt(bar)+'kg）より軽いため、プレートは不要です。';return;}
+  const r=calcPlatesPerSide(target,bar,owned);
+  const parts=PLATE_SIZES.filter(sz=>r.used[sz]).map(sz=>fmt(sz)+'kg ×'+r.used[sz]);
+  let html="片側に乗せる枚数：<br>"+(parts.length?parts.join("　"):"（プレートなし）");
+  html+="<br>合計 <b>"+fmt(r.achieved)+"</b> kg";
+  if(!r.exact)html+="<br><span class=\"muted\">この組み合わせでは目標どおりに作れません。一番近いのは"+fmt(r.achieved)+"kgです。</span>";
+  box.innerHTML=html;
+}
+document.getElementById("plateSheetClose").onclick=()=>{document.getElementById("plateSheetBg").hidden=true;};
+document.getElementById("plateSheetBg").addEventListener("click",e=>{if(e.target.id==="plateSheetBg")document.getElementById("plateSheetBg").hidden=true;});
+
+function openWarmupCalc(initWeight,exId){
+  calcExId=exId;
+  const box=document.getElementById("warmupTargetStep");
+  box.innerHTML=stepper("warmupTarget",initWeight>0?initWeight:20,2.5);
+  box.onclick=e=>{stepHandler(e);if(e.target.closest("button[data-step]"))drawWarmupRows();};
+  box.querySelector("#warmupTarget").oninput=drawWarmupRows;
+  drawWarmupRows();
+  document.getElementById("warmupSheetBg").hidden=false;
+}
+function drawWarmupRows(){
+  const wrap=document.getElementById("warmupRows");
+  const target=parseFloat(document.getElementById("warmupTarget").value)||0;
+  if(target<=0){wrap.innerHTML='<div class="muted">目標重量を入れると、ウォームアップが組まれます。</div>';return;}
+  const steps=[{pct:40,reps:"8"},{pct:60,reps:"5"},{pct:80,reps:"3"},{pct:100,reps:"1〜"}];
+  wrap.innerHTML=steps.map((s,i)=>{
+    const w=s.pct===100?target:Math.round(target*s.pct/100/2.5)*2.5;
+    return '<div class="warmup-row"><span class="wp">Set'+(i+1)+'</span><span>'+s.pct+'%</span>'+
+      '<span class="wv">'+fmt(w)+'kg × '+s.reps+'</span></div>';
+  }).join("");
+}
+document.getElementById("warmupSheetClose").onclick=()=>{document.getElementById("warmupSheetBg").hidden=true;};
+document.getElementById("warmupSheetBg").addEventListener("click",e=>{if(e.target.id==="warmupSheetBg")document.getElementById("warmupSheetBg").hidden=true;});
+document.getElementById("warmupBackBtn").onclick=()=>{
+  document.getElementById("warmupSheetBg").hidden=true;
+  if(calcExId!=null){
+    const card=[...document.querySelectorAll("#exCards .card")].find(c=>{
+      const title=c.querySelector('div[style*="font-weight:600"]');
+      return title&&exById(calcExId)&&title.textContent===exById(calcExId).name;
+    });
+    if(card)card.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+};
+
+/* ---------- 計算機ロック案内（無料ユーザー向け・前向きな文言のみ） ---------- */
+const CALC_LOCK_TXT={
+  plate:"目標重量を、バーベルと所持プレートの枚数構成に分解して表示します。本格的なジム機材のような感覚で、片側に何枚乗せればいいかが一目でわかります。",
+  warmup:"目標重量から、40%・60%・80%・100%の4段階のウォームアップセットを自動で組みます。今入力中の重さがそのまま初期値になります。",
+};
+function openCalcLockSheet(kind){
+  document.getElementById("calcLockTitle").textContent=kind==="warmup"?"ウォームアップ計算機":"プレート計算機";
+  document.getElementById("calcLockBody").textContent=CALC_LOCK_TXT[kind]||"";
+  document.getElementById("calcLockSheetBg").hidden=false;
+}
+document.getElementById("calcLockClose").onclick=()=>{document.getElementById("calcLockSheetBg").hidden=true;};
+document.getElementById("calcLockSheetBg").addEventListener("click",e=>{if(e.target.id==="calcLockSheetBg")document.getElementById("calcLockSheetBg").hidden=true;});
+document.getElementById("calcLockGoBtn").onclick=()=>{
+  document.getElementById("calcLockSheetBg").hidden=true;
+  document.querySelector('.navbar button[data-t="s-set"]').click();
+  scrollToUnlock();
+};
 function flashToast(exId,p){
   // place toast under the matching card by re-finding it
   const cards=document.querySelectorAll("#exCards .card");
@@ -828,7 +1272,7 @@ function changeDayDate(oldD,newD){ // その日の記録・有酸素・コンデ
     if(!state.cond[newD])state.cond[newD]=state.cond[oldD];
     delete state.cond[oldD];
   }
-  save();renderHist();
+  save();renderHist();renderCalendar();
 }
 function appendDateEdit(card,d){
   const ed=document.createElement("button");
@@ -854,7 +1298,6 @@ function appendDateEdit(card,d){
 
 /* ---------- history ---------- */
 function renderHist(){
-  renderCalendar();
   renderPB();
   const sel=document.getElementById("progExSel");
   const used=[...new Set(state.records.map(r=>r.exId))];
@@ -870,9 +1313,22 @@ function renderHist(){
   });
 
   renderShiftPerf();
+  renderTrend();
+  renderHeatmap();
+  renderMeasureTrend();
 
   const list=document.getElementById("histList");list.innerHTML="";
-  const dates=[...new Set([...state.records.map(r=>r.date),...state.cardio.map(r=>r.date)])].sort().reverse();
+  let dates=[...new Set([...state.records.map(r=>r.date),...state.cardio.map(r=>r.date)])].sort().reverse();
+  const histGateLead=document.getElementById("histGateLead"),histGateCard=document.getElementById("histGateCard");
+  const hiddenDateCount=dates.filter(d=>!isWithinFreeWindow(d)).length;
+  if(!isStandardUp()&&hiddenDateCount>0){
+    dates=dates.filter(isWithinFreeWindow);
+    histGateLead.style.display="block";
+    histGateLead.textContent="直近7日分（"+freeWindowLabel()+"）を表示しています。";
+    histGateCard.style.display="block";
+  }else{
+    histGateLead.style.display="none";histGateCard.style.display="none";
+  }
   if(!dates.length)list.innerHTML='<div class="muted card">まだ記録がありません。「記録」タブから始めましょう。</div>';
   dates.forEach(d=>{
     const card=document.createElement("div");card.className="card";
@@ -900,23 +1356,40 @@ function renderHist(){
 let progMetric="e1rm"; // "e1rm" 推定1RM ／ "vol" 総ボリューム
 function drawProg(){
   const sel=document.getElementById("progExSel");const id=+sel.value;
+  const allRecs=state.records.filter(r=>r.exId===id);
+  const gateOn=!isStandardUp()&&allRecs.some(r=>!isWithinFreeWindow(r.date));
+  const recs=gateOn?allRecs.filter(r=>isWithinFreeWindow(r.date)):allRecs;
   const byDate={};
   if(progMetric==="vol"){
-    state.records.filter(r=>r.exId===id).forEach(r=>{byDate[r.date]=(byDate[r.date]||0)+r.weight*r.reps;});
+    recs.forEach(r=>{byDate[r.date]=(byDate[r.date]||0)+r.weight*r.reps;});
   }else{
-    state.records.filter(r=>r.exId===id).forEach(r=>{byDate[r.date]=Math.max(byDate[r.date]||0,e1rm(r.weight,r.reps));});
+    recs.forEach(r=>{byDate[r.date]=Math.max(byDate[r.date]||0,e1rm(r.weight,r.reps));});
   }
   const dates=Object.keys(byDate).sort();const pts=dates.map(d=>byDate[d]);
   const peak=pts.length?Math.max(...pts):0;
   const lbl=progMetric==="vol"?("最高 総ボリューム "+fmtKg(peak)+"kg"):("自己ベスト 推定1RM "+fmt(peak)+"kg");
   document.getElementById("progBest").textContent=peak?lbl:"";
   lineChart(document.getElementById("progCanvas"),pts);
+  const progGateLead=document.getElementById("progGateLead"),progGateCard=document.getElementById("progGateCard");
+  if(gateOn){
+    progGateLead.style.display="block";
+    progGateLead.textContent="直近7日分（"+freeWindowLabel()+"）のグラフを表示しています。";
+    progGateCard.style.display="block";
+  }else{
+    progGateLead.style.display="none";progGateCard.style.display="none";
+  }
 }
 function renderShiftPerf(){
   const card=document.getElementById("shiftCard");
   const data=shiftPerf();
   if(data.length<2){card.hidden=true;return;} // シフトが1種類以下なら比較にならないので隠す
   card.hidden=false;
+  const lock=document.getElementById("shiftLockCard"),bars=document.getElementById("shiftBars");
+  if(!isPremium()){
+    bars.innerHTML="";document.getElementById("shiftLead").textContent="";lock.style.display="block";
+    return;
+  }
+  lock.style.display="none";
   const total=data.reduce((s,d)=>s+d.n,0);
   document.getElementById("shiftLead").textContent=total<8
     ? "あなたの平均（100%）と比べた推定1RMの傾向。まだ記録が少なめなので、増えるほど正確になります。"
@@ -938,6 +1411,134 @@ function renderShiftPerf(){
     wrap.appendChild(row);
   });
 }
+
+/* ---------- シフト×コンディション傾向（¥480） ----------
+   薬機法対応：UIラベル・空状態・注記いずれも「主観的体調スコアの統計的傾向」という表現に統一する。
+   「回復」「改善」「治る」「戻る（身体機能として）」は一切使わない。注記は常設（設定でオフ不可）。 */
+function renderTrend(){
+  const body=document.getElementById("trendBody"),lock=document.getElementById("trendLockCard");
+  const lead=document.getElementById("trendLead");
+  if(!isPremium()){
+    body.innerHTML="";lead.textContent="";lock.style.display="block";
+    return;
+  }
+  lock.style.display="none";
+  const data=shiftConditionTrend();
+  if(data.total<TREND_MIN_SAMPLES){
+    lead.textContent="";
+    body.innerHTML='<div class="muted">もう少し記録が増えると、傾向が見えてきます。</div>';
+    return;
+  }
+  lead.textContent="明け／夜勤後、何日空けると体調スコアの統計的傾向が変わりやすいかを、あなたの記録から集計します。";
+  body.innerHTML='<div class="trendbars">'+data.bars.map(b=>{
+    const h=b.avg?Math.max(6,Math.round(b.avg/5*100)):3; // 体調スコアは1〜5想定。高さは5点満点に対する比率
+    return '<div class="trendbar"><div class="bv">'+(b.avg?fmt(b.avg):"−")+'</div>'+
+      '<div class="bb" style="height:'+h+'%"></div>'+
+      '<div class="bl">'+b.label+'</div></div>';
+  }).join("")+'</div><div class="muted" style="margin-top:8px;font-size:12px">体調スコア平均（自己記録・1〜5、n='+data.total+'）</div>';
+}
+document.getElementById("trendLockBtn").onclick=goToUnlockFromGate;
+document.getElementById("shiftLockBtn").onclick=goToUnlockFromGate;
+
+/* ---------- 部位ヒートマップ（¥480） ----------
+   人体シルエット（正面・背面の2体）はインラインSVGのみで構成（外部画像不可・通信ゼロ）。
+   濃淡はaccent-primaryの不透明度のみで表現（fill-opacity属性。color-mix()は古いiOS Safariで
+   未サポートのため使わず、互換性の高いopacity表現に統一）。 */
+let heatRange=7; // 7 | 30 | "all"
+// SVG描画パーツの単位は「腕」でbiceps+tricepsを合算表示する（シルエット上は2頭/3頭を分けて描かない）
+const HEATMAP_SVG='<svg viewBox="0 0 160 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'+
+  '<ellipse cx="80" cy="16" rx="14" ry="15" fill="var(--line)"/>'+ // 頭（部位対象外・常に中立色）
+  '<g id="hm-shoulder"><rect x="32" y="32" width="96" height="14" rx="7" fill="var(--line)"/></g>'+ // 肩
+  '<g id="hm-back"><rect x="30" y="44" width="20" height="58" rx="8" fill="var(--line)"/><rect x="110" y="44" width="20" height="58" rx="8" fill="var(--line)"/></g>'+ // 背中（胸の脇＝広背筋に見立てた帯）
+  '<g id="hm-chest"><rect x="52" y="44" width="56" height="34" rx="9" fill="var(--line)"/></g>'+ // 胸
+  '<g id="hm-arms"><rect x="14" y="46" width="14" height="54" rx="7" fill="var(--line)"/><rect x="132" y="46" width="14" height="54" rx="7" fill="var(--line)"/></g>'+ // 腕（二頭+三頭の合算）
+  '<g id="hm-abs"><rect x="56" y="80" width="48" height="34" rx="8" fill="var(--line)"/></g>'+ // 腹
+  '<g id="hm-legs"><rect x="46" y="116" width="30" height="32" rx="10" fill="var(--line)"/><rect x="84" y="116" width="30" height="32" rx="10" fill="var(--line)"/></g>'+ // 脚
+  '</svg>';
+function heatOpacityFor(ratio){return ratio<=0?0:0.28+ratio*0.62;} // 0(未実施・中立線色のまま)／0.28〜0.9
+function applyHeatmapColors(svgRoot,counts,max){
+  const groupMap={chest:"hm-chest",shoulder:"hm-shoulder",back:"hm-back",abs:"hm-abs",legs:"hm-legs"};
+  Object.keys(groupMap).forEach(k=>{
+    const ratio=(counts[k]||0)/max;
+    const g=svgRoot.querySelector("#"+groupMap[k]);
+    if(g)g.querySelectorAll("rect").forEach(r=>{r.setAttribute("fill","var(--accent)");r.setAttribute("fill-opacity",heatOpacityFor(ratio));});
+  });
+  const armRatio=((counts.biceps||0)+(counts.triceps||0))/max;
+  const armG=svgRoot.querySelector("#hm-arms");
+  if(armG)armG.querySelectorAll("rect").forEach(r=>{r.setAttribute("fill","var(--accent)");r.setAttribute("fill-opacity",heatOpacityFor(armRatio));});
+}
+function renderHeatmap(){
+  const body=document.getElementById("heatBody"),lock=document.getElementById("heatLockCard");
+  if(!isPremium()){
+    body.innerHTML="";lock.style.display="block";
+    return;
+  }
+  lock.style.display="none";
+  const counts=partVolumeInRange(heatRange);
+  const max=Math.max(1,...Object.values(counts));
+  const total=Object.values(counts).reduce((a,b)=>a+b,0);
+  const wrap=document.createElement("div");
+  wrap.innerHTML='<div class="heatmap-wrap">'+HEATMAP_SVG+
+    '<div class="heatlegend"><i style="background:var(--line)"></i>少ない（未実施）<i style="background:var(--accent)"></i>多い</div></div>'+
+    '<div class="heatlist" id="heatList"></div>';
+  body.innerHTML="";body.appendChild(wrap);
+  if(total===0){
+    wrap.querySelector("#heatList").innerHTML='<div class="muted" style="margin-top:4px">種目を記録すると、部位の色がついていきます。</div>';
+    return;
+  }
+  applyHeatmapColors(wrap.querySelector("svg"),counts,max);
+  const listEl=wrap.querySelector("#heatList");
+  // リストは器具学習で使っている部位粒度（biceps/tricepsを分けたまま）で表示し、実際の記録の手応えを正確に伝える
+  const sorted=[...PARTS].filter(p=>p.k!=="cardio").map(p=>({k:p.k,label:p.label,n:counts[p.k]||0,ratio:(counts[p.k]||0)/max}))
+    .sort((a,b)=>b.n-a.n);
+  listEl.innerHTML=sorted.map(p=>
+    '<div class="heatrow"><span class="hn"><span class="hd" style="background:var(--accent);opacity:'+(p.n>0?heatOpacityFor(p.ratio):0.15)+'"></span>'+p.label+'</span>'+
+    '<span class="hv">'+p.n+'セット</span></div>'
+  ).join("");
+  const under=sorted.filter(p=>p.n===0).map(p=>p.label);
+  const noteEl=document.createElement("div");noteEl.className="muted";noteEl.style.marginTop="10px";noteEl.style.fontSize="12px";
+  noteEl.textContent=under.length?("まだ伸ばせる部位："+under.join("・")):"直近の期間は、どの部位もバランスよく記録されています。";
+  wrap.appendChild(noteEl);
+}
+document.getElementById("heatLockBtn").onclick=goToUnlockFromGate;
+document.getElementById("heatRange").onclick=e=>{
+  const b=e.target.closest("button");if(!b)return;
+  heatRange=b.dataset.r==="all"?"all":+b.dataset.r;
+  document.querySelectorAll("#heatRange button").forEach(x=>x.classList.toggle("on",x===b));
+  renderHeatmap();renderPartBalanceMini();
+};
+
+/* ---------- 部位バランス・ミニ表示（種目選択画面・¥480） ---------- */
+function renderPartBalanceMini(){
+  const slot=document.getElementById("partBalanceMini");if(!slot)return;
+  if(!isPremium()){
+    slot.innerHTML='<div class="lockcard" style="margin-top:0">'+
+      '<div>直近7日の部位バランスを見られるようになります。鍛えている部位、まだ伸ばせる部位が一目でわかります。</div>'+
+      '<button class="btn primary" id="partBalanceLockBtn" style="margin-top:10px;width:100%">¥480でもっと知る</button></div>';
+    const btn=document.getElementById("partBalanceLockBtn");if(btn)btn.onclick=goToUnlockFromGate;
+    return;
+  }
+  const counts=partVolumeInRange(7);
+  const miniParts=[
+    {label:"胸",n:counts.chest||0},{label:"肩",n:counts.shoulder||0},{label:"背中",n:counts.back||0},
+    {label:"腕",n:(counts.biceps||0)+(counts.triceps||0)},{label:"腹",n:counts.abs||0},{label:"脚",n:counts.legs||0},
+  ];
+  const dots=miniParts.map(p=>{
+    const n=Math.min(3,p.n); // ●の数は最大3個まで
+    const filled="●".repeat(n),empty=n===0?"○":"";
+    return '<span class="pbdot">'+p.label+(n>0?filled:empty)+'</span>';
+  }).join("");
+  slot.innerHTML='<div class="card" style="margin:0;padding:11px 12px">'+
+    '<div class="muted" style="font-size:12px">直近7日の部位バランス</div>'+
+    '<div class="partbalance-dots">'+dots+'</div>'+
+    '<button class="btn sm ghost" id="partBalanceMoreBtn" style="margin-top:4px;padding-left:0">もっと詳しく見る →</button></div>';
+  const moreBtn=document.getElementById("partBalanceMoreBtn");
+  if(moreBtn)moreBtn.onclick=()=>{
+    document.querySelector('.navbar button[data-t="s-hist"]').click();
+    setTimeout(()=>{document.getElementById("heatCard").scrollIntoView({behavior:"smooth",block:"start"});},50);
+  };
+}
+
 let calYear,calMonth; // カレンダー表示中の年・月（未設定なら当月）
 function renderCalendar(){
   if(calYear===undefined){const d=new Date();calYear=d.getFullYear();calMonth=d.getMonth();}
@@ -948,12 +1549,14 @@ function renderCalendar(){
   const first=new Date(calYear,calMonth,1).getDay();
   const dim=new Date(calYear,calMonth+1,0).getDate();
   for(let i=0;i<first;i++)grid.appendChild(document.createElement("div"));
-  const td=today();
+  const td=today(),sel=logDate.value;
   for(let d=1;d<=dim;d++){
     const ds=fmtDate(new Date(calYear,calMonth,d));
     const cell=document.createElement("div");cell.className="caday";cell.textContent=d;
     if(days.has(ds))cell.classList.add("on");
     if(ds===td)cell.classList.add("today");
+    if(ds===sel)cell.classList.add("sel");
+    cell.onclick=()=>selectLogDate(ds);
     grid.appendChild(cell);
   }
   // 統計はつねに「今」基準（表示中の月に関係なく）
@@ -966,14 +1569,45 @@ function renderCalendar(){
     '<div class="cstat"><b>'+weekDays+'</b><span>今週の日数</span></div>'+
     '<div class="cstat"><b>'+monthDays+'</b><span>今月の日数</span></div>'+
     '<div class="cstat"><b>'+currentStreak(days)+'</b><span>連続日数</span></div>';
-  document.getElementById("calPrev").onclick=()=>{calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();};
+  // 7日ゲート：無料ユーザーは「直近7日を含む月」より前へは戻れない（前向きな案内に切り替える。当月のカレンダー自体は無料で見える）
+  const freeStart=sevenDayStartDate();
+  const freeStartYM=freeStart.getFullYear()*12+freeStart.getMonth();
+  const curYM=calYear*12+calMonth;
+  const canGoPrevMonth=isStandardUp()||curYM>freeStartYM;
+  let gateNote=document.getElementById("calGateNote");
+  if(!gateNote){
+    gateNote=document.createElement("div");gateNote.id="calGateNote";gateNote.className="lockcard";gateNote.style.display="none";
+    gateNote.innerHTML='<div>7日より前のカレンダーも、ちゃんと残っています。</div><button class="btn primary" id="calGateBtn" style="margin-top:10px;width:100%">¥200でもっと見る</button>';
+    document.getElementById("calCard").appendChild(gateNote);
+  }
+  gateNote.style.display=canGoPrevMonth?"none":"block";
+  document.getElementById("calPrev").disabled=!canGoPrevMonth;
+  document.getElementById("calPrev").style.opacity=canGoPrevMonth?"1":".45";
+  const btn=document.getElementById("calGateBtn");if(btn)btn.onclick=()=>{document.querySelector('.navbar button[data-t="s-set"]').click();scrollToUnlock();};
+  document.getElementById("calPrev").onclick=()=>{
+    if(!canGoPrevMonth)return;
+    calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();
+  };
   document.getElementById("calNext").onclick=()=>{calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();};
 }
 function renderPB(){
-  const card=document.getElementById("pbCard"),pbs=personalBests();
-  if(!pbs.length){card.hidden=true;return;}
+  const card=document.getElementById("pbCard"),allPbs=personalBests();
+  if(!allPbs.length){card.hidden=true;return;}
   card.hidden=false;
+  const gateOn=!isStandardUp()&&allPbs.some(p=>!isWithinFreeWindow(p.date));
+  const pbs=gateOn?allPbs.filter(p=>isWithinFreeWindow(p.date)):allPbs;
   const wrap=document.getElementById("pbList");wrap.innerHTML="";
+  const pbGateLead=document.getElementById("pbGateLead"),pbGateCard=document.getElementById("pbGateCard");
+  if(gateOn){
+    pbGateLead.style.display="block";
+    pbGateLead.textContent="直近7日（"+freeWindowLabel()+"）に更新した自己ベストを表示しています。";
+    pbGateCard.style.display="block";
+  }else{
+    pbGateLead.style.display="none";pbGateCard.style.display="none";
+  }
+  if(!pbs.length){
+    wrap.innerHTML='<div class="muted">直近7日に更新した自己ベストはまだありません。</div>';return;
+  }
   pbs.forEach(p=>{
     const ex=exById(p.exId);
     const row=document.createElement("div");row.className="pbrow";
@@ -986,11 +1620,19 @@ function renderPB(){
 }
 function renderAffil(){
   const slot=document.getElementById("affilSlot");
-  if(state.settings.adsOff){slot.innerHTML="";return;}
+  if(isPremium()){slot.innerHTML="";return;} // プレミアムはおすすめ枠（アフィリ）を消す
   slot.innerHTML='<div class="affil"><div class="tag">おすすめ（PR）</div>'+
-    '<div style="font-weight:600;color:var(--amberink);margin:2px 0">夜勤明けの回復に・プロテイン</div>'+
+    '<div style="font-weight:600;color:var(--amberink);margin:2px 0">トレーニング後のたんぱく質補給に</div>'+
     '<a class="vlink" target="_blank" rel="noopener noreferrer" href="https://www.amazon.co.jp/s?k=%E3%83%97%E3%83%AD%E3%83%86%E3%82%A4%E3%83%B3">商品を見る ↗</a></div>';
 }
+/* 7日ゲートの「もっと見る」ボタン共通：設定画面の解除コード入力欄へ遷移 */
+function goToUnlockFromGate(){
+  document.querySelector('.navbar button[data-t="s-set"]').click();
+  scrollToUnlock();
+}
+["pbGateBtn","progGateBtn","histGateBtn"].forEach(id=>{
+  const b=document.getElementById(id);if(b)b.onclick=goToUnlockFromGate;
+});
 
 /* ---------- body ---------- */
 document.getElementById("bSave").onclick=()=>{
@@ -1006,7 +1648,78 @@ function renderBody(){
   const list=document.getElementById("bodyList");list.innerHTML="";
   [...arr].reverse().forEach(b=>{const c=document.createElement("div");c.className="card";
     c.innerHTML='<div class="between"><b>'+b.date+'</b><span>'+fmt(b.weight)+'kg'+(b.fat?' ・ '+fmt(b.fat)+'%':'')+'</span></div>';list.appendChild(c);});
+  renderMeasure();
 }
+
+/* ---------- ボディメジャー拡張（¥480） ---------- */
+function renderMeasure(){
+  const form=document.getElementById("measureForm"),lock=document.getElementById("measureBodyLockCard");
+  const list=document.getElementById("measureList");
+  if(!isPremium()){
+    form.style.display="none";lock.style.display="block";list.innerHTML="";
+    return;
+  }
+  lock.style.display="none";form.style.display="block";
+  const arr=[...state.bodyMeasure].sort((a,b)=>a.date<b.date?-1:1);
+  list.innerHTML="";
+  if(!arr.length){
+    list.innerHTML='<div class="muted card">上腕・ウエスト・腿のサイズを記録すると、ここに推移が出ます。</div>';
+    return;
+  }
+  [...arr].reverse().forEach(m=>{
+    const c=document.createElement("div");c.className="card";
+    const bits=[];
+    if(m.arm)bits.push("上腕 "+fmt(m.arm)+"cm");
+    if(m.waist)bits.push("ウエスト "+fmt(m.waist)+"cm");
+    if(m.thigh)bits.push("腿 "+fmt(m.thigh)+"cm");
+    c.innerHTML='<div class="between"><b>'+m.date+'</b></div><div class="muted" style="margin-top:4px">'+bits.join(" ・ ")+'</div>';
+    list.appendChild(c);
+  });
+}
+document.getElementById("mSave").onclick=()=>{
+  const arm=parseFloat(document.getElementById("mArm").value)||null;
+  const waist=parseFloat(document.getElementById("mWaist").value)||null;
+  const thigh=parseFloat(document.getElementById("mThigh").value)||null;
+  if(!arm&&!waist&&!thigh)return; // 何も入力されていなければ保存しない（赤文字エラーは出さず、静かに何もしない）
+  const d=today();
+  state.bodyMeasure=state.bodyMeasure.filter(m=>m.date!==d);
+  state.bodyMeasure.push({date:d,arm,waist,thigh});save();
+  document.getElementById("mArm").value="";document.getElementById("mWaist").value="";document.getElementById("mThigh").value="";
+  renderMeasure();renderMeasureTrend();
+};
+document.getElementById("measureBodyLockBtn").onclick=goToUnlockFromGate;
+
+/* 振り返り画面「自分を理解する」セクション内の、ボディメジャー推移グラフ（¥480） */
+function renderMeasureTrend(){
+  const body=document.getElementById("measureTrendBody"),lock=document.getElementById("measureLockCard");
+  const lead=document.getElementById("measureTrendLead");
+  if(!isPremium()){
+    body.innerHTML="";lead.textContent="";lock.style.display="block";
+    return;
+  }
+  lock.style.display="none";
+  const arr=[...state.bodyMeasure].sort((a,b)=>a.date<b.date?-1:1);
+  if(!arr.length){
+    lead.textContent="";
+    body.innerHTML='<div class="muted">上腕・ウエスト・腿のサイズを記録すると、ここに推移が出ます。</div>';
+    return;
+  }
+  lead.textContent="体組成タブで記録したサイズの推移です。";
+  const metrics=[{k:"arm",label:"上腕"},{k:"waist",label:"ウエスト"},{k:"thigh",label:"腿"}];
+  body.innerHTML=metrics.map(m=>{
+    const pts=arr.filter(a=>a[m.k]).map(a=>a[m.k]);
+    if(!pts.length)return "";
+    const latest=pts[pts.length-1];
+    return '<div style="margin-top:10px"><div class="between"><span class="muted">'+m.label+'の推移</span>'+
+      '<span class="best">最新 '+fmt(latest)+'cm</span></div>'+
+      '<canvas id="measureCanvas_'+m.k+'" width="480" height="160"></canvas></div>';
+  }).join("");
+  metrics.forEach(m=>{
+    const cv=document.getElementById("measureCanvas_"+m.k);
+    if(cv)lineChart(cv,arr.filter(a=>a[m.k]).map(a=>a[m.k]));
+  });
+}
+document.getElementById("measureLockBtn").onclick=goToUnlockFromGate;
 
 /* ---------- chart ---------- */
 function themeColor(name,fallback){
@@ -1036,16 +1749,115 @@ function renderPraiseSeg(){
 }
 document.getElementById("praiseSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;
   state.settings.praiseStyle=b.dataset.v;save();renderPraiseSeg();};
-const adsOff=document.getElementById("adsOff");adsOff.checked=state.settings.adsOff;
-adsOff.onchange=()=>{state.settings.adsOff=adsOff.checked;save();};
+/* ---------- 購入・解除：完全オフラインのコード検証 ----------
+   仕組み（外部通信ゼロ）：
+   ・コードは「KINTORE-XXXX-XXXX-C」形式。本体8文字＋末尾1文字のチェックディジット。
+   ・末尾チェックディジットで打ち間違いを検知。
+   ・さらに本体8文字が「ゲート条件（秘密の重み付き合計が13で割り切れる）」を満たすコードだけ受理。
+     → でたらめな入力ではまず通らない（理論上の誤受理は約 1/32 × 1/13 ≒ 0.24%。
+        実用上は紙のコードを打つので問題ない水準。完全な防御は不可能だが「当てずっぽうでは通らない」を満たす）。
+   ・検証は関数判定なので、有効コードは無数に作れる＝将来「購入者ごとに違うコード」へ拡張可能。
+   ・端末に紐づけない＝同じコードを再入力すればデータ消去・機種変更後も復活できる。
+   【3種コードの判別】既存のチェック桁・ゲート判定はそのまま再利用し、
+   本体payload[0]（先頭1文字、値0-31）を3で割った余りで種類を埋め込む：
+     余り0 = standard用（¥200）／余り1 = premium用（¥480）／余り2 = upgrade用（¥200→¥480差額）
+   この方式なら既存のチェック桁計算・ゲート計算（payload全体に対する処理）を1文字も変えずに再利用でき、
+   誤受理率(~0.24%)・入力ゆらぎ吸収（小文字/全角空白/ハイフン無視）も完全に維持される。 */
+const UNLOCK_ALPHA="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // 紛らわしい I,O,0,1 を除いた32文字
+function unlockVal(c){return UNLOCK_ALPHA.indexOf(c);}
+function unlockCheckDigit(payload){ // 本体8文字→チェックディジット1文字
+  let s=0;for(let i=0;i<payload.length;i++)s+=unlockVal(payload[i])*(i%2===0?3:1);
+  return UNLOCK_ALPHA[((s%32)+32)%32];
+}
+function unlockGate(payload){ // ゲート条件（有効コードの「鍵穴」）
+  let g=0;for(let i=0;i<payload.length;i++)g+=unlockVal(payload[i])*(i+1);
+  return g%13===0;
+}
+function unlockKind(payload){ // payload[0]の値を3で割った余りでコード種別を埋め込む
+  const r=unlockVal(payload[0])%3;
+  return r===0?"standard":(r===1?"premium":"upgrade");
+}
+// 正規化（大小・ハイフン・全角含む空白を吸収）して payload/chk を取り出す。不正なら null。
+function parseUnlockCode(raw){
+  if(!raw)return null;
+  const code=String(raw).toUpperCase().replace(/[\s　\-]/g,""); // 半角/全角空白・ハイフンを除去
+  if(code.length!==16)return null;          // KINTORE(7)+本体(8)+チェック(1)
+  if(code.slice(0,7)!=="KINTORE")return null;
+  const payload=code.slice(7,15),chk=code.slice(15,16);
+  for(const c of payload)if(unlockVal(c)<0)return null; // 不正文字（I,O,0,1等）を拒否
+  if(unlockVal(chk)<0)return null;
+  if(unlockCheckDigit(payload)!==chk)return null;       // 打ち間違い検知
+  if(!unlockGate(payload))return null;                  // 鍵穴判定
+  return {payload,kind:unlockKind(payload)};
+}
+function verifyUnlockCode(raw){ // 後方互換：種類を問わず有効コードかどうかだけ見る
+  return !!parseUnlockCode(raw);
+}
+function renderUnlock(){
+  const t=tier();
+  document.getElementById("unlockActiveStandard").style.display=(t==="standard"||t==="premium")?"block":"none";
+  document.getElementById("unlockActivePremium").style.display=(t==="premium")?"block":"none";
+  document.getElementById("unlockForm").style.display=(t==="premium")?"none":"block";
+  document.getElementById("unlockLead").style.display=(t==="premium")?"none":"block";
+  // ¥200→¥480アップグレードカードは standard 購入済みの時だけ表示
+  document.getElementById("upgradeCard").style.display=(t==="standard")?"block":"none";
+}
+const unlockInput=document.getElementById("unlockInput");
+const unlockMsg=document.getElementById("unlockMsg");
+document.getElementById("unlockBtn").onclick=()=>{
+  const v=unlockInput.value.trim();
+  const parsed=parseUnlockCode(v);
+  if(parsed&&(parsed.kind==="standard"||parsed.kind==="premium")){
+    const before=tier();
+    // standardコードはfreeから昇格のみ／premiumコードはどの状態からでもpremiumへ
+    if(parsed.kind==="premium"){state.settings.tier="premium";}
+    else if(before==="free"){state.settings.tier="standard";}
+    save();
+    const label=state.settings.tier==="premium"?"プレミアム（¥480）":"スタンダード（¥200）";
+    unlockMsg.className="toast up";unlockMsg.textContent="🎉 "+label+"を解除しました！応援ありがとうございます！";
+    unlockInput.value="";
+    renderUnlock();renderAffil();renderThemes();renderCalcButtons();renderHist(); // 各画面の該当機能を即時反映
+  }else{
+    unlockMsg.className="toast calm";
+    unlockMsg.textContent=v?"コードが正しくないようです。ハイフンを含めて、もう一度ゆっくり確認してみてください。":"解除コードを入力してください。";
+  }
+};
+const upgradeInput=document.getElementById("upgradeInput");
+const upgradeMsg=document.getElementById("upgradeMsg");
+document.getElementById("upgradeOpenBtn").onclick=()=>{
+  document.getElementById("upgradeForm").style.display="block";
+  document.getElementById("upgradeOpenBtn").style.display="none";
+  upgradeInput.focus();
+};
+document.getElementById("upgradeBtn").onclick=()=>{
+  const v=upgradeInput.value.trim();
+  const parsed=parseUnlockCode(v);
+  if(parsed&&(parsed.kind==="upgrade"||parsed.kind==="premium")&&tier()==="standard"){
+    state.settings.tier="premium";save();
+    upgradeMsg.className="toast up";upgradeMsg.textContent="🎉 プレミアムになりました！";
+    upgradeInput.value="";
+    renderUnlock();renderThemes();renderCalcButtons();renderHist();
+  }else{
+    upgradeMsg.className="toast calm";
+    upgradeMsg.textContent=v?"コードが正しくないようです。アップグレード専用コードかご確認ください。":"アップグレードコードを入力してください。";
+  }
+};
+renderUnlock();
 /* ---------- テーマ ---------- */
 const THEMES=[
-  {k:"green",   nm:"標準",       ds:"やさしいグリーン",       sw:["#f5f5f2","#0f6e56","#1d9e75"]},
-  {k:"midnight",nm:"ミッドナイト",ds:"クールな夜のシアン",     sw:["#0e1620","#22d3ee","#38bdf8"]},
-  {k:"wild",    nm:"ワイルド",   ds:"黒×レッドの闘魂",        sw:["#141210","#ef3a24","#ff7a3c"]},
-  {k:"neon",    nm:"ネオン",     ds:"サイバーなライム",       sw:["#0a0a12","#c6f432","#f637ec"]},
-  {k:"minimal", nm:"ミニマル",   ds:"モノクロで洗練",         sw:["#fafafa","#18181b","#52525b"]}
+  {k:"green",   nm:"標準",       ds:"やさしいグリーン",       sw:["#f5f5f2","#0f6e56","#1d9e75"],need:"free"},
+  {k:"midnight",nm:"ミッドナイト",ds:"クールな夜のシアン",     sw:["#0e1620","#22d3ee","#38bdf8"],need:"free"},
+  {k:"wild",    nm:"ワイルド",   ds:"黒×レッドの闘魂",        sw:["#141210","#ef3a24","#ff7a3c"],need:"free"},
+  {k:"neon",    nm:"ネオン",     ds:"サイバーなライム",       sw:["#0a0a12","#c6f432","#f637ec"],need:"standard"},
+  {k:"minimal", nm:"ミニマル",   ds:"モノクロで洗練",         sw:["#fafafa","#18181b","#52525b"],need:"standard"},
+  {k:"gold",    nm:"ゴールドプレート",ds:"スチール×ゴールドの本格仕様", sw:["#e3e7ea","#835c0f","#d4a017"],need:"premium"}
 ];
+const TIER_PRICE={standard:"¥200",premium:"¥480"};
+function tierMet(need){
+  if(need==="free")return true;
+  if(need==="standard")return isStandardUp();
+  return isPremium();
+}
 function applyTheme(k){
   if(!THEMES.some(t=>t.k===k))k="green";
   if(k==="green")document.documentElement.removeAttribute("data-theme");
@@ -1057,13 +1869,26 @@ function applyTheme(k){
 function renderThemes(){
   const g=document.getElementById("themeGrid");g.innerHTML="";
   THEMES.forEach(t=>{
+    const unlocked=tierMet(t.need);
     const b=document.createElement("button");b.type="button";
     b.className="themeCard"+(t.k===state.settings.theme?" on":"");
+    const lockBit=unlocked?"":' <span class="pill amber">🔒'+TIER_PRICE[t.need]+'</span>';
     b.innerHTML='<div class="sw">'+t.sw.map(c=>'<i style="background:'+c+'"></i>').join("")+
-      '</div><div class="nm">'+t.nm+'<span class="ck">● 使用中</span></div><div class="ds">'+t.ds+'</div>';
-    b.onclick=()=>{state.settings.theme=t.k;applyTheme(t.k);save();renderThemes();};
+      '</div><div class="nm">'+t.nm+lockBit+'<span class="ck">● 使用中</span></div><div class="ds">'+t.ds+'</div>';
+    if(unlocked){
+      b.onclick=()=>{state.settings.theme=t.k;applyTheme(t.k);save();renderThemes();};
+    }else{
+      b.onclick=()=>scrollToUnlock();
+    }
     g.appendChild(b);
   });
+}
+function scrollToUnlock(){ // テーマの鎖タップ→設定の解除コード入力欄へスクロール＋ハイライト
+  const card=document.getElementById("unlockCard");
+  card.scrollIntoView({behavior:"smooth",block:"center"});
+  card.style.boxShadow="0 0 0 2px var(--accent) inset";
+  setTimeout(()=>{card.style.boxShadow="";},1400);
+  document.getElementById("unlockInput").focus({preventScroll:true});
 }
 document.getElementById("exportBtn").onclick=()=>{
   const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
@@ -1157,7 +1982,7 @@ document.getElementById("restSecChips").onclick=e=>{const c=e.target.closest(".c
 
 /* ---------- init ---------- */
 applyTheme(state.settings.theme);renderThemes();renderRestSec();
-renderExCards();renderPraiseSeg();renderRoutines();
+loadCondFields();renderExCards();renderPraiseSeg();renderRoutines();
 document.getElementById("routineCard").open=state.routines.length>0;
 
 /* ---------- PWA: オフライン対応（同一オリジンのみ・外部通信なし） ---------- */
