@@ -424,7 +424,7 @@
 
 <!-- ===== 体組成 ===== -->
 <section id="s-body" class="screen">
-  <div class="card">
+  <div class="card" id="bodyFormCard" style="display:none">
     <div class="grid2">
       <div><label class="lbl">体重（kg）</label><input type="number" id="bWeight" step="0.1" placeholder="例 62.5"></div>
       <div><label class="lbl">体脂肪率（％）目安</label><input type="number" id="bFat" step="0.1" placeholder="例 18"></div>
@@ -432,7 +432,11 @@
     <button class="btn primary" id="bSave" style="margin-top:12px;width:100%">今日の体組成を記録</button>
     <div class="muted" style="margin-top:8px">※体脂肪率は家庭用計測の誤差が大きいので「目安」です</div>
   </div>
-  <div class="card">
+  <div id="bodyLockCard" class="lockcard" style="display:none">
+    <div>体重・体脂肪率を記録すると、ここに推移が出ます。</div>
+    <button class="btn primary" id="bodyLockBtn" style="margin-top:10px;width:100%">¥480でもっと知る</button>
+  </div>
+  <div class="card" id="bodyGraphCard" style="display:none">
     <div class="between"><span class="muted">体重の推移</span></div>
     <canvas id="bodyCanvas" width="480" height="160"></canvas>
   </div>
@@ -1127,6 +1131,7 @@ function renderCalcButtons(){ /* 将来tierによる見た目変更が必要に�
 
 function plateTargetVal(){return parseFloat(document.getElementById("plateTarget").value)||0;}
 function openPlateCalc(initWeight,exId){
+  if(!isStandardUp())return;
   calcExId=exId;
   const box=document.getElementById("plateTargetStep");
   box.innerHTML=stepper("plateTarget",initWeight>0?initWeight:(state.settings.plateBar||20),2.5);
@@ -1138,7 +1143,7 @@ function openPlateCalc(initWeight,exId){
 function renderPlateBarChips(){
   document.querySelectorAll("#plateBarChips .chip").forEach(c=>{
     c.classList.toggle("on",+c.dataset.bar===(state.settings.plateBar||20));
-    c.onclick=()=>{state.settings.plateBar=+c.dataset.bar;save();renderPlateBarChips();drawPlateResult();};
+    c.onclick=()=>{if(!isStandardUp())return;state.settings.plateBar=+c.dataset.bar;save();renderPlateBarChips();drawPlateResult();};
   });
 }
 function renderPlateOwnedRows(){
@@ -1154,6 +1159,7 @@ function renderPlateOwnedRows(){
     row.appendChild(step);wrap.appendChild(row);
   });
   wrap.onclick=e=>{
+    if(!isStandardUp())return;
     const b=e.target.closest("button[data-psz]");if(!b)return;
     const sz=b.dataset.psz;
     if(!state.settings.plateOwned)state.settings.plateOwned={};
@@ -1195,6 +1201,7 @@ document.getElementById("plateSheetClose").onclick=()=>{document.getElementById(
 document.getElementById("plateSheetBg").addEventListener("click",e=>{if(e.target.id==="plateSheetBg")document.getElementById("plateSheetBg").hidden=true;});
 
 function openWarmupCalc(initWeight,exId){
+  if(!isStandardUp())return;
   calcExId=exId;
   const box=document.getElementById("warmupTargetStep");
   box.innerHTML=stepper("warmupTarget",initWeight>0?initWeight:20,2.5);
@@ -1634,18 +1641,28 @@ function goToUnlockFromGate(){
   const b=document.getElementById(id);if(b)b.onclick=goToUnlockFromGate;
 });
 
-/* ---------- body ---------- */
+/* ---------- body（体組成記録・¥480） ---------- */
 document.getElementById("bSave").onclick=()=>{
+  if(!isPremium())return;
   const w=parseFloat(document.getElementById("bWeight").value)||0;
   const f=parseFloat(document.getElementById("bFat").value)||null;
   if(w<=0)return;const d=today();
   state.body=state.body.filter(b=>b.date!==d);state.body.push({date:d,weight:w,fat:f});save();
   document.getElementById("bWeight").value="";document.getElementById("bFat").value="";renderBody();
 };
+document.getElementById("bodyLockBtn").onclick=goToUnlockFromGate;
 function renderBody(){
+  const formCard=document.getElementById("bodyFormCard"),graphCard=document.getElementById("bodyGraphCard");
+  const lock=document.getElementById("bodyLockCard"),list=document.getElementById("bodyList");
+  if(!isPremium()){
+    formCard.style.display="none";graphCard.style.display="none";list.innerHTML="";lock.style.display="block";
+    renderMeasure();
+    return;
+  }
+  formCard.style.display="block";graphCard.style.display="block";lock.style.display="none";
   const arr=[...state.body].sort((a,b)=>a.date<b.date?-1:1);
   lineChart(document.getElementById("bodyCanvas"),arr.map(b=>b.weight));
-  const list=document.getElementById("bodyList");list.innerHTML="";
+  list.innerHTML="";
   [...arr].reverse().forEach(b=>{const c=document.createElement("div");c.className="card";
     c.innerHTML='<div class="between"><b>'+b.date+'</b><span>'+fmt(b.weight)+'kg'+(b.fat?' ・ '+fmt(b.fat)+'%':'')+'</span></div>';list.appendChild(c);});
   renderMeasure();
@@ -1677,6 +1694,7 @@ function renderMeasure(){
   });
 }
 document.getElementById("mSave").onclick=()=>{
+  if(!isPremium())return;
   const arm=parseFloat(document.getElementById("mArm").value)||null;
   const waist=parseFloat(document.getElementById("mWaist").value)||null;
   const thigh=parseFloat(document.getElementById("mThigh").value)||null;
