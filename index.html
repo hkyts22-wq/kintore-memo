@@ -188,6 +188,10 @@
   .seg button{flex:1;border:none;background:var(--card);color:var(--ink);padding:10px;cursor:pointer;font-size:14px}
   .seg button.on{background:var(--accent);color:var(--onAccent);font-weight:600}
   details summary{cursor:pointer;color:var(--sub);font-size:14px;padding:6px 0}
+  details summary::-webkit-details-marker{display:none}
+  details summary{list-style:none}
+  #planCompareCard summary{color:var(--ink)}
+  #planCompareCard .plan-toggle-label{white-space:nowrap;flex-shrink:0}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   /* テーマ切替 */
   body,.card,.navbar,.btn,.chip,input,select{transition:background-color .25s ease,border-color .25s ease,color .25s ease}
@@ -243,8 +247,21 @@
   .warmup-row .wv{font-weight:700;flex:1}
   .calcbtns{display:flex;gap:8px;margin-top:8px}
   .calcbtns .btn{flex:1;font-size:13px}
-  .lockcard{padding:12px;border-radius:12px;background:var(--bg2);border:1px solid var(--line);margin-top:8px}
-  .lockcard .pill{margin-left:6px}
+  /* モザイクロック（共通・2026-06-24実装）：薄いグレーの半透明オーバーレイで覆い、タップ不可にするだけの軽量実装。
+     価格テキスト・個別ボタンはここに置かない（価格は設定画面「プラン比較」に一本化）。
+     クリックは外側の.mosaicWrap（pointer-events:auto）が受け、共通委譲ハンドラ1つで処理する。
+     .locked-mosaic自体の内容（中の文字・図形）はタップ不可にしたいので疑似要素側だけにオーバーレイを描く。
+     テーマカードのように1要素が.mosaicWrapと.locked-mosaicを両方兼ねる場合もクリックは要素自身が受ける。 */
+  .mosaicWrap{position:relative;cursor:pointer;pointer-events:auto}
+  .locked-mosaic{position:relative;user-select:none}
+  .locked-mosaic::after{
+    content:"";position:absolute;inset:0;border-radius:10px;pointer-events:none;
+    background:var(--bg2);opacity:.82;
+  }
+  .locked-mosaic::before{
+    content:"🔒";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    font-size:18px;opacity:.7;z-index:1;pointer-events:none;
+  }
   /* セクション見出し（振り返り画面：記録を見る／自分を理解する） */
   .sectionhead{font-size:15px;font-weight:600;margin:18px 4px 6px;color:var(--ink)}
   .sectionhead .pill{margin-left:6px;vertical-align:1px}
@@ -344,9 +361,8 @@
     <label class="lbl">自己ベスト（推定1RM）</label>
     <div class="muted" id="pbGateLead" style="font-size:12px;margin:-2px 0 10px;line-height:1.5;display:none"></div>
     <div id="pbList"></div>
-    <div id="pbGateCard" class="lockcard" style="display:none">
-      <div>直近7日より前に更新した自己ベストも見られるようになります。</div>
-      <button class="btn primary" id="pbGateBtn" style="margin-top:10px;width:100%">¥200でもっと見る</button>
+    <div id="pbGateCard" class="mosaicWrap" style="display:none" data-need="standard">
+      <div class="locked-mosaic" style="height:54px;border-radius:10px;background:var(--card)"></div>
     </div>
   </div>
   <div class="card">
@@ -361,19 +377,17 @@
     </div>
     <canvas id="progCanvas" width="480" height="160"></canvas>
     <div class="muted" id="progGateLead" style="font-size:12px;margin-top:8px;line-height:1.5;display:none"></div>
-    <div id="progGateCard" class="lockcard" style="display:none">
-      <div>直近7日より前のグラフも見られるようになります。</div>
-      <button class="btn primary" id="progGateBtn" style="margin-top:10px;width:100%">¥200で全期間を見る</button>
+    <div id="progGateCard" class="mosaicWrap" style="display:none" data-need="standard">
+      <div class="locked-mosaic" style="height:60px;border-radius:10px;background:var(--card);margin-top:8px"></div>
     </div>
   </div>
-  <div class="sectionhead">自分を理解する<span class="pill blue">¥480</span></div>
+  <div class="sectionhead">自分を理解する</div>
   <div class="card" id="shiftCard" hidden>
     <label class="lbl">シフト別のパフォーマンス</label>
     <div class="muted" id="shiftLead" style="font-size:12px;margin:-2px 0 12px;line-height:1.5">あなたの平均（100%）と比べた推定1RMの傾向。種目ごとに補正して比べています。</div>
     <div id="shiftBars"></div>
-    <div id="shiftLockCard" class="lockcard" style="display:none">
-      <div>シフトごとの推定1RMの傾向を、種目ごとに補正して比べられるようになります。</div>
-      <button class="btn primary" id="shiftLockBtn" style="margin-top:10px;width:100%">¥480でもっと知る</button>
+    <div id="shiftLockCard" class="mosaicWrap" style="display:none" data-need="premium">
+      <div class="locked-mosaic" style="height:90px;border-radius:10px;background:var(--card)"></div>
     </div>
   </div>
 
@@ -382,9 +396,8 @@
     <label class="lbl">シフト×体調スコアの統計的傾向</label>
     <div class="muted" id="trendLead" style="font-size:13px;margin:-2px 0 4px;line-height:1.5"></div>
     <div id="trendBody"></div>
-    <div id="trendLockCard" class="lockcard" style="display:none">
-      <div>明け／夜勤後、何日空けると体調スコアの統計的傾向が変わりやすいかを見られるようになります。</div>
-      <button class="btn primary" id="trendLockBtn" style="margin-top:10px;width:100%">¥480でもっと知る</button>
+    <div id="trendLockCard" class="mosaicWrap" style="display:none" data-need="premium">
+      <div class="locked-mosaic" style="height:120px;border-radius:10px;background:var(--card)"></div>
     </div>
     <div class="medicalnote">※医療的な診断・効能を示すものではありません。あなたの記録に基づく統計的な傾向の参考情報です。</div>
   </div>
@@ -400,9 +413,8 @@
       </div>
     </div>
     <div id="heatBody"></div>
-    <div id="heatLockCard" class="lockcard" style="display:none">
-      <div>鍛えている部位・まだ伸ばせる部位を、人型のヒートマップで見られるようになります。</div>
-      <button class="btn primary" id="heatLockBtn" style="margin-top:10px;width:100%">¥480でもっと知る</button>
+    <div id="heatLockCard" class="mosaicWrap" style="display:none" data-need="premium">
+      <div class="locked-mosaic" style="height:160px;border-radius:10px;background:var(--card)"></div>
     </div>
   </div>
 
@@ -411,18 +423,16 @@
     <label class="lbl">ボディメジャーの推移</label>
     <div class="muted" id="measureTrendLead" style="font-size:13px;margin:-2px 0 4px;line-height:1.5"></div>
     <div id="measureTrendBody"></div>
-    <div id="measureLockCard" class="lockcard" style="display:none">
-      <div>上腕・ウエスト・腿のサイズの推移を、グラフでも見られるようになります。</div>
-      <button class="btn primary" id="measureLockBtn" style="margin-top:10px;width:100%">¥480でもっと知る</button>
+    <div id="measureLockCard" class="mosaicWrap" style="display:none" data-need="premium">
+      <div class="locked-mosaic" style="height:90px;border-radius:10px;background:var(--card)"></div>
     </div>
   </div>
 
   <div class="h2">記録の履歴</div>
   <div class="muted" id="histGateLead" style="font-size:12px;margin:0 4px 6px;line-height:1.5;display:none"></div>
   <div id="histList"></div>
-  <div id="histGateCard" class="lockcard" style="display:none;margin:12px 4px">
-    <div>7日より前の記録も見られるようになります。</div>
-    <button class="btn primary" id="histGateBtn" style="margin-top:10px;width:100%">¥200でもっと見る</button>
+  <div id="histGateCard" class="mosaicWrap" style="display:none;margin:12px 4px" data-need="standard">
+    <div class="locked-mosaic" style="height:64px;border-radius:14px;background:var(--card)"></div>
   </div>
   <div id="affilSlot"></div>
 </section>
@@ -437,9 +447,8 @@
     <button class="btn primary" id="bSave" style="margin-top:12px;width:100%">今日の体組成を記録</button>
     <div class="muted" style="margin-top:8px">※体脂肪率は家庭用計測の誤差が大きいので「目安」です</div>
   </div>
-  <div id="bodyLockCard" class="lockcard" style="display:none">
-    <div>体重・体脂肪率を記録すると、ここに推移が出ます。</div>
-    <button class="btn primary" id="bodyLockBtn" style="margin-top:10px;width:100%">¥480でもっと知る</button>
+  <div id="bodyLockCard" class="mosaicWrap" style="display:none" data-need="premium">
+    <div class="locked-mosaic" style="height:90px;border-radius:14px;background:var(--card)"></div>
   </div>
   <div class="card" id="bodyGraphCard" style="display:none">
     <div class="between"><span class="muted">体重の推移</span></div>
@@ -450,7 +459,7 @@
   <!-- ボディメジャー拡張（¥480） -->
   <div class="card" id="measureCard">
     <div class="between">
-      <label class="lbl" style="margin-bottom:0">ボディメジャー<span class="pill blue">¥480</span></label>
+      <label class="lbl" style="margin-bottom:0">ボディメジャー</label>
     </div>
     <div id="measureForm" style="display:none">
       <div class="measure-grid" style="margin-top:10px">
@@ -460,9 +469,8 @@
       </div>
       <button class="btn primary" id="mSave" style="margin-top:12px;width:100%">今日のサイズを記録</button>
     </div>
-    <div id="measureBodyLockCard" class="lockcard" style="display:none">
-      <div>上腕・ウエスト・腿のサイズを記録すると、ここに推移が出ます。</div>
-      <button class="btn primary" id="measureBodyLockBtn" style="margin-top:10px;width:100%">¥480でもっと知る</button>
+    <div id="measureBodyLockCard" class="mosaicWrap" style="display:none" data-need="premium">
+      <div class="locked-mosaic" style="height:90px;border-radius:10px;background:var(--card)"></div>
     </div>
   </div>
   <div id="measureList"></div>
@@ -497,6 +505,46 @@
         <span class="chip" data-s="180">3分</span>
       </div>
     </div>
+  </div>
+  <!-- プラン比較一覧（新設・UX_課金機能設計.md§3-5）。無料は常時展開、¥200/¥480は<details>でキャッチのみ常時表示。 -->
+  <div class="card" id="planCompareCard">
+    <div style="font-weight:600">プラン比較</div>
+    <div class="h2" style="margin:10px 4px 4px">無料でできること</div>
+    <div class="muted" style="margin:0 4px">
+      ・記録・前回値プリセット・シフトタグ・休憩タイマー・自己ベストを褒める通知<br>
+      ・体重/体脂肪の記録＋前回比較<br>
+      ・データの書き出し/読み込み<br>
+      ・テーマ：標準/ミッドナイト/ワイルド
+    </div>
+    <details id="planStandardDetails" style="margin-top:14px">
+      <summary style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <span><b>スタンダード ¥200</b><br><span class="muted" style="font-size:13px">「貯めた記録を、眺めて楽しむ」</span></span>
+        <span class="btn sm plan-toggle-label">できることを見る ▾</span>
+      </summary>
+      <div class="muted" style="margin:10px 4px 0">
+        ・ライブ統計（推定1RM/総ボリューム）<br>
+        ・種目別グラフ・カレンダー＆ストリーク・自己ベストボード（すべて全期間表示）<br>
+        ・プレート計算機／ウォームアップ計算機<br>
+        ・テーマ：ネオン/ミニマル
+      </div>
+      <button class="btn sm" id="planStandardCodeBtn" style="margin-top:10px;width:100%">解除コードを入力する</button>
+    </details>
+    <details id="planPremiumDetails" style="margin-top:14px">
+      <summary style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <span><b>プレミアム ¥480</b>（¥200を含む）<br><span class="muted" style="font-size:13px">「続けてきた自分を理解し、誇る」</span></span>
+        <span class="btn sm plan-toggle-label">できることを見る ▾</span>
+      </summary>
+      <div class="muted" style="margin:10px 4px 0">
+        ・シフト×体調スコアの統計的傾向<br>
+        ・体重・体脂肪の全期間グラフ<br>
+        ・ボディメジャー（上腕・ウエスト・腿など）の記録・推移<br>
+        ・部位ヒートマップ<br>
+        ・おすすめ枠を非表示にする<br>
+        ・テーマ：ゴールドプレート<br>
+        ※¥200購入済みなら差額¥280でアップグレード可能
+      </div>
+      <button class="btn sm" id="planPremiumCodeBtn" style="margin-top:10px;width:100%">解除コードを入力する</button>
+    </details>
   </div>
   <div class="card" id="unlockCard">
     <div style="font-weight:600">購入・解除</div>
@@ -577,20 +625,6 @@
     <div id="warmupTargetStep"></div>
     <div id="warmupRows" style="margin-top:10px"></div>
     <button class="btn primary" id="warmupBackBtn" style="margin-top:12px;width:100%">この種目の記録に戻る</button>
-  </div>
-</div>
-
-<!-- ===== 計算機ロック案内（無料ユーザー向け） ===== -->
-<div id="calcLockSheetBg" class="sheetbg" hidden>
-  <div class="sheet">
-    <div class="between">
-      <h3 id="calcLockTitle">プレート計算機</h3>
-      <button id="calcLockClose" class="btn sm ghost" type="button">×</button>
-    </div>
-    <div class="lockcard">
-      <div id="calcLockBody" style="line-height:1.6"></div>
-      <button class="btn primary" id="calcLockGoBtn" style="margin-top:10px;width:100%">¥200でもっと使う</button>
-    </div>
   </div>
 </div>
 
@@ -833,7 +867,8 @@ function openSummarySheet(){
       const vol=volumeOf(strengthToday),best=Math.max(...strengthToday.map(r=>e1rm(r.weight,r.reps)));
       html+='<div class="statline" style="margin-top:10px">💪 計 <b>'+strengthToday.length+'</b>セット ・ 総ボリューム <b>'+fmtKg(vol)+'</b> kg ・ 推定1RM <b>'+fmt(best)+'</b> kg</div>';
     }else{
-      html+='<a class="vlink" href="#" id="summaryUpsell" style="display:block;margin-top:10px">総ボリューム・推定1RMを見て楽しむなら¥200</a>';
+      html+='<div class="mosaicWrap" data-need="standard" style="margin-top:10px">'+
+        '<div class="locked-mosaic" style="height:40px;border-radius:9px;background:var(--bg2)"></div></div>';
     }
   }
   const pbToday=personalBests().filter(pb=>pb.date===date);
@@ -842,8 +877,6 @@ function openSummarySheet(){
     html+='<div style="margin-top:10px;color:var(--accent);font-weight:600">🎉 自己ベスト更新：'+names+'</div>';
   }
   body.innerHTML=html;
-  const up=document.getElementById("summaryUpsell");
-  if(up)up.onclick=e=>{e.preventDefault();document.getElementById("summarySheetBg").hidden=true;goToUnlockFromGate();};
   document.getElementById("summarySheetBg").hidden=false;
 }
 
@@ -1081,11 +1114,10 @@ function renderExCards(){
           stat.innerHTML="💪 "+todays.length+"セット ・ 計 <b>"+fmtKg(vol)+"</b> kg ・ 推定1RM <b>"+fmt(best)+"</b> kg";
           card.appendChild(stat);
         }else{
-          const link=document.createElement("a");link.className="vlink";link.href="#";
-          link.style.display="block";link.style.marginTop="4px";
-          link.textContent="セット履歴を見て楽しむなら¥200";
-          link.onclick=e=>{e.preventDefault();goToUnlockFromGate();};
-          card.appendChild(link);
+          const wrap=document.createElement("div");wrap.className="mosaicWrap";wrap.style.marginTop="6px";
+          wrap.dataset.need="standard";
+          wrap.innerHTML='<div class="locked-mosaic" style="height:40px;border-radius:9px;background:var(--bg2)"></div>';
+          card.appendChild(wrap);
         }
       }
       card.appendChild(strengthInput(exId,date,card));
@@ -1130,8 +1162,9 @@ function strengthInput(exId,date,card){
   const cbtns=document.createElement("div");cbtns.className="calcbtns";
   const pb=document.createElement("button");pb.type="button";pb.className="btn sm";pb.textContent="⚙ プレート計算";
   const wb=document.createElement("button");wb.type="button";wb.className="btn sm";wb.textContent="⚙ ウォームアップ";
-  pb.onclick=()=>{if(isStandardUp())openPlateCalc(parseFloat(document.getElementById("w_"+exId).value)||w,exId);else openCalcLockSheet("plate");};
-  wb.onclick=()=>{if(isStandardUp())openWarmupCalc(parseFloat(document.getElementById("w_"+exId).value)||w,exId);else openCalcLockSheet("warmup");};
+  // 無料ユーザーがタップした場合はボトムシートを開かず、直接「プラン比較」へ遷移する（UX_課金機能設計.md §3-1）
+  pb.onclick=()=>{if(isStandardUp())openPlateCalc(parseFloat(document.getElementById("w_"+exId).value)||w,exId);else goToUnlockFromGate("standard");};
+  wb.onclick=()=>{if(isStandardUp())openWarmupCalc(parseFloat(document.getElementById("w_"+exId).value)||w,exId);else goToUnlockFromGate("standard");};
   cbtns.appendChild(pb);cbtns.appendChild(wb);box.appendChild(cbtns);
   const grid=document.createElement("div");
   grid.innerHTML='<div class="grid2"><div><label class="lbl">重量(kg)</label>'+stepper("w_"+exId,w,2.5)+'</div>'+
@@ -1315,25 +1348,8 @@ document.getElementById("warmupBackBtn").onclick=()=>{
   }
 };
 
-/* ---------- 計算機ロック案内（無料ユーザー向け・前向きな文言のみ） ---------- */
-const CALC_LOCK_TXT={
-  plate:"目標重量を、バーベルと所持プレートの枚数構成に分解して表示します。本格的なジム機材のような感覚で、片側に何枚乗せればいいかが一目でわかります。",
-  warmup:"目標重量から、40%・60%・80%・100%の4段階のウォームアップセットを自動で組みます。今入力中の重さがそのまま初期値になります。",
-};
-function openCalcLockSheet(kind){
-  document.getElementById("calcLockTitle").textContent=kind==="warmup"?"ウォームアップ計算機":"プレート計算機";
-  document.getElementById("calcLockBody").textContent=CALC_LOCK_TXT[kind]||"";
-  document.getElementById("calcLockSheetBg").hidden=false;
-}
-document.getElementById("calcLockClose").onclick=()=>{document.getElementById("calcLockSheetBg").hidden=true;};
 document.getElementById("endWorkoutBtn").onclick=()=>{openSummarySheet();};
 document.getElementById("summarySheetClose").onclick=()=>{document.getElementById("summarySheetBg").hidden=true;};
-document.getElementById("calcLockSheetBg").addEventListener("click",e=>{if(e.target.id==="calcLockSheetBg")document.getElementById("calcLockSheetBg").hidden=true;});
-document.getElementById("calcLockGoBtn").onclick=()=>{
-  document.getElementById("calcLockSheetBg").hidden=true;
-  document.querySelector('.navbar button[data-t="s-set"]').click();
-  scrollToUnlock();
-};
 function flashToast(exId,p){
   // place toast under the matching card by re-finding it
   const cards=document.querySelectorAll("#exCards .card");
@@ -1527,9 +1543,6 @@ function renderTrend(){
       '<div class="bl">'+b.label+'</div></div>';
   }).join("")+'</div><div class="muted" style="margin-top:8px;font-size:12px">体調スコア平均（自己記録・1〜5、n='+data.total+'）</div>';
 }
-document.getElementById("trendLockBtn").onclick=goToUnlockFromGate;
-document.getElementById("shiftLockBtn").onclick=goToUnlockFromGate;
-
 /* ---------- 部位ヒートマップ（¥480） ----------
    人体シルエット（正面・背面の2体）はインラインSVGのみで構成（外部画像不可・通信ゼロ）。
    濃淡はaccent-primaryの不透明度のみで表現（fill-opacity属性。color-mix()は古いiOS Safariで
@@ -1590,7 +1603,6 @@ function renderHeatmap(){
   noteEl.textContent=under.length?("まだ伸ばせる部位："+under.join("・")):"直近の期間は、どの部位もバランスよく記録されています。";
   wrap.appendChild(noteEl);
 }
-document.getElementById("heatLockBtn").onclick=goToUnlockFromGate;
 document.getElementById("heatRange").onclick=e=>{
   const b=e.target.closest("button");if(!b)return;
   heatRange=b.dataset.r==="all"?"all":+b.dataset.r;
@@ -1602,10 +1614,8 @@ document.getElementById("heatRange").onclick=e=>{
 function renderPartBalanceMini(){
   const slot=document.getElementById("partBalanceMini");if(!slot)return;
   if(!isPremium()){
-    slot.innerHTML='<div class="lockcard" style="margin-top:0">'+
-      '<div>直近7日の部位バランスを見られるようになります。鍛えている部位、まだ伸ばせる部位が一目でわかります。</div>'+
-      '<button class="btn primary" id="partBalanceLockBtn" style="margin-top:10px;width:100%">¥480でもっと知る</button></div>';
-    const btn=document.getElementById("partBalanceLockBtn");if(btn)btn.onclick=goToUnlockFromGate;
+    slot.innerHTML='<div class="mosaicWrap" data-need="premium">'+
+      '<div class="locked-mosaic" style="height:54px;border-radius:12px;background:var(--card)"></div></div>';
     return;
   }
   const counts=partVolumeInRange(7);
@@ -1666,14 +1676,14 @@ function renderCalendar(){
   const canGoPrevMonth=isStandardUp()||curYM>freeStartYM;
   let gateNote=document.getElementById("calGateNote");
   if(!gateNote){
-    gateNote=document.createElement("div");gateNote.id="calGateNote";gateNote.className="lockcard";gateNote.style.display="none";
-    gateNote.innerHTML='<div>7日より前の月のカレンダーも見られるようになります。</div><button class="btn primary" id="calGateBtn" style="margin-top:10px;width:100%">¥200でもっと見る</button>';
+    gateNote=document.createElement("div");gateNote.id="calGateNote";gateNote.className="mosaicWrap";gateNote.style.display="none";
+    gateNote.dataset.need="standard";
+    gateNote.innerHTML='<div class="locked-mosaic" style="height:40px;border-radius:9px;background:var(--bg2);margin-top:8px"></div>';
     document.getElementById("calCard").appendChild(gateNote);
   }
   gateNote.style.display=canGoPrevMonth?"none":"block";
   document.getElementById("calPrev").disabled=!canGoPrevMonth;
   document.getElementById("calPrev").style.opacity=canGoPrevMonth?"1":".45";
-  const btn=document.getElementById("calGateBtn");if(btn)btn.onclick=()=>{document.querySelector('.navbar button[data-t="s-set"]').click();scrollToUnlock();};
   document.getElementById("calPrev").onclick=()=>{
     if(!canGoPrevMonth)return;
     calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();
@@ -1715,13 +1725,21 @@ function renderAffil(){
     '<div style="font-weight:600;color:var(--amberink);margin:2px 0">トレーニング後のたんぱく質補給に</div>'+
     '<a class="vlink" target="_blank" rel="noopener noreferrer" href="https://www.amazon.co.jp/s?k=%E3%83%97%E3%83%AD%E3%83%86%E3%82%A4%E3%83%B3">商品を見る ↗</a></div>';
 }
-/* 7日ゲートの「もっと見る」ボタン共通：設定画面の解除コード入力欄へ遷移 */
-function goToUnlockFromGate(){
+/* ロック要素タップ共通：設定画面の「プラン比較」へ遷移し、該当価格帯のブロックを自動展開する。
+   need省略時は"standard"扱い（¥200系のゲートからの遷移はスタンダードを開く）。
+   UX_課金機能設計.md §3-5・§7-8：個別カードに価格・ボトムシートは置かず、ここへ一本化する。 */
+function goToUnlockFromGate(need){
+  // ボトムシート（今日のサマリ等）の上からタップされた場合は、先に閉じてから画面遷移する
+  document.querySelectorAll(".sheetbg").forEach(s=>{s.hidden=true;});
   document.querySelector('.navbar button[data-t="s-set"]').click();
-  scrollToUnlock();
+  openPlanCompare(need||"standard");
 }
-["pbGateBtn","progGateBtn","histGateBtn"].forEach(id=>{
-  const b=document.getElementById(id);if(b)b.onclick=goToUnlockFromGate;
+/* モザイクロックの共通クリックハンドラ（UX_課金機能設計.md §7-8）：
+   .mosaicWrap は箇所ごとに別実装せず、ここ1か所のイベント委譲だけですべて処理する。
+   data-need="standard"|"premium" を見て、プラン比較の該当ブロックへ遷移する。 */
+document.addEventListener("click",e=>{
+  const wrap=e.target.closest(".mosaicWrap");if(!wrap)return;
+  goToUnlockFromGate(wrap.dataset.need||"standard");
 });
 
 /* ---------- body（体組成記録・¥480） ---------- */
@@ -1733,7 +1751,6 @@ document.getElementById("bSave").onclick=()=>{
   state.body=state.body.filter(b=>b.date!==d);state.body.push({date:d,weight:w,fat:f});save();
   document.getElementById("bWeight").value="";document.getElementById("bFat").value="";renderBody();
 };
-document.getElementById("bodyLockBtn").onclick=goToUnlockFromGate;
 function renderBody(){
   const formCard=document.getElementById("bodyFormCard"),graphCard=document.getElementById("bodyGraphCard");
   const lock=document.getElementById("bodyLockCard"),list=document.getElementById("bodyList");
@@ -1788,8 +1805,6 @@ document.getElementById("mSave").onclick=()=>{
   document.getElementById("mArm").value="";document.getElementById("mWaist").value="";document.getElementById("mThigh").value="";
   renderMeasure();renderMeasureTrend();
 };
-document.getElementById("measureBodyLockBtn").onclick=goToUnlockFromGate;
-
 /* 振り返り画面「自分を理解する」セクション内の、ボディメジャー推移グラフ（¥480） */
 function renderMeasureTrend(){
   const body=document.getElementById("measureTrendBody"),lock=document.getElementById("measureLockCard");
@@ -1820,8 +1835,6 @@ function renderMeasureTrend(){
     if(cv)lineChart(cv,arr.filter(a=>a[m.k]).map(a=>a[m.k]));
   });
 }
-document.getElementById("measureLockBtn").onclick=goToUnlockFromGate;
-
 /* ---------- chart ---------- */
 function themeColor(name,fallback){
   const v=getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -1953,7 +1966,6 @@ const THEMES=[
   {k:"minimal", nm:"ミニマル",   ds:"モノクロで洗練",         sw:["#fafafa","#18181b","#52525b"],need:"standard"},
   {k:"gold",    nm:"ゴールドプレート",ds:"スチール×ゴールドの本格仕様", sw:["#e3e7ea","#835c0f","#d4a017"],need:"premium"}
 ];
-const TIER_PRICE={standard:"¥200",premium:"¥480"};
 function tierMet(need){
   if(need==="free")return true;
   if(need==="standard")return isStandardUp();
@@ -1972,25 +1984,47 @@ function renderThemes(){
   THEMES.forEach(t=>{
     const unlocked=tierMet(t.need);
     const b=document.createElement("button");b.type="button";
-    b.className="themeCard"+(t.k===state.settings.theme?" on":"");
-    const lockBit=unlocked?"":' <span class="pill amber">🔒'+TIER_PRICE[t.need]+'</span>';
+    // 未購入テーマはボタン全体を薄いグレーのモザイクで覆い、価格テキストは置かない（鍵アイコンのみ最小限。UX_課金機能設計.md §3-4）
+    b.className="themeCard"+(t.k===state.settings.theme?" on":"")+(unlocked?"":" locked-mosaic mosaicWrap");
+    if(!unlocked)b.dataset.need=t.need;
     b.innerHTML='<div class="sw">'+t.sw.map(c=>'<i style="background:'+c+'"></i>').join("")+
-      '</div><div class="nm">'+t.nm+lockBit+'<span class="ck">● 使用中</span></div><div class="ds">'+t.ds+'</div>';
-    if(unlocked){
-      b.onclick=()=>{state.settings.theme=t.k;applyTheme(t.k);save();renderThemes();};
-    }else{
-      b.onclick=()=>scrollToUnlock();
-    }
+      '</div><div class="nm">'+t.nm+'<span class="ck">● 使用中</span></div><div class="ds">'+t.ds+'</div>';
+    // ロック中はボタン自身が.mosaicWrapを兼ねるため、クリックは1741行目の共通委譲ハンドラが処理する（疑似要素のみpointer-events:none）
+    if(unlocked)b.onclick=()=>{state.settings.theme=t.k;applyTheme(t.k);save();renderThemes();};
     g.appendChild(b);
   });
 }
-function scrollToUnlock(){ // テーマの鎖タップ→設定の解除コード入力欄へスクロール＋ハイライト
+/* プラン比較一覧（設定画面・新設）への遷移共通関数（UX_課金機能設計.md §3-5・§7-8）。
+   need="standard"|"premium" のブロックを<details open>にしてスクロール表示する。
+   モザイク・テーマ🔒など、ロック済み要素のタップ先はすべてここに一本化する。 */
+function openPlanCompare(need){
+  const stdD=document.getElementById("planStandardDetails"),premD=document.getElementById("planPremiumDetails");
+  stdD.open=true; // スタンダードの内容は常に分かるよう開いておく（プレミアムはスタンダードを含むため）
+  premD.open=(need==="premium");
+  updatePlanToggleLabel(stdD);updatePlanToggleLabel(premD);
+  const card=document.getElementById("planCompareCard");
+  card.scrollIntoView({behavior:"smooth",block:"start"});
+  card.style.boxShadow="0 0 0 2px var(--accent) inset";
+  setTimeout(()=>{card.style.boxShadow="";},1400);
+}
+function updatePlanToggleLabel(detailsEl){
+  const lbl=detailsEl.querySelector(".plan-toggle-label");if(!lbl)return;
+  lbl.textContent=detailsEl.open?"できることを閉じる ▴":"できることを見る ▾";
+}
+document.querySelectorAll("#planCompareCard details").forEach(d=>{
+  d.addEventListener("toggle",()=>updatePlanToggleLabel(d));
+});
+/* プラン比較の各ブロック内「解除コードを入力する」→既存の購入・解除カードの入力欄まで自動スクロール＋ハイライト
+   （新しい入力欄は重複して作らない＝§3-5の指示通り既存欄を流用） */
+function scrollToUnlock(){
   const card=document.getElementById("unlockCard");
   card.scrollIntoView({behavior:"smooth",block:"center"});
   card.style.boxShadow="0 0 0 2px var(--accent) inset";
   setTimeout(()=>{card.style.boxShadow="";},1400);
   document.getElementById("unlockInput").focus({preventScroll:true});
 }
+document.getElementById("planStandardCodeBtn").onclick=()=>scrollToUnlock();
+document.getElementById("planPremiumCodeBtn").onclick=()=>scrollToUnlock();
 document.getElementById("exportBtn").onclick=()=>{
   const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="kintore-memo-backup.json";a.click();
