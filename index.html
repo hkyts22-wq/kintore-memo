@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none';">
 <title>あけトレ ｜ 夜勤明けでも続く筋トレメモ</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0f6e56">
@@ -256,12 +256,43 @@
   .locked-mosaic{position:relative;user-select:none}
   .locked-mosaic::after{
     content:"";position:absolute;inset:0;border-radius:10px;pointer-events:none;
-    background:var(--bg2);opacity:.82;
+    background:var(--bg2);opacity:.6;
   }
   .locked-mosaic::before{
     content:"🔒";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
     font-size:18px;opacity:.7;z-index:1;pointer-events:none;
   }
+  /* モザイクロックの「気配」表示（2026-06-25追加・UX_課金機能設計.md §3-6／§7-15）：
+     .locked-mosaic本体のbackgroundに内容種別ごとの固定CSSグラデーションを敷き、
+     上の::afterオーバーレイ（opacity .6）を通してうっすら気配が透ける見た目にする。
+     本物データは使わない／実データの量に応じて変化しない固定パターン。配色は既存テーマ
+     トークン（--accent/--line/--bg2）のみ使用し新色は増やさない。 */
+  .lm-chart{background:
+    repeating-linear-gradient(100deg, transparent 0 18%, var(--accent) 18% 21%, transparent 21% 100%),
+    repeating-linear-gradient(95deg, transparent 0 35%, var(--accent) 35% 37%, transparent 37% 100%),
+    var(--bg2);
+  }
+  .lm-grid{background:
+    repeating-linear-gradient(0deg, var(--line) 0 1px, transparent 1px 18px),
+    repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 18px),
+    radial-gradient(circle at 30% 40%, var(--accent) 0 8px, transparent 9px),
+    radial-gradient(circle at 70% 65%, var(--accent) 0 6px, transparent 7px),
+    var(--bg2);
+  }
+  .lm-dots{background:
+    radial-gradient(circle at 20% 50%, var(--accent) 0 5px, transparent 6px),
+    radial-gradient(circle at 50% 30%, var(--accent) 0 5px, transparent 6px),
+    radial-gradient(circle at 80% 60%, var(--accent) 0 5px, transparent 6px),
+    var(--bg2);
+  }
+  .lm-rows{background:
+    repeating-linear-gradient(0deg, var(--line) 0 2px, transparent 2px 22px),
+    var(--bg2);
+  }
+  /* 背景カスタム画像のロック表示専用パターン（4種とは別。§3-6）。
+     ::beforeは🔒の代わりに🖼を出すため、詳細度を上げて.locked-mosaic::beforeを上書きする。 */
+  .locked-mosaic.lm-bgphoto{background:linear-gradient(135deg, var(--accent) 0%, transparent 40%, var(--bg2) 100%)}
+  .locked-mosaic.lm-bgphoto::before{content:"🖼";font-size:22px;opacity:.7}
   /* セクション見出し（振り返り画面：記録を見る／自分を理解する） */
   .sectionhead{font-size:15px;font-weight:600;margin:18px 4px 6px;color:var(--ink)}
   .sectionhead .pill{margin-left:6px;vertical-align:1px}
@@ -289,6 +320,45 @@
   .pbdot .d{width:10px;height:10px;border-radius:50%;border:1px solid var(--line);display:inline-block}
   /* ボディメジャー（¥480） */
   .measure-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  /* 進捗写真（¥480・2026-06-25仕様確定）
+     ロック専用カード（.photoLockCard）は他のモザイクロックと共通クラスを使わない（§7-9）。
+     画像そのものをDOMに生成しない分岐とセットで使うクラスなので、見た目もモザイクではなく
+     「鍵アイコン＋説明文＋ボタンのみ」のシンプルな専用カードにする。 */
+  .photoLockCard{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:18px 10px}
+  .photoLockCard .lockic{font-size:26px;opacity:.7}
+  .photoLockCard .locktxt{font-size:14px;color:var(--ink)}
+  .photo-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .photo-compare figure{margin:0}
+  .photo-compare .pf-label{font-size:13px;color:var(--sub);text-align:center;margin-bottom:4px}
+  .photo-compare .pf-frame{aspect-ratio:3/4;border-radius:10px;overflow:hidden;background:var(--bg2);border:1px solid var(--line)}
+  .photo-compare .pf-frame img{width:100%;height:100%;object-fit:cover;display:block}
+  .photo-compare .pf-date{font-size:12px;color:var(--sub);text-align:center;margin-top:4px;font-variant-numeric:tabular-nums}
+  .photo-single{display:flex;flex-direction:column;align-items:center;margin-top:10px}
+  .photo-single .pf-frame{width:60%;aspect-ratio:3/4;border-radius:10px;overflow:hidden;background:var(--bg2);border:1px solid var(--line)}
+  .photo-single .pf-frame img{width:100%;height:100%;object-fit:cover;display:block}
+  .photo-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:16px 10px}
+  .photo-storage{margin-top:12px;padding-top:10px;border-top:1px solid var(--line);font-size:13px;color:var(--sub)}
+  .photo-confirm-img{width:100%;border-radius:12px;display:block;background:var(--bg2)}
+  .photo-pickrow{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--line)}
+  .photo-pickrow:first-of-type{border-top:none}
+  .photo-pickrow img{width:48px;height:48px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--bg2)}
+  .photo-pickrow .pp-date{font-size:14px;flex:1}
+  .photo-del{background:none;border:none;color:var(--link);font-size:13px;cursor:pointer;padding:4px 8px}
+  /* 背景カスタム画像（¥200・2026-06-25仕様確定）
+     記録画面・振り返り画面のみに適用する全画面レイヤー。未設定・ロック中はDOMに生成しない。
+     z-index:-2（画像本体）→-1（暗幕）→既存カード等はauto（不透明のまま・変更不要）。 */
+  .bgPhotoLayer{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:-2}
+  .bgPhotoScrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:-1}
+  /* 設定画面：背景画像セクションの空枠／サムネイル */
+  .bgPhotoThumbRow{display:flex;align-items:center;gap:12px}
+  .bgPhotoThumb{width:80px;height:80px;border-radius:10px;flex-shrink:0;object-fit:cover;display:block}
+  .bgPhotoThumbEmpty{width:80px;height:80px;border-radius:10px;flex-shrink:0;border:1px dashed var(--line);
+    background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:26px;opacity:.6}
+  .bgPhotoThumbLoading{width:80px;height:80px;border-radius:10px;flex-shrink:0;background:var(--bg2);
+    display:flex;align-items:center;justify-content:center}
+  .bgPhotoSpin{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);
+    animation:bgPhotoSpin .8s linear infinite}
+  @keyframes bgPhotoSpin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -299,6 +369,7 @@
 
 <!-- ===== 記録 ===== -->
 <section id="s-log" class="screen active">
+  <div id="bgPhotoSlot_log"></div>
   <div class="card" id="calCard">
     <div class="between">
       <button id="calPrev" class="cnav" type="button" aria-label="前の月">‹</button>
@@ -356,13 +427,14 @@
 
 <!-- ===== 履歴 ===== -->
 <section id="s-hist" class="screen">
+  <div id="bgPhotoSlot_hist"></div>
   <div class="sectionhead">記録を見る</div>
   <div class="card" id="pbCard" hidden>
     <label class="lbl">自己ベスト（推定1RM）</label>
     <div class="muted" id="pbGateLead" style="font-size:12px;margin:-2px 0 10px;line-height:1.5;display:none"></div>
     <div id="pbList"></div>
     <div id="pbGateCard" class="mosaicWrap" style="display:none" data-need="standard">
-      <div class="locked-mosaic" style="height:54px;border-radius:10px;background:var(--card)"></div>
+      <div class="locked-mosaic lm-dots" style="height:54px;border-radius:10px"></div>
     </div>
   </div>
   <div class="card">
@@ -378,7 +450,7 @@
     <canvas id="progCanvas" width="480" height="160"></canvas>
     <div class="muted" id="progGateLead" style="font-size:12px;margin-top:8px;line-height:1.5;display:none"></div>
     <div id="progGateCard" class="mosaicWrap" style="display:none" data-need="standard">
-      <div class="locked-mosaic" style="height:60px;border-radius:10px;background:var(--card);margin-top:8px"></div>
+      <div class="locked-mosaic lm-chart" style="height:60px;border-radius:10px;margin-top:8px"></div>
     </div>
   </div>
   <div class="sectionhead">自分を理解する</div>
@@ -387,7 +459,7 @@
     <div class="muted" id="shiftLead" style="font-size:12px;margin:-2px 0 12px;line-height:1.5">あなたの平均（100%）と比べた推定1RMの傾向。種目ごとに補正して比べています。</div>
     <div id="shiftBars"></div>
     <div id="shiftLockCard" class="mosaicWrap" style="display:none" data-need="premium">
-      <div class="locked-mosaic" style="height:90px;border-radius:10px;background:var(--card)"></div>
+      <div class="locked-mosaic lm-rows" style="height:90px;border-radius:10px"></div>
     </div>
   </div>
 
@@ -397,7 +469,7 @@
     <div class="muted" id="trendLead" style="font-size:13px;margin:-2px 0 4px;line-height:1.5"></div>
     <div id="trendBody"></div>
     <div id="trendLockCard" class="mosaicWrap" style="display:none" data-need="premium">
-      <div class="locked-mosaic" style="height:120px;border-radius:10px;background:var(--card)"></div>
+      <div class="locked-mosaic lm-chart" style="height:120px;border-radius:10px"></div>
     </div>
     <div class="medicalnote">※医療的な診断・効能を示すものではありません。あなたの記録に基づく統計的な傾向の参考情報です。</div>
   </div>
@@ -414,8 +486,17 @@
     </div>
     <div id="heatBody"></div>
     <div id="heatLockCard" class="mosaicWrap" style="display:none" data-need="premium">
-      <div class="locked-mosaic" style="height:160px;border-radius:10px;background:var(--card)"></div>
+      <div class="locked-mosaic lm-grid" style="height:160px;border-radius:10px"></div>
     </div>
+  </div>
+
+  <!-- 進捗写真（¥480・2026-06-25仕様確定）
+       重要：ロック中（free/standard）はここに画像要素を一切生成しない（§7-9）。
+       renderProgressPhotos() が tier を見て、photoBody の中身をまるごと作り直す。
+       HTML側はプレースホルダの空divのみで、img要素や写真関連のDOMはJSが必要な時だけ生成する。 -->
+  <div class="card" id="photoCard">
+    <label class="lbl">進捗写真</label>
+    <div id="photoBody"></div>
   </div>
 
   <!-- ボディメジャー推移（¥480。体組成は別タブ、ここはサイズ推移のグラフのみ） -->
@@ -424,7 +505,7 @@
     <div class="muted" id="measureTrendLead" style="font-size:13px;margin:-2px 0 4px;line-height:1.5"></div>
     <div id="measureTrendBody"></div>
     <div id="measureLockCard" class="mosaicWrap" style="display:none" data-need="premium">
-      <div class="locked-mosaic" style="height:90px;border-radius:10px;background:var(--card)"></div>
+      <div class="locked-mosaic lm-dots" style="height:90px;border-radius:10px"></div>
     </div>
   </div>
 
@@ -432,7 +513,7 @@
   <div class="muted" id="histGateLead" style="font-size:12px;margin:0 4px 6px;line-height:1.5;display:none"></div>
   <div id="histList"></div>
   <div id="histGateCard" class="mosaicWrap" style="display:none;margin:12px 4px" data-need="standard">
-    <div class="locked-mosaic" style="height:64px;border-radius:14px;background:var(--card)"></div>
+    <div class="locked-mosaic lm-grid" style="height:64px;border-radius:14px"></div>
   </div>
   <div id="affilSlot"></div>
 </section>
@@ -448,7 +529,7 @@
     <div class="muted" style="margin-top:8px">※体脂肪率は家庭用計測の誤差が大きいので「目安」です</div>
   </div>
   <div id="bodyLockCard" class="mosaicWrap" style="display:none" data-need="premium">
-    <div class="locked-mosaic" style="height:90px;border-radius:14px;background:var(--card)"></div>
+    <div class="locked-mosaic lm-chart" style="height:90px;border-radius:14px"></div>
   </div>
   <div class="card" id="bodyGraphCard" style="display:none">
     <div class="between"><span class="muted">体重の推移</span></div>
@@ -470,7 +551,7 @@
       <button class="btn primary" id="mSave" style="margin-top:12px;width:100%">今日のサイズを記録</button>
     </div>
     <div id="measureBodyLockCard" class="mosaicWrap" style="display:none" data-need="premium">
-      <div class="locked-mosaic" style="height:90px;border-radius:10px;background:var(--card)"></div>
+      <div class="locked-mosaic lm-dots" style="height:90px;border-radius:10px"></div>
     </div>
   </div>
   <div id="measureList"></div>
@@ -481,6 +562,12 @@
   <div class="card">
     <label class="lbl">デザインテーマ</label>
     <div class="themeGrid" id="themeGrid"></div>
+  </div>
+  <!-- 背景画像（¥200・2026-06-25仕様確定）：ロック中はセクション全体を1ブロックのモザイクで覆い、
+       「背景画像を選ぶ」「背景画像を削除」ボタン自体をDOMに生成しない（UX_課金機能設計.md §3-3-2(C)・§7-13）。 -->
+  <div class="card" id="bgPhotoCard">
+    <label class="lbl">背景画像</label>
+    <div id="bgPhotoBody"></div>
   </div>
   <div class="card">
     <label class="lbl">褒め方のタイプ</label>
@@ -575,6 +662,13 @@
     </div>
     <button class="btn sm" id="upgradeOpenBtn" style="margin-top:10px;width:100%">アップグレードコード入力</button>
   </div>
+  <!-- 進捗写真の書き出し（¥480購入済み・1枚以上ある時だけ表示。UX_課金機能設計.md §3-4） -->
+  <div class="card" id="photoExportCard" style="display:none">
+    <div style="font-weight:600">進捗写真</div>
+    <div class="muted" style="margin-top:6px" id="photoStorageInfo"></div>
+    <div class="muted" style="margin-top:6px;font-size:13px">JSONバックアップには含まれません</div>
+    <button class="btn sm" id="photoExportBtn" style="margin-top:10px;width:100%">進捗写真を書き出す</button>
+  </div>
   <div class="card">
     <div style="font-weight:600;margin-bottom:8px">データ</div>
     <div class="grid2">
@@ -636,6 +730,43 @@
       <button id="summarySheetClose" class="btn sm ghost" type="button">×</button>
     </div>
     <div id="summaryBody"></div>
+  </div>
+</div>
+
+<!-- ===== 進捗写真：撮影ネイティブ起動用（非表示input・画面には出さない） ===== -->
+<input type="file" id="photoFileInput" accept="image/*" capture="environment" style="display:none">
+
+<!-- ===== 背景カスタム画像：ギャラリー選択用（非表示input・capture属性なし＝撮影機能は持たない） ===== -->
+<input type="file" id="bgPhotoFileInput" accept="image/*" style="display:none">
+
+<!-- ===== 進捗写真：確認画面（撮影直後・新規） ===== -->
+<div id="photoConfirmSheetBg" class="sheetbg" hidden>
+  <div class="sheet">
+    <div class="between">
+      <h3>写真を確認</h3>
+      <button id="photoConfirmClose" class="btn sm ghost" type="button">×</button>
+    </div>
+    <img id="photoConfirmImg" class="photo-confirm-img" alt="撮影した写真の確認">
+    <div class="muted" style="text-align:center;margin-top:10px">顔が写らない範囲がおすすめです</div>
+    <div class="calcbtns" style="margin-top:14px">
+      <button class="btn" id="photoRetakeBtn" type="button">もう一度撮る</button>
+      <button class="btn primary" id="photoSaveBtn" type="button">この写真を保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 進捗写真：比較する写真を選ぶ（ボトムシート） ===== -->
+<div id="photoPickSheetBg" class="sheetbg" hidden>
+  <div class="sheet">
+    <div class="between">
+      <h3>比較する写真を選ぶ</h3>
+      <button id="photoPickClose" class="btn sm ghost" type="button">×</button>
+    </div>
+    <label class="lbl">Before</label>
+    <div id="photoPickBefore"></div>
+    <label class="lbl" style="margin-top:14px">After</label>
+    <div id="photoPickAfter"></div>
+    <button class="btn primary" id="photoPickApplyBtn" style="margin-top:14px;width:100%">この組み合わせで見る</button>
   </div>
 </div>
 
@@ -784,6 +915,104 @@ function syncPresets(s){
 }
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
 function uid(){return Date.now()+Math.floor(Math.random()*1000);}
+
+/* ---------- 進捗写真：IndexedDB（¥480・2026-06-25仕様確定） ----------
+   重要：写真はここ（IndexedDB）にのみ保存し、state（localStorage・JSONバックアップの対象）には
+   一切含めない（PRODUCT_課金モデル.md §5-1・社長の明示指示）。save()/load()/exportBtn/importFile
+   のどのコードパスからも photoDB には触れない設計を保つこと。
+   既存の state 管理と仕組みを揃えるためクラスやラッパーは作らず、素直な関数だけで実装する。 */
+const PHOTO_DB_NAME="kintoreMemoPhotos";
+const PHOTO_DB_VERSION=1;
+const PHOTO_STORE="photos";
+let photoDBPromise=null;
+function openPhotoDB(){
+  if(photoDBPromise)return photoDBPromise;
+  photoDBPromise=new Promise((resolve,reject)=>{
+    const req=indexedDB.open(PHOTO_DB_NAME,PHOTO_DB_VERSION);
+    req.onupgradeneeded=()=>{
+      const db=req.result;
+      if(!db.objectStoreNames.contains(PHOTO_STORE)){
+        const store=db.createObjectStore(PHOTO_STORE,{keyPath:"id"});
+        store.createIndex("date","date",{unique:false});
+      }
+    };
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+  return photoDBPromise;
+}
+function addPhoto(blob,date){ // blob: 圧縮済みJPEG Blob。保存後、保存したレコードを返す。
+  return openPhotoDB().then(db=>new Promise((resolve,reject)=>{
+    const rec={id:uid(),date:date||today(),createdAt:Date.now(),blob};
+    const tx=db.transaction(PHOTO_STORE,"readwrite");
+    tx.objectStore(PHOTO_STORE).add(rec);
+    tx.oncomplete=()=>resolve(rec);
+    tx.onerror=()=>reject(tx.error);
+  }));
+}
+function getAllPhotos(){ // 撮影日の古い順（昇順）で返す
+  return openPhotoDB().then(db=>new Promise((resolve,reject)=>{
+    const tx=db.transaction(PHOTO_STORE,"readonly");
+    const req=tx.objectStore(PHOTO_STORE).getAll();
+    req.onsuccess=()=>resolve(req.result.sort((a,b)=>a.createdAt-b.createdAt));
+    req.onerror=()=>reject(req.error);
+  }));
+}
+function deletePhoto(id){
+  return openPhotoDB().then(db=>new Promise((resolve,reject)=>{
+    const tx=db.transaction(PHOTO_STORE,"readwrite");
+    tx.objectStore(PHOTO_STORE).delete(id);
+    tx.oncomplete=()=>resolve();
+    tx.onerror=()=>reject(tx.error);
+  }));
+}
+
+/* ---------- 背景カスタム画像：IndexedDB（¥200・2026-06-25仕様確定） ----------
+   重要：進捗写真（PHOTO_DB_NAME）とは目的も個人情報の機微性も異なる別データのため、
+   同じDBに混在させず別名の独立したIndexedDBを使う。1枚のみ保持し、新規選択で自動上書き。
+   state（localStorage・JSONバックアップの対象）には一切含めない（PRODUCT_課金モデル.md §5-2）。 */
+const BGPHOTO_DB_NAME="kintoreMemoBgPhoto";
+const BGPHOTO_DB_VERSION=1;
+const BGPHOTO_STORE="bgphoto";
+const BGPHOTO_KEY="current"; // 1枚のみ保持なので固定キー
+let bgPhotoDBPromise=null;
+function openBgPhotoDB(){
+  if(bgPhotoDBPromise)return bgPhotoDBPromise;
+  bgPhotoDBPromise=new Promise((resolve,reject)=>{
+    const req=indexedDB.open(BGPHOTO_DB_NAME,BGPHOTO_DB_VERSION);
+    req.onupgradeneeded=()=>{
+      const db=req.result;
+      if(!db.objectStoreNames.contains(BGPHOTO_STORE))db.createObjectStore(BGPHOTO_STORE);
+    };
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+  return bgPhotoDBPromise;
+}
+function setBgPhoto(blob){ // 1枚のみ保持。put()なので既存があれば自動上書き（確認ダイアログなし）
+  return openBgPhotoDB().then(db=>new Promise((resolve,reject)=>{
+    const tx=db.transaction(BGPHOTO_STORE,"readwrite");
+    tx.objectStore(BGPHOTO_STORE).put(blob,BGPHOTO_KEY);
+    tx.oncomplete=()=>resolve();
+    tx.onerror=()=>reject(tx.error);
+  }));
+}
+function getBgPhoto(){ // 未設定時はundefinedで解決
+  return openBgPhotoDB().then(db=>new Promise((resolve,reject)=>{
+    const tx=db.transaction(BGPHOTO_STORE,"readonly");
+    const req=tx.objectStore(BGPHOTO_STORE).get(BGPHOTO_KEY);
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  }));
+}
+function deleteBgPhoto(){
+  return openBgPhotoDB().then(db=>new Promise((resolve,reject)=>{
+    const tx=db.transaction(BGPHOTO_STORE,"readwrite");
+    tx.objectStore(BGPHOTO_STORE).delete(BGPHOTO_KEY);
+    tx.oncomplete=()=>resolve();
+    tx.onerror=()=>reject(tx.error);
+  }));
+}
 function fmtDate(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function today(){return fmtDate(new Date());}
 /* ---------- 7日ゲート（無料ユーザー）----------
@@ -868,7 +1097,7 @@ function openSummarySheet(){
       html+='<div class="statline" style="margin-top:10px">💪 計 <b>'+strengthToday.length+'</b>セット ・ 総ボリューム <b>'+fmtKg(vol)+'</b> kg ・ 推定1RM <b>'+fmt(best)+'</b> kg</div>';
     }else{
       html+='<div class="mosaicWrap" data-need="standard" style="margin-top:10px">'+
-        '<div class="locked-mosaic" style="height:40px;border-radius:9px;background:var(--bg2)"></div></div>';
+        '<div class="locked-mosaic lm-grid" style="height:40px;border-radius:9px"></div></div>';
     }
   }
   const pbToday=personalBests().filter(pb=>pb.date===date);
@@ -954,6 +1183,7 @@ document.getElementById("nav").addEventListener("click",e=>{
   document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("active",s.id===b.dataset.t));
   if(b.dataset.t==="s-hist")renderHist();
   if(b.dataset.t==="s-body")renderBody();
+  if(b.dataset.t==="s-log"||b.dataset.t==="s-hist")renderBgPhotoLayers();
 });
 
 /* ---------- log screen ---------- */
@@ -1116,7 +1346,7 @@ function renderExCards(){
         }else{
           const wrap=document.createElement("div");wrap.className="mosaicWrap";wrap.style.marginTop="6px";
           wrap.dataset.need="standard";
-          wrap.innerHTML='<div class="locked-mosaic" style="height:40px;border-radius:9px;background:var(--bg2)"></div>';
+          wrap.innerHTML='<div class="locked-mosaic lm-grid" style="height:40px;border-radius:9px"></div>';
           card.appendChild(wrap);
         }
       }
@@ -1421,6 +1651,7 @@ function renderHist(){
   renderShiftPerf();
   renderTrend();
   renderHeatmap();
+  renderProgressPhotos();
   renderMeasureTrend();
 
   const list=document.getElementById("histList");list.innerHTML="";
@@ -1610,12 +1841,213 @@ document.getElementById("heatRange").onclick=e=>{
   renderHeatmap();renderPartBalanceMini();
 };
 
+/* ---------- 進捗写真（¥480・2026-06-25仕様確定） ----------
+   最重要：未購入（free/standard）のときは photoBody の中に <img> 等の画像参照要素を
+   一切生成しない。renderProgressPhotos() の最初の分岐でロック専用カードだけを作って return し、
+   Before/After比較・撮影ボタン・容量表示・撮影頻度案内のサブツリーはそもそも作らない
+   （非表示スタイルで隠すのではなく、DOM生成そのものをしないことで開発者ツールからも画像が
+   取得できないようにする。UX_課金機能設計.md §7-9）。 */
+const PHOTO_REMINDER_MS=14*24*60*60*1000; // 2週間：これ未満は案内文を出さない（定数1箇所で管理）
+let photoCompareBeforeId=null,photoCompareAfterId=null; // 比較中の写真id（未選択時はnull＝自動選択に委ねる）
+let photoPendingBlob=null; // 確認画面で保存待ちのBlob（保存 or 撮り直しで破棄）
+
+function renderProgressPhotos(){
+  const body=document.getElementById("photoBody");
+  if(!isPremium()){
+    // ロック中：鍵アイコン＋説明文1行＋ボタンのみ。画像要素・撮影ボタン・容量表示は生成しない。
+    body.innerHTML=
+      '<div class="photoLockCard">'+
+        '<div class="lockic">🔒</div>'+
+        '<div class="locktxt">見た目の変化を、写真で残せます</div>'+
+        '<button type="button" class="btn sm" id="photoLockBtn">プラン比較を見る</button>'+
+      '</div>';
+    document.getElementById("photoLockBtn").onclick=()=>goToUnlockFromGate("premium");
+    renderPhotoExportCard([]); // ¥480未購入時は書き出しカードも表示しない
+    return;
+  }
+  body.innerHTML='<div class="muted">読み込み中…</div>';
+  getAllPhotos().then(photos=>{
+    renderPhotoBody(photos);
+    renderPhotoExportCard(photos);
+  });
+}
+function renderPhotoBody(photos){
+  const body=document.getElementById("photoBody");
+  if(!photos.length){
+    body.innerHTML=
+      '<div class="photo-empty">'+
+        '<div class="muted">写真を撮ると、ここに並びます</div>'+
+        '<button type="button" class="btn primary" id="photoTakeBtn">📷 今日の写真を撮る</button>'+
+      '</div>';
+    document.getElementById("photoTakeBtn").onclick=startPhotoCapture;
+    return;
+  }
+  // 撮影頻度の軽い案内文（直近撮影から2週間未満は非表示。当日撮影済みなら非表示＝直近撮影日=今日のケースで包含される）
+  const lastPhoto=photos[photos.length-1];
+  const showReminder=(Date.now()-lastPhoto.createdAt)>=PHOTO_REMINDER_MS;
+  let html='<div id="photoReminder" class="muted" style="margin-bottom:8px;display:'+(showReminder?"block":"none")+'">そろそろ1枚、撮ってみませんか</div>';
+  html+='<button type="button" class="btn primary" id="photoTakeBtn" style="width:100%">📷 今日の写真を撮る</button>';
+  html+='<div id="photoCompareArea" style="margin-top:12px"></div>';
+  body.innerHTML=html;
+  document.getElementById("photoTakeBtn").onclick=startPhotoCapture;
+  renderPhotoCompareArea(photos);
+}
+function renderPhotoCompareArea(photos){
+  const area=document.getElementById("photoCompareArea");if(!area)return;
+  if(photos.length===1){
+    // 1枚だけの場合は比較せず、その1枚を中央に大きく表示する簡易レイアウト
+    const p=photos[0];
+    const url=URL.createObjectURL(p.blob);
+    area.innerHTML=
+      '<div class="photo-single">'+
+        '<div class="pf-frame"><img src="'+url+'" alt="進捗写真"></div>'+
+        '<div class="pf-date">'+p.date+'</div>'+
+        '<button type="button" class="photo-del" id="photoDelOnly">この写真を削除</button>'+
+      '</div>';
+    document.getElementById("photoDelOnly").onclick=()=>confirmDeletePhoto(p.id);
+    return;
+  }
+  // 初期表示のデフォルト：Before=最も古い、After=最も新しい（自動選択）。
+  const beforeP=photos.find(p=>p.id===photoCompareBeforeId)||photos[0];
+  const afterP=photos.find(p=>p.id===photoCompareAfterId)||photos[photos.length-1];
+  const beforeUrl=URL.createObjectURL(beforeP.blob),afterUrl=URL.createObjectURL(afterP.blob);
+  area.innerHTML=
+    '<div class="photo-compare">'+
+      '<figure><div class="pf-label">Before</div><div class="pf-frame"><img src="'+beforeUrl+'" alt="Before写真"></div>'+
+        '<div class="pf-date">'+beforeP.date+'</div></figure>'+
+      '<figure><div class="pf-label">After</div><div class="pf-frame"><img src="'+afterUrl+'" alt="After写真"></div>'+
+        '<div class="pf-date">'+afterP.date+'</div></figure>'+
+    '</div>'+
+    '<button type="button" class="btn sm" id="photoPickOpenBtn" style="margin-top:10px;width:100%">比較する写真を選ぶ ▾</button>'+
+    '<button type="button" class="photo-del" id="photoDelAfter" style="margin-top:6px">表示中のAfter写真を削除</button>';
+  document.getElementById("photoPickOpenBtn").onclick=()=>openPhotoPickSheet(photos,beforeP.id,afterP.id);
+  document.getElementById("photoDelAfter").onclick=()=>confirmDeletePhoto(afterP.id);
+}
+function confirmDeletePhoto(id){
+  if(!confirm("この写真を削除します。よろしいですか？"))return;
+  deletePhoto(id).then(()=>{
+    if(photoCompareBeforeId===id)photoCompareBeforeId=null;
+    if(photoCompareAfterId===id)photoCompareAfterId=null;
+    renderProgressPhotos();
+  });
+}
+/* 「比較する写真を選ぶ」ボトムシート：日付の新しい順・サムネイル付きラジオ選択 */
+function openPhotoPickSheet(photos,curBefore,curAfter){
+  const sorted=[...photos].sort((a,b)=>b.createdAt-a.createdAt);
+  const buildRows=(name,curId,isFirstLabelId)=>sorted.map(p=>{
+    const url=URL.createObjectURL(p.blob);
+    const labelSuffix=p.id===isFirstLabelId?"（初回）":(p.id===photos[photos.length-1].id?"（最新）":"");
+    return '<label class="photo-pickrow"><input type="radio" name="'+name+'" value="'+p.id+'" '+(p.id===curId?"checked":"")+'>'+
+      '<img src="'+url+'" alt=""><span class="pp-date">'+p.date+labelSuffix+'</span></label>';
+  }).join("");
+  document.getElementById("photoPickBefore").innerHTML=buildRows("photoPickBeforeRadio",curBefore,photos[0].id);
+  document.getElementById("photoPickAfter").innerHTML=buildRows("photoPickAfterRadio",curAfter,photos[0].id);
+  document.getElementById("photoPickSheetBg").hidden=false;
+}
+document.getElementById("photoPickClose").onclick=()=>{document.getElementById("photoPickSheetBg").hidden=true;};
+document.getElementById("photoPickSheetBg").addEventListener("click",e=>{if(e.target.id==="photoPickSheetBg")document.getElementById("photoPickSheetBg").hidden=true;});
+document.getElementById("photoPickApplyBtn").onclick=()=>{
+  const b=document.querySelector('input[name="photoPickBeforeRadio"]:checked');
+  const a=document.querySelector('input[name="photoPickAfterRadio"]:checked');
+  if(b)photoCompareBeforeId=+b.value;
+  if(a)photoCompareAfterId=+a.value;
+  document.getElementById("photoPickSheetBg").hidden=true;
+  renderProgressPhotos();
+};
+
+/* ---------- 撮影フロー：①ネイティブ起動 → ②確認画面 → ③Canvas圧縮して保存 ---------- */
+function startPhotoCapture(){
+  document.getElementById("photoFileInput").click();
+}
+document.getElementById("photoFileInput").onchange=e=>{
+  const f=e.target.files[0];
+  e.target.value=""; // 同じファイルを連続で選んでもonchangeが発火するようにリセット
+  if(!f)return;
+  if(!isPremium())return; // 通常操作では未購入時にこの入力欄へ到達するボタン自体がDOMに無いが、念のための防御
+
+  const url=URL.createObjectURL(f);
+  document.getElementById("photoConfirmImg").src=url;
+  photoPendingBlob=f;
+  document.getElementById("photoSaveBtn").disabled=false;
+  document.getElementById("photoSaveBtn").textContent="この写真を保存";
+  document.getElementById("photoConfirmSheetBg").hidden=false;
+};
+function closePhotoConfirm(){
+  document.getElementById("photoConfirmSheetBg").hidden=true;
+  document.getElementById("photoConfirmImg").src="";
+  photoPendingBlob=null;
+}
+document.getElementById("photoConfirmClose").onclick=closePhotoConfirm; // キャンセル時は保存処理を行わず元の画面に戻るだけ
+document.getElementById("photoRetakeBtn").onclick=()=>{closePhotoConfirm();startPhotoCapture();};
+document.getElementById("photoSaveBtn").onclick=()=>{
+  if(!photoPendingBlob)return;
+  const btn=document.getElementById("photoSaveBtn");
+  btn.disabled=true;btn.textContent="保存中…"; // 二重タップ防止（圧縮処理は数百ms〜1秒程度の想定）
+  compressImageToJpeg(photoPendingBlob,1080,0.8).then(blob=>addPhoto(blob,today())).then(()=>{
+    closePhotoConfirm();
+    renderProgressPhotos();
+  }).catch(()=>{
+    btn.disabled=false;btn.textContent="この写真を保存";
+    alert("保存できませんでした。もう一度お試しください。");
+  });
+};
+/* Canvas APIで長辺1080px・JPEG quality 0.8目安にリサイズ＋再エンコード（PRODUCT_課金モデル.md §5-1） */
+function compressImageToJpeg(srcBlob,maxSide,quality){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    const url=URL.createObjectURL(srcBlob);
+    img.onload=()=>{
+      URL.revokeObjectURL(url);
+      let w=img.naturalWidth,h=img.naturalHeight;
+      const longSide=Math.max(w,h);
+      if(longSide>maxSide){
+        const ratio=maxSide/longSide;
+        w=Math.round(w*ratio);h=Math.round(h*ratio);
+      }
+      const canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;
+      const ctx=canvas.getContext("2d");
+      ctx.drawImage(img,0,0,w,h);
+      canvas.toBlob(blob=>{
+        if(blob)resolve(blob);else reject(new Error("toBlob failed"));
+      },"image/jpeg",quality);
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error("image load failed"));};
+    img.src=url;
+  });
+}
+
+/* ---------- 設定画面：進捗写真の書き出し・容量表示（UX_課金機能設計.md §3-4） ---------- */
+function fmtMB(bytes){return (bytes/(1024*1024)).toFixed(1);}
+function renderPhotoExportCard(photos){
+  const card=document.getElementById("photoExportCard");
+  if(!isPremium()||!photos.length){card.style.display="none";return;} // 0枚または未購入は非表示
+  card.style.display="block";
+  const totalBytes=photos.reduce((s,p)=>s+(p.blob?p.blob.size:0),0);
+  document.getElementById("photoStorageInfo").textContent="撮影済み "+photos.length+"枚／合計 "+fmtMB(totalBytes)+"MB";
+}
+document.getElementById("photoExportBtn").onclick=()=>{
+  const btn=document.getElementById("photoExportBtn");
+  btn.disabled=true;btn.textContent="書き出し中…";
+  getAllPhotos().then(photos=>{
+    // zip化はしない（実装コストを抑え、端末の標準保存先に1枚ずつ保存する＝A案）。
+    photos.forEach((p,i)=>{
+      const url=URL.createObjectURL(p.blob);
+      const a=document.createElement("a");
+      a.href=url;a.download="akeTore_progress_"+p.date+"_"+(i+1)+".jpg";
+      a.click();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+    });
+  }).finally(()=>{
+    btn.disabled=false;btn.textContent="進捗写真を書き出す";
+  });
+};
+
 /* ---------- 部位バランス・ミニ表示（種目選択画面・¥480） ---------- */
 function renderPartBalanceMini(){
   const slot=document.getElementById("partBalanceMini");if(!slot)return;
   if(!isPremium()){
     slot.innerHTML='<div class="mosaicWrap" data-need="premium">'+
-      '<div class="locked-mosaic" style="height:54px;border-radius:12px;background:var(--card)"></div></div>';
+      '<div class="locked-mosaic lm-dots" style="height:54px;border-radius:12px"></div></div>';
     return;
   }
   const counts=partVolumeInRange(7);
@@ -1678,7 +2110,7 @@ function renderCalendar(){
   if(!gateNote){
     gateNote=document.createElement("div");gateNote.id="calGateNote";gateNote.className="mosaicWrap";gateNote.style.display="none";
     gateNote.dataset.need="standard";
-    gateNote.innerHTML='<div class="locked-mosaic" style="height:40px;border-radius:9px;background:var(--bg2);margin-top:8px"></div>';
+    gateNote.innerHTML='<div class="locked-mosaic lm-grid" style="height:40px;border-radius:9px;margin-top:8px"></div>';
     document.getElementById("calCard").appendChild(gateNote);
   }
   gateNote.style.display=canGoPrevMonth?"none":"block";
@@ -1930,7 +2362,7 @@ document.getElementById("unlockBtn").onclick=()=>{
     const label=state.settings.tier==="premium"?"プレミアム（¥480）":"スタンダード（¥200）";
     unlockMsg.className="toast up";unlockMsg.textContent="🎉 "+label+"を解除しました！応援ありがとうございます！";
     unlockInput.value="";
-    renderUnlock();renderAffil();renderThemes();renderCalcButtons();renderHist(); // 各画面の該当機能を即時反映
+    renderUnlock();renderAffil();renderThemes();renderCalcButtons();renderHist();renderBgPhotoSettings();renderBgPhotoLayers(); // 各画面の該当機能を即時反映
   }else{
     unlockMsg.className="toast calm";
     unlockMsg.textContent=v?"コードが正しくないようです。ハイフンを含めて、もう一度ゆっくり確認してみてください。":"解除コードを入力してください。";
@@ -1950,7 +2382,7 @@ document.getElementById("upgradeBtn").onclick=()=>{
     state.settings.tier="premium";save();
     upgradeMsg.className="toast up";upgradeMsg.textContent="🎉 プレミアムになりました！";
     upgradeInput.value="";
-    renderUnlock();renderThemes();renderCalcButtons();renderHist();
+    renderUnlock();renderThemes();renderCalcButtons();renderHist();renderBgPhotoSettings();renderBgPhotoLayers();
   }else{
     upgradeMsg.className="toast calm";
     upgradeMsg.textContent=v?"コードが正しくないようです。アップグレード専用コードかご確認ください。":"アップグレードコードを入力してください。";
@@ -1994,6 +2426,80 @@ function renderThemes(){
     g.appendChild(b);
   });
 }
+
+/* ---------- 背景カスタム画像（¥200・2026-06-25仕様確定。UX_課金機能設計.md §3-3-2・§7-13・§7-14） ----------
+   ・設定画面：選択・削除（このブロック）
+   ・記録画面（s-log）・振り返り画面（s-hist）の2画面のみに表示（renderBgPhotoLayers）
+   ・ロック中（free/premium。standard未満）は§7-8の既存モザイクロック共通実装をそのまま流用し、
+     セクション全体を1ブロックで覆う。ボタン等はDOMに生成しない（進捗写真のような専用DOM非読込対応は不要）。 */
+let bgPhotoObjectUrl=null; // 表示中のBlob URL。差し替え時はrevokeしてリークを防ぐ
+function renderBgPhotoSettings(){
+  const body=document.getElementById("bgPhotoBody");
+  if(!isStandardUp()){
+    // ロック中：見出し直下のセクション全体（サムネイル枠＋説明文＋ボタン2個ぶんの高さ）を1ブロックのモザイクで覆う。
+    // 選ぶ/削除ボタンは生成しない（UX_課金機能設計.md §3-3-2(C)・他の¥480ロック箇所と同じmosaicWrap+locked-mosaicパターン）。
+    body.className="mosaicWrap";body.dataset.need="standard";
+    body.innerHTML='<div class="locked-mosaic lm-bgphoto" style="height:120px;border-radius:10px"></div>';
+    return;
+  }
+  body.className="";delete body.dataset.need;
+  getBgPhoto().then(blob=>{
+    if(!blob){
+      body.innerHTML=
+        '<div class="bgPhotoThumbRow">'+
+          '<div class="bgPhotoThumbEmpty">🖼</div>'+
+          '<div class="muted" style="flex:1">まだ背景画像が設定されていません</div>'+
+        '</div>'+
+        '<button type="button" class="btn primary" id="bgPhotoPickBtn" style="margin-top:10px;width:100%">🖼 背景画像を選ぶ</button>';
+    }else{
+      if(bgPhotoObjectUrl)URL.revokeObjectURL(bgPhotoObjectUrl);
+      bgPhotoObjectUrl=URL.createObjectURL(blob);
+      body.innerHTML=
+        '<div class="bgPhotoThumbRow">'+
+          '<img class="bgPhotoThumb" src="'+bgPhotoObjectUrl+'" alt="設定中の背景画像">'+
+          '<div class="muted" style="flex:1">記録画面・振り返り画面の背景に使われます</div>'+
+        '</div>'+
+        '<button type="button" class="btn sm" id="bgPhotoPickBtn" style="margin-top:10px;width:100%">🖼 背景画像を選ぶ</button>'+
+        '<button type="button" class="btn sm" id="bgPhotoDelBtn" style="margin-top:8px;width:100%">背景画像を削除</button>'+
+        '<div class="muted" style="margin-top:8px;font-size:13px">JSONバックアップには含まれません</div>';
+      document.getElementById("bgPhotoDelBtn").onclick=()=>{
+        if(!confirm("背景画像を削除しますか？"))return;
+        deleteBgPhoto().then(()=>{renderBgPhotoSettings();renderBgPhotoLayers();});
+      };
+    }
+    document.getElementById("bgPhotoPickBtn").onclick=()=>document.getElementById("bgPhotoFileInput").click();
+  });
+}
+document.getElementById("bgPhotoFileInput").onchange=e=>{
+  const f=e.target.files[0];
+  e.target.value=""; // 同じファイルを連続選択してもonchangeが発火するようにリセット
+  if(!f)return;
+  if(!isStandardUp())return; // 通常操作では未購入時にこの入力欄へ到達するボタン自体がDOMに無いが、念のための防御
+  const body=document.getElementById("bgPhotoBody");
+  body.innerHTML='<div class="bgPhotoThumbRow"><div class="bgPhotoThumbLoading"><div class="bgPhotoSpin"></div></div>'+
+    '<div class="muted" style="flex:1">処理中…</div></div>';
+  // 選択＝確定（進捗写真のような確認画面・撮り直しフローは無し）。Canvas圧縮後、確認ダイアログなしで自動上書き保存。
+  compressImageToJpeg(f,800,0.7).then(blob=>setBgPhoto(blob)).then(()=>{
+    renderBgPhotoSettings();renderBgPhotoLayers();
+  }).catch(()=>{
+    renderBgPhotoSettings();
+    alert("背景画像を設定できませんでした。もう一度お試しください。");
+  });
+};
+/* 記録画面（s-log）・振り返り画面（s-hist）の背景レイヤー生成・破棄。
+   未設定・ロック中はレイヤー自体をDOMに生成しない（常時非表示スタイルで隠すのではなく、生成しない）。 */
+let bgPhotoLayerObjectUrl=null; // 表示中のBlob URL。画面切替で再生成するたびrevokeしてリークを防ぐ
+function renderBgPhotoLayers(){
+  const slotLog=document.getElementById("bgPhotoSlot_log"),slotHist=document.getElementById("bgPhotoSlot_hist");
+  if(bgPhotoLayerObjectUrl){URL.revokeObjectURL(bgPhotoLayerObjectUrl);bgPhotoLayerObjectUrl=null;}
+  if(!isStandardUp()){slotLog.innerHTML="";slotHist.innerHTML="";return;}
+  getBgPhoto().then(blob=>{
+    if(!blob){slotLog.innerHTML="";slotHist.innerHTML="";return;}
+    bgPhotoLayerObjectUrl=URL.createObjectURL(blob);
+    const layerHtml='<img class="bgPhotoLayer" src="'+bgPhotoLayerObjectUrl+'" alt=""><div class="bgPhotoScrim"></div>';
+    slotLog.innerHTML=layerHtml;slotHist.innerHTML=layerHtml;
+  });
+}
 /* プラン比較一覧（設定画面・新設）への遷移共通関数（UX_課金機能設計.md §3-5・§7-8）。
    need="standard"|"premium" のブロックを<details open>にしてスクロール表示する。
    モザイク・テーマ🔒など、ロック済み要素のタップ先はすべてここに一本化する。 */
@@ -2026,6 +2532,8 @@ function scrollToUnlock(){
 document.getElementById("planStandardCodeBtn").onclick=()=>scrollToUnlock();
 document.getElementById("planPremiumCodeBtn").onclick=()=>scrollToUnlock();
 document.getElementById("exportBtn").onclick=()=>{
+  // 注：state（localStorageのこのオブジェクト）には進捗写真を一切含めていないため、
+  // ここでJSON化してもPhotoDB（IndexedDB）の画像データは絶対に書き出されない（PRODUCT_課金モデル.md §5-1）。
   const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="kintore-memo-backup.json";a.click();
 };
@@ -2119,6 +2627,7 @@ document.getElementById("restSecChips").onclick=e=>{const c=e.target.closest(".c
 applyTheme(state.settings.theme);renderThemes();renderRestSec();
 loadCondFields();renderExCards();renderPraiseSeg();renderRoutines();
 document.getElementById("routineCard").open=state.routines.length>0;
+renderBgPhotoSettings();renderBgPhotoLayers(); // 初期表示はs-log（記録画面）がactiveなので背景レイヤーも初回反映が必要
 
 /* ---------- PWA: オフライン対応（同一オリジンのみ・外部通信なし） ---------- */
 (function(){
