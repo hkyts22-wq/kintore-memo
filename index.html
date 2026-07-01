@@ -2039,10 +2039,17 @@ function renderExCards(){
   activeExIds.forEach(exId=>{
     const ex=exById(exId);const card=document.createElement("div");card.className="card";
     let html='<div class="between"><div style="font-weight:600;font-size:16px">'+exDisplayName(ex)+'</div>'+
-      '<span class="muted">'+partLabel(ex.part)+'</span></div>';
+      '<div class="between" style="gap:6px;flex:none"><span class="muted">'+partLabel(ex.part)+'</span></div></div>';
     const searchSuffix=isJa?"やり方":t("howto_search_suffix");
     html+='<a class="vlink" target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/results?search_query='+encodeURIComponent(exDisplayName(ex)+" "+searchSuffix)+'">'+(isJa?"▶ やり方を見る（YouTube）↗":t("howto_watch"))+'</a>';
     card.innerHTML=html;
+    const closeExBtn=document.createElement("button");
+    closeExBtn.className="btn sm";closeExBtn.textContent="✕";
+    closeExBtn.style.cssText="padding:4px 9px;margin-left:8px;color:var(--sub)";
+    const closeTitle=isJa?"この種目を閉じる":"Close this exercise";
+    closeExBtn.title=closeTitle;closeExBtn.setAttribute("aria-label",closeTitle);
+    closeExBtn.onclick=()=>{activeExIds=activeExIds.filter(id=>id!==exId);renderExCards();};
+    card.querySelector(".between .between").appendChild(closeExBtn);
 
     // existing sets today
     if(ex.type==="cardio"){
@@ -2093,24 +2100,76 @@ function commentLine(text){
 function setLine(r,i){
   const isJa=state.settings.lang==="ja";
   const frag=document.createDocumentFragment();
+  if(editingSetId===r.id){
+    const box=document.createElement("div");box.className="setline";box.style.cssText="display:block;padding:10px";
+    box.innerHTML='<div class="grid2"><div><label class="lbl">'+(isJa?"重量(kg)":t("weight_kg"))+'</label>'+stepper("ew_"+r.id,r.weight,2.5)+'</div>'+
+      '<div><label class="lbl">'+(isJa?"回数":t("reps_label"))+'</label>'+stepper("er_"+r.id,r.reps,1)+'</div></div>'+
+      '<div style="margin-top:10px"><label class="lbl">'+(isJa?"コメント（任意）":t("comment_optional"))+'</label>'+
+      '<input type="text" id="ec_'+r.id+'" value="'+(r.comment||"").replace(/"/g,"&quot;")+'"></div>';
+    const btnrow=document.createElement("div");btnrow.className="row";btnrow.style.marginTop="10px";
+    const saveBtn=document.createElement("button");saveBtn.className="btn sm primary";saveBtn.style.flex="1";saveBtn.textContent=isJa?"保存":t("common_save");
+    saveBtn.onclick=()=>{
+      const wt=parseFloat(document.getElementById("ew_"+r.id).value)||0;
+      const rp=parseInt(document.getElementById("er_"+r.id).value)||0;
+      if(wt<=0||rp<=0)return;
+      const cmt=document.getElementById("ec_"+r.id).value.trim();
+      const rec=state.records.find(x=>x.id===r.id);
+      if(rec){rec.weight=wt;rec.reps=rp;rec.comment=cmt;save();}
+      editingSetId=null;renderExCards();
+    };
+    const cancelBtn=document.createElement("button");cancelBtn.className="btn sm";cancelBtn.style.flex="1";cancelBtn.textContent=isJa?"キャンセル":t("common_cancel");
+    cancelBtn.onclick=()=>{editingSetId=null;renderExCards();};
+    btnrow.appendChild(saveBtn);btnrow.appendChild(cancelBtn);box.appendChild(btnrow);
+    box.addEventListener("click",stepHandler);
+    frag.appendChild(box);
+    return frag;
+  }
   const d=document.createElement("div");d.className="setline";
   d.innerHTML='<span class="no">'+(i+1)+'</span><span class="val">'+fmt(r.weight)+'kg × '+r.reps+'</span>';
+  const edit=document.createElement("button");edit.className="del";edit.textContent=isJa?"✎ 編集":("✎ "+t("common_edit"));
+  edit.onclick=()=>{editingSetId=r.id;renderExCards();};
   const del=document.createElement("button");del.className="del";del.textContent=isJa?"削除":t("common_delete");
   del.onclick=()=>{state.records=state.records.filter(x=>x.id!==r.id);save();renderExCards();};
-  d.appendChild(del);frag.appendChild(d);
+  d.appendChild(edit);d.appendChild(del);frag.appendChild(d);
   if(r.comment)frag.appendChild(commentLine(r.comment));
   return frag;
 }
 function cardioLine(r,i){
   const isJa=state.settings.lang==="ja";
   const frag=document.createDocumentFragment();
+  if(editingSetId===r.id){
+    const box=document.createElement("div");box.className="setline";box.style.cssText="display:block;padding:10px";
+    box.innerHTML='<div class="grid2"><div><label class="lbl">'+(isJa?"距離(km)":t("distance_km"))+'</label>'+stepper("ed_"+r.id,r.distance,0.5)+'</div>'+
+      '<div><label class="lbl">'+(isJa?"時間(分)":t("time_min"))+'</label>'+stepper("et_"+r.id,Math.round(r.durSec/60),1)+'</div></div>'+
+      '<div style="margin-top:10px"><label class="lbl">'+(isJa?"コメント（任意）":t("comment_optional"))+'</label>'+
+      '<input type="text" id="ec_'+r.id+'" value="'+(r.comment||"").replace(/"/g,"&quot;")+'"></div>';
+    const btnrow=document.createElement("div");btnrow.className="row";btnrow.style.marginTop="10px";
+    const saveBtn=document.createElement("button");saveBtn.className="btn sm primary";saveBtn.style.flex="1";saveBtn.textContent=isJa?"保存":t("common_save");
+    saveBtn.onclick=()=>{
+      const dd=parseFloat(document.getElementById("ed_"+r.id).value)||0;
+      const mm=parseInt(document.getElementById("et_"+r.id).value)||0;
+      if(dd<=0||mm<=0)return;
+      const cmt=document.getElementById("ec_"+r.id).value.trim();
+      const rec=state.cardio.find(x=>x.id===r.id);
+      if(rec){rec.distance=dd;rec.durSec=mm*60;rec.comment=cmt;save();}
+      editingSetId=null;renderExCards();
+    };
+    const cancelBtn=document.createElement("button");cancelBtn.className="btn sm";cancelBtn.style.flex="1";cancelBtn.textContent=isJa?"キャンセル":t("common_cancel");
+    cancelBtn.onclick=()=>{editingSetId=null;renderExCards();};
+    btnrow.appendChild(saveBtn);btnrow.appendChild(cancelBtn);box.appendChild(btnrow);
+    box.addEventListener("click",stepHandler);
+    frag.appendChild(box);
+    return frag;
+  }
   const d=document.createElement("div");d.className="setline";
   const m=Math.floor(r.durSec/60),s=r.durSec%60;
   const dur=isJa?(m+'分'+(s?s+'秒':'')):(m+(state.settings.lang==="zh"?"分":" min")+(s?(s+(state.settings.lang==="zh"?"秒":"s")):''));
   d.innerHTML='<span class="no">'+(i+1)+'</span><span class="val">'+fmt(r.distance)+'km / '+dur+'</span>';
+  const edit=document.createElement("button");edit.className="del";edit.textContent=isJa?"✎ 編集":("✎ "+t("common_edit"));
+  edit.onclick=()=>{editingSetId=r.id;renderExCards();};
   const del=document.createElement("button");del.className="del";del.textContent=isJa?"削除":t("common_delete");
   del.onclick=()=>{state.cardio=state.cardio.filter(x=>x.id!==r.id);save();renderExCards();};
-  d.appendChild(del);frag.appendChild(d);
+  d.appendChild(edit);d.appendChild(del);frag.appendChild(d);
   if(r.comment)frag.appendChild(commentLine(r.comment));
   return frag;
 }
