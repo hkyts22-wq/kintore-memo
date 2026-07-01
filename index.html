@@ -634,6 +634,12 @@
       </div>
     </div>
   </div>
+  <div class="card">
+    <div class="between">
+      <div><div style="font-weight:600" data-i18n="set_wakelock_title">画面を常時点灯</div><div class="muted" data-i18n="set_wakelock_desc">アプリ使用中に画面が自動で暗くなるのを防ぎます</div></div>
+      <label class="step" style="border:none"><input type="checkbox" id="wakeLockToggle" style="width:22px;height:22px"></label>
+    </div>
+  </div>
   <!-- プラン比較一覧（新設・UX_課金機能設計.md§3-5）。無料は常時展開、¥200/¥480は<details>でキャッチのみ常時表示。 -->
   <div class="card" id="planCompareCard">
     <div style="font-weight:600" data-i18n="plan_compare_title">プラン比較</div>
@@ -1052,7 +1058,10 @@ const I18N={
     sw_active:"Offline support: active (works without signal)",sw_failed:"Offline support: couldn't register",sw_addtohome:"Offline support: enabled once added to home screen",
     summary_day_empty:"No records for this day yet.",pb_updated_label:"🎉 New PB: ",routine_empty:"Not yet. Build today's exercises, then save with the button below.",total_label:"Total",
     cal_week_days:"Days this week",cal_month_days:"Days this month",cal_streak_days:"Current streak",
-    praise_sample_hype:"e.g. 🔥 New PB! Amazing!",praise_sample_carrotstick:"e.g. Nice work, you've got this!",praise_sample_calm:"e.g. New PB. +2.5 kg vs last time"
+    praise_sample_hype:"e.g. 🔥 New PB! Amazing!",praise_sample_carrotstick:"e.g. Nice work, you've got this!",praise_sample_calm:"e.g. New PB. +2.5 kg vs last time",
+    prev_value_strength:"Previous: {w}kg × {r}",prev_value_cardio:"Previous: {d}km / {m} min",
+    set_wakelock_title:"Keep screen on",set_wakelock_desc:"Prevents the screen from turning off automatically while you use the app",
+    finish_exercise_btn:"✓ Finish this exercise"
   },
   zh:{
     shift_day:"白班",shift_night:"夜班",shift_postnight:"夜班后",shift_off:"休息",
@@ -1123,7 +1132,10 @@ const I18N={
     sw_active:"离线支持：已启用（无信号也能启动）",sw_failed:"离线支持：注册失败",sw_addtohome:"离线支持：添加到主屏幕后即可启用",
     summary_day_empty:"这一天还没有记录。",pb_updated_label:"🎉 创造新纪录：",routine_empty:"还没有。先组好今天的动作，再用下面的按钮保存。",total_label:"合计",
     cal_week_days:"本周天数",cal_month_days:"本月天数",cal_streak_days:"连续天数",
-    praise_sample_hype:"例）🔥 创造新纪录！太棒了！",praise_sample_carrotstick:"例）做得好，你能行！",praise_sample_calm:"例）创造新纪录。比上次 +2.5kg"
+    praise_sample_hype:"例）🔥 创造新纪录！太棒了！",praise_sample_carrotstick:"例）做得好，你能行！",praise_sample_calm:"例）创造新纪录。比上次 +2.5kg",
+    prev_value_strength:"上次：{w}kg × {r}次",prev_value_cardio:"上次：{d}km / {m}分钟",
+    set_wakelock_title:"屏幕常亮",set_wakelock_desc:"使用本应用期间，防止屏幕自动熄灭",
+    finish_exercise_btn:"✓ 结束这个动作"
   },
   es:{
     shift_day:"Turno de día",shift_night:"Turno de noche",shift_postnight:"Tras guardia",shift_off:"Libre",
@@ -1194,7 +1206,10 @@ const I18N={
     sw_active:"Soporte sin conexión: activo (funciona sin señal)",sw_failed:"Soporte sin conexión: no se pudo registrar",sw_addtohome:"Soporte sin conexión: se activa al añadir a la pantalla de inicio",
     summary_day_empty:"Aún no hay registros para este día.",pb_updated_label:"🎉 ¡Nueva marca personal: ",routine_empty:"Aún no hay ninguno. Crea los ejercicios de hoy y guárdalos con el botón de abajo.",total_label:"Total",
     cal_week_days:"Días esta semana",cal_month_days:"Días este mes",cal_streak_days:"Racha actual",
-    praise_sample_hype:"ej. 🔥 ¡Nueva marca personal! ¡Increíble!",praise_sample_carrotstick:"ej. ¡Bien hecho, tú puedes!",praise_sample_calm:"ej. Nueva marca personal. +2,5 kg respecto a la vez anterior"
+    praise_sample_hype:"ej. 🔥 ¡Nueva marca personal! ¡Increíble!",praise_sample_carrotstick:"ej. ¡Bien hecho, tú puedes!",praise_sample_calm:"ej. Nueva marca personal. +2,5 kg respecto a la vez anterior",
+    prev_value_strength:"Anterior: {w}kg × {r}",prev_value_cardio:"Anterior: {d}km / {m} min",
+    set_wakelock_title:"Mantener pantalla encendida",set_wakelock_desc:"Evita que la pantalla se apague automáticamente mientras usas la app",
+    finish_exercise_btn:"✓ Terminar este ejercicio"
   },
   fr:{
     shift_day:"Jour",shift_night:"Nuit",shift_postnight:"Après-garde",shift_off:"Repos",
@@ -1265,7 +1280,10 @@ const I18N={
     sw_active:"Support hors ligne : actif (fonctionne sans réseau)",sw_failed:"Support hors ligne : échec de l'enregistrement",sw_addtohome:"Support hors ligne : activé une fois ajouté à l'écran d'accueil",
     summary_day_empty:"Pas encore de données pour ce jour.",pb_updated_label:"🎉 Nouveau record : ",routine_empty:"Pas encore. Composez les exercices du jour, puis enregistrez avec le bouton ci-dessous.",total_label:"Total",
     cal_week_days:"Jours cette semaine",cal_month_days:"Jours ce mois",cal_streak_days:"Série actuelle",
-    praise_sample_hype:"ex. 🔥 Nouveau record personnel ! Incroyable !",praise_sample_carrotstick:"ex. Bien joué, tu peux le faire !",praise_sample_calm:"ex. Nouveau record personnel. +2,5 kg par rapport à la dernière fois"
+    praise_sample_hype:"ex. 🔥 Nouveau record personnel ! Incroyable !",praise_sample_carrotstick:"ex. Bien joué, tu peux le faire !",praise_sample_calm:"ex. Nouveau record personnel. +2,5 kg par rapport à la dernière fois",
+    prev_value_strength:"Dernière fois : {w}kg × {r}",prev_value_cardio:"Dernière fois : {d}km / {m} min",
+    set_wakelock_title:"Garder l'écran allumé",set_wakelock_desc:"Empêche l'écran de s'éteindre automatiquement pendant l'utilisation de l'appli",
+    finish_exercise_btn:"✓ Terminer cet exercice"
   },
   de:{
     shift_day:"Tagschicht",shift_night:"Nachtschicht",shift_postnight:"Nach Nachtdienst",shift_off:"Frei",
@@ -1336,7 +1354,10 @@ const I18N={
     sw_active:"Offline-Unterstützung: aktiv (funktioniert ohne Empfang)",sw_failed:"Offline-Unterstützung: Registrierung fehlgeschlagen",sw_addtohome:"Offline-Unterstützung: aktiviert, wenn zum Startbildschirm hinzugefügt",
     summary_day_empty:"Für diesen Tag liegen noch keine Einträge vor.",pb_updated_label:"🎉 Neue Bestleistung: ",routine_empty:"Noch keine. Stelle zuerst die heutigen Übungen zusammen und speichere sie dann über den Button unten.",total_label:"Gesamt",
     cal_week_days:"Tage diese Woche",cal_month_days:"Tage diesen Monat",cal_streak_days:"Aktuelle Serie",
-    praise_sample_hype:"z. B. 🔥 Neue Bestleistung! Fantastisch!",praise_sample_carrotstick:"z. B. Gut gemacht, du schaffst das!",praise_sample_calm:"z. B. Neue Bestleistung. +2,5 kg im Vergleich zum letzten Mal"
+    praise_sample_hype:"z. B. 🔥 Neue Bestleistung! Fantastisch!",praise_sample_carrotstick:"z. B. Gut gemacht, du schaffst das!",praise_sample_calm:"z. B. Neue Bestleistung. +2,5 kg im Vergleich zum letzten Mal",
+    prev_value_strength:"Letztes Mal: {w}kg × {r}",prev_value_cardio:"Letztes Mal: {d}km / {m} Min.",
+    set_wakelock_title:"Bildschirm dauerhaft an",set_wakelock_desc:"Verhindert, dass sich der Bildschirm während der Nutzung der App automatisch ausschaltet",
+    finish_exercise_btn:"✓ Diese Übung beenden"
   },
   it:{
     shift_day:"Turno diurno",shift_night:"Turno notturno",shift_postnight:"Dopo notte",shift_off:"Riposo",
@@ -1407,7 +1428,10 @@ const I18N={
     sw_active:"Supporto offline: attivo (funziona senza segnale)",sw_failed:"Supporto offline: registrazione non riuscita",sw_addtohome:"Supporto offline: attivato una volta aggiunto alla schermata Home",
     summary_day_empty:"Ancora nessun dato per questo giorno.",pb_updated_label:"🎉 Nuovo record: ",routine_empty:"Ancora nessuno. Componi prima gli esercizi di oggi, poi salva con il pulsante qui sotto.",total_label:"Totale",
     cal_week_days:"Giorni questa settimana",cal_month_days:"Giorni questo mese",cal_streak_days:"Serie attuale",
-    praise_sample_hype:"es. 🔥 Nuovo record personale! Fantastico!",praise_sample_carrotstick:"es. Ben fatto, puoi farcela!",praise_sample_calm:"es. Nuovo record personale. +2,5 kg rispetto alla volta precedente"
+    praise_sample_hype:"es. 🔥 Nuovo record personale! Fantastico!",praise_sample_carrotstick:"es. Ben fatto, puoi farcela!",praise_sample_calm:"es. Nuovo record personale. +2,5 kg rispetto alla volta precedente",
+    prev_value_strength:"Volta precedente: {w}kg × {r}",prev_value_cardio:"Volta precedente: {d}km / {m} min",
+    set_wakelock_title:"Mantieni lo schermo acceso",set_wakelock_desc:"Evita che lo schermo si spenga automaticamente mentre usi l'app",
+    finish_exercise_btn:"✓ Termina questo esercizio"
   }
 };
 function t(key){const d=I18N[state.settings.lang];return (d&&d[key])||I18N.ja[key]||key;}
@@ -1437,7 +1461,7 @@ let activeExIds=[]; // exIds added to today's session view
 
 function defaultState(){
   return {exercises:[],records:[],cardio:[],body:[],bodyMeasure:[],cond:{},routines:[],
-    settings:{lang:detectInitialLang(),praiseStyle:"hype",tier:"free",theme:"green",restTimer:true,restSec:90,
+    settings:{lang:detectInitialLang(),praiseStyle:"hype",tier:"free",theme:"green",restTimer:true,restSec:90,wakeLock:true,
       plateBar:20,plateOwned:{20:4,15:0,10:2,5:2,2.5:2,1.25:2}}};
 }
 function load(){
@@ -1451,6 +1475,7 @@ function load(){
   if(!s.settings.lang||!I18N[s.settings.lang])s.settings.lang=detectInitialLang(); // 言語未設定の旧データはブラウザ言語から推定
   s.settings.restTimer=(s.settings.restTimer===undefined)?true:s.settings.restTimer; // 既定ON（明示OFFは保持）
   s.settings.restSec=s.settings.restSec||90; // 既定90秒
+  s.settings.wakeLock=(s.settings.wakeLock===undefined)?true:s.settings.wakeLock; // 既定ON（画面常時点灯・明示OFFは保持）
   // tier移行：旧adsOff(bool)→tier('free'|'standard'|'premium')。adsOff:trueは旧買い切り＝プレミアム相当として救済。
   if(!s.settings.tier){
     s.settings.tier=s.settings.adsOff?"premium":"free";
@@ -1739,18 +1764,80 @@ function partVolumeInRange(rangeDays){ // rangeDays: 7 | 30 | "all"
 }
 
 /* ---------- praise ---------- */
+// 日本語の褒め台詞バリエーション（kind×style）。呼び出しごとにランダムで1つ選ぶ。
+// pr/upはinfo（推定1RM・ペース等）を末尾に添えて具体性を出す。noneはcarrotstickのみ（明けは抑制、既存仕様を維持）。
+const PRAISE_JA={
+  pr:{
+    hype:[
+      i=>"🔥 自己ベスト更新キター！最高だ！ "+i,
+      i=>"🎉 新記録！やってくれると思ってた！ "+i,
+      i=>"🔥🔥 ぶち抜いた！自己ベスト更新！ "+i,
+      i=>"最高更新！今日のお前、強すぎる！ "+i,
+      i=>"うおおPR達成！この勢い保とう！ "+i,
+    ],
+    carrotstick:[
+      i=>"よくやった、やればできるじゃん！ "+i,
+      i=>"お、更新したな。ここで満足すんなよ "+i,
+      i=>"やるじゃん。次はもっと上を見せて "+i,
+      i=>"自己ベスト、認めてやる。調子に乗るなよ "+i,
+      i=>"今日はよく頑張った。次はここが基準だぞ "+i,
+    ],
+    calm:[
+      i=>"自己ベスト更新。"+i,
+      i=>"新記録を記録しました。"+i,
+      i=>"これまでの最高値を更新。"+i,
+      i=>"自己ベストです。"+i,
+      i=>"記録が更新されました。"+i,
+    ],
+  },
+  up:{
+    hype:[
+      ()=>"💪 伸びてる！その調子！",
+      ()=>"🔥 前回超え！乗ってきた！",
+      ()=>"いいぞ、確実に強くなってる！",
+      ()=>"前回を上回った！この調子で行こう！",
+      ()=>"成長してるの、数字が証明してるぞ！",
+    ],
+    carrotstick:[
+      ()=>"いいね。でもまだ伸びしろあるよ",
+      ()=>"前回よりは上。でも本気はまだ先だろ",
+      ()=>"悪くない。もう一段いけるはずだ",
+      ()=>"前進はしてる。慢心せずもう少し詰めよう",
+      ()=>"良い傾向。ここからが本番だぞ",
+    ],
+    calm:[
+      ()=>"前回を上回りました。",
+      ()=>"前回のセッションを超えています。",
+      ()=>"数値が前回より向上しました。",
+      ()=>"前回比でプラスです。",
+      ()=>"前回の記録を上回りました。",
+    ],
+  },
+};
+function pickJa(kind,style){
+  const arr=(PRAISE_JA[kind]&&PRAISE_JA[kind][style])||PRAISE_JA[kind].calm;
+  return arr[Math.floor(Math.random()*arr.length)];
+}
 function praiseText(kind,info){
   const s=state.settings.praiseStyle;
   const isJa=state.settings.lang==="ja";
   if(kind==="pr"){
-    if(s==="hype")return {cls:"pr",txt:isJa?("🔥 自己ベスト更新キター！最高だ！ "+info):(t("praise_pr_hype")+info)};
-    if(s==="carrotstick")return {cls:"pr",txt:isJa?("よくやった、やればできるじゃん！ "+info):(t("praise_pr_carrotstick")+info)};
-    return {cls:"calm",txt:isJa?("自己ベスト更新。"+info):(t("praise_pr_calm")+info)};
+    if(isJa){
+      const style=(s==="hype"||s==="carrotstick")?s:"calm";
+      return {cls:style==="calm"?"calm":"pr",txt:pickJa("pr",style)(info)};
+    }
+    if(s==="hype")return {cls:"pr",txt:t("praise_pr_hype")+info};
+    if(s==="carrotstick")return {cls:"pr",txt:t("praise_pr_carrotstick")+info};
+    return {cls:"calm",txt:t("praise_pr_calm")+info};
   }
   if(kind==="up"){
-    if(s==="hype")return {cls:"up",txt:isJa?"💪 伸びてる！その調子！":t("praise_up_hype")};
-    if(s==="carrotstick")return {cls:"up",txt:isJa?"いいね。でもまだ伸びしろあるよ":t("praise_up_carrotstick")};
-    return {cls:"calm",txt:isJa?"前回を上回りました。":t("praise_up_calm")};
+    if(isJa){
+      const style=(s==="hype"||s==="carrotstick")?s:"calm";
+      return {cls:style==="calm"?"calm":"up",txt:pickJa("up",style)()};
+    }
+    if(s==="hype")return {cls:"up",txt:t("praise_up_hype")};
+    if(s==="carrotstick")return {cls:"up",txt:t("praise_up_carrotstick")};
+    return {cls:"calm",txt:t("praise_up_calm")};
   }
   // none / nudge
   if(s==="carrotstick" && activeShift!=="明け")return {cls:"calm",txt:isJa?"今日はここまで。次は超えていこう":t("praise_done_carrotstick")};
@@ -1905,6 +1992,45 @@ function lastSessionBestE1rm(exId,exclDate){
   const dates=Object.keys(byDate).sort();if(!dates.length)return 0;return byDate[dates[dates.length-1]];
 }
 
+/* ---------- 種目を終える：その日その種目の全セットを集計し、pr＞up＞noneの優先順で1回だけ褒める ---------- */
+function finishStrengthExercise(exId,date){
+  const isJa=state.settings.lang==="ja";
+  const todays=state.records.filter(r=>r.exId===exId&&r.date===date);
+  if(!todays.length)return;
+  let kind="none",bestCur=0;
+  todays.forEach(r=>{
+    const ts=r.ts;
+    const prevBest=bestE1rmBefore(exId,ts);
+    const lastSess=lastSessionBestE1rm(exId,date);
+    const cur=e1rm(r.weight,r.reps);
+    if(cur>bestCur)bestCur=cur;
+    let thisKind="none";
+    if(prevBest>0&&cur>prevBest)thisKind="pr";
+    else if(lastSess>0&&cur>lastSess)thisKind="up";
+    else if(prevBest===0)thisKind="pr"; // first ever record = celebrate
+    if(thisKind==="pr")kind="pr";
+    else if(thisKind==="up"&&kind!=="pr")kind="up";
+  });
+  const info=isJa?("推定1RM "+fmt(bestCur)+"kg"):(t("metric_e1rm")+" "+fmt(bestCur)+"kg");
+  const p=praiseText(kind,info);
+  if(p)flashToast(exId,p);
+}
+function finishCardioExercise(exId,date){
+  const isJa=state.settings.lang==="ja";
+  const todays=state.cardio.filter(r=>r.exId===exId&&r.date===date);
+  if(!todays.length)return;
+  let kind="none",bestDist=0,bestPace=0;
+  todays.forEach(r=>{
+    const prevMax=Math.max(0,...state.cardio.filter(x=>x.exId===exId&&x.ts<r.ts).map(x=>x.distance));
+    const thisKind=(prevMax===0||r.distance>prevMax)?"pr":"none";
+    if(r.distance>bestDist){bestDist=r.distance;bestPace=(r.durSec/60)/r.distance;}
+    if(thisKind==="pr")kind="pr";
+  });
+  const info=isJa?("ペース "+fmt(bestPace)+"分/km"):(t("pace_label")+" "+fmt(bestPace)+t("unit_minkm"));
+  const p=praiseText(kind,info);
+  if(p)flashToast(exId,p);
+}
+
 function renderExCards(){
   const isJa=state.settings.lang==="ja";
   const wrap=document.getElementById("exCards");wrap.innerHTML="";
@@ -1919,8 +2045,15 @@ function renderExCards(){
 
     // existing sets today
     if(ex.type==="cardio"){
-      state.cardio.filter(r=>r.exId===exId&&r.date===date).forEach((r,i)=>card.appendChild(cardioLine(r,i)));
+      const todaysCardio=state.cardio.filter(r=>r.exId===exId&&r.date===date);
+      todaysCardio.forEach((r,i)=>card.appendChild(cardioLine(r,i)));
       card.appendChild(cardioInput(exId,date,card));
+      if(todaysCardio.length){
+        const finishBtn=document.createElement("button");finishBtn.type="button";finishBtn.className="btn sm";finishBtn.style.marginTop="10px";
+        finishBtn.textContent=isJa?"✓ この種目を終える":t("finish_exercise_btn");
+        finishBtn.onclick=()=>finishCardioExercise(exId,date);
+        card.appendChild(finishBtn);
+      }
     }else{
       const todays=state.records.filter(r=>r.exId===exId&&r.date===date);
       todays.forEach((r,i)=>card.appendChild(setLine(r,i)));
@@ -1941,6 +2074,12 @@ function renderExCards(){
         }
       }
       card.appendChild(strengthInput(exId,date,card));
+      if(todays.length){
+        const finishBtn=document.createElement("button");finishBtn.type="button";finishBtn.className="btn sm";finishBtn.style.marginTop="10px";
+        finishBtn.textContent=isJa?"✓ この種目を終える":t("finish_exercise_btn");
+        finishBtn.onclick=()=>finishStrengthExercise(exId,date);
+        card.appendChild(finishBtn);
+      }
     }
     wrap.appendChild(card);
   });
@@ -1983,6 +2122,11 @@ function strengthInput(exId,date,card){
   const last=lastRecord(exId,date);
   const w=last?last.weight:20,r=last?last.reps:10;
   const box=document.createElement("div");box.style.marginTop="10px";
+  if(last){
+    const prev=document.createElement("div");prev.className="muted";
+    prev.textContent=isJa?("前回："+fmt(last.weight)+"kg × "+last.reps+"回"):t("prev_value_strength").replace("{w}",fmt(last.weight)).replace("{r}",last.reps);
+    box.appendChild(prev);
+  }
   const cbtns=document.createElement("div");cbtns.className="calcbtns";
   const pb=document.createElement("button");pb.type="button";pb.className="btn sm";pb.textContent=isJa?"⚙ プレート計算":t("plate_calc_btn");
   const wb=document.createElement("button");wb.type="button";wb.className="btn sm";wb.textContent=isJa?"⚙ ウォームアップ":t("warmup_calc_btn");
@@ -2015,10 +2159,8 @@ function strengthInput(exId,date,card){
     if(prevBest>0&&cur>prevBest)kind="pr";
     else if(lastSess>0&&cur>lastSess)kind="up";
     else if(prevBest===0)kind="pr"; // first ever record = celebrate
-    const info=isJa?("推定1RM "+fmt(cur)+"kg"):(t("metric_e1rm")+" "+fmt(cur)+"kg");
-    const p=praiseText(kind,info);
+    // セットごとの褒め表示はうるさいので廃止。pr/up判定は「この種目を終える」ボタン押下時の集計で使うため、ここでは行わない。
     renderExCards();
-    if(p)flashToast(exId,p);
     startRest(); // セット記録→休憩カウントダウン開始（タップ操作内で音声を解錠）
   };
   btnrow.appendChild(rec);box.appendChild(btnrow);box.appendChild(toast);
@@ -2030,8 +2172,15 @@ function cardioInput(exId,date,card){
   const last=lastRecord(exId,date);
   const dist=last?last.distance:3, mins=last?Math.round(last.durSec/60):20;
   const box=document.createElement("div");box.style.marginTop="10px";
-  box.innerHTML='<div class="grid2"><div><label class="lbl">'+(isJa?"距離(km)":t("distance_km"))+'</label>'+stepper("d_"+exId,dist,0.5)+'</div>'+
+  if(last){
+    const prev=document.createElement("div");prev.className="muted";
+    prev.textContent=isJa?("前回："+fmt(last.distance)+"km / "+Math.round(last.durSec/60)+"分"):t("prev_value_cardio").replace("{d}",fmt(last.distance)).replace("{m}",Math.round(last.durSec/60));
+    box.appendChild(prev);
+  }
+  const grid=document.createElement("div");
+  grid.innerHTML='<div class="grid2"><div><label class="lbl">'+(isJa?"距離(km)":t("distance_km"))+'</label>'+stepper("d_"+exId,dist,0.5)+'</div>'+
     '<div><label class="lbl">'+(isJa?"時間(分)":t("time_min"))+'</label>'+stepper("t_"+exId,mins,1)+'</div></div>';
+  box.appendChild(grid);
   const cmtBox=document.createElement("div");cmtBox.style.marginTop="10px";
   cmtBox.innerHTML='<label class="lbl">'+(isJa?"コメント（任意）":t("comment_optional"))+'</label><input type="text" id="cmt_'+exId+'" placeholder="'+(isJa?"例 ペースを意識した":t("comment_ph_cardio"))+'">';
   box.appendChild(cmtBox);
@@ -2043,12 +2192,9 @@ function cardioInput(exId,date,card){
     const cmtEl=document.getElementById("cmt_"+exId);
     const cmt=cmtEl?cmtEl.value.trim():"";
     const ts=Date.now();
-    const prevMax=Math.max(0,...state.cardio.filter(r=>r.exId===exId&&r.ts<ts).map(r=>r.distance));
     state.cardio.push({id:uid(),exId,date,shift:activeShift,distance:dd,durSec:mm*60,comment:cmt,ts});save();
-    let kind=(prevMax===0||dd>prevMax)?"pr":"none";
-    const pace=mm/dd;
-    const info=isJa?("ペース "+fmt(pace)+"分/km"):(t("pace_label")+" "+fmt(pace)+t("unit_minkm"));
-    const p=praiseText(kind,info);renderExCards();if(p)flashToast(exId,p);
+    // セットごとの褒め表示はうるさいので廃止。「この種目を終える」ボタン押下時にまとめて表示する。
+    renderExCards();
   };
   box.appendChild(rec);box.addEventListener("click",stepHandler);
   return box;
@@ -3276,6 +3422,27 @@ restToggle.checked=state.settings.restTimer;
 restToggle.onchange=()=>{state.settings.restTimer=restToggle.checked;save();renderRestSec();if(!restToggle.checked)restHide();};
 document.getElementById("restSecChips").onclick=e=>{const c=e.target.closest(".chip");if(!c)return;
   state.settings.restSec=+c.dataset.s;save();renderRestSec();ensureAudio();};
+
+/* ---------- 画面の常時点灯（Wake Lock） ----------
+   対応ブラウザが限られるため'wakeLock' in navigatorで機能検出し、非対応環境では何もしない。
+   タブが非アクティブになると自動解除される仕様のため、visibilitychangeで復帰時に再取得する。 */
+let wakeLockSentinel=null;
+function requestWakeLock(){
+  if(!("wakeLock" in navigator))return;
+  if(!state.settings.wakeLock)return;
+  navigator.wakeLock.request("screen").then(sentinel=>{wakeLockSentinel=sentinel;}).catch(()=>{});
+}
+function releaseWakeLock(){
+  if(wakeLockSentinel){wakeLockSentinel.release().catch(()=>{});wakeLockSentinel=null;}
+}
+const wakeLockToggle=document.getElementById("wakeLockToggle");
+wakeLockToggle.checked=state.settings.wakeLock;
+wakeLockToggle.onchange=()=>{
+  state.settings.wakeLock=wakeLockToggle.checked;save();
+  if(state.settings.wakeLock)requestWakeLock();else releaseWakeLock();
+};
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)requestWakeLock();});
+requestWakeLock(); // 初回起動時、既定ONなら即座に取得を試みる
 
 document.getElementById("langSelect").onchange=e=>{
   state.settings.lang=e.target.value;save();location.reload(); // 全画面の表示言語を一括反映するため再読込
