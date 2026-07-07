@@ -107,6 +107,16 @@
   .setline .no{color:var(--sub);width:20px}
   .setline .val{flex:1}
   .setline .del{color:var(--link);background:none;border:none;cursor:pointer;font-size:13px}
+  .prevhist-btn{background:var(--bg2);border:1px solid var(--line);border-radius:9px;color:var(--ink);
+    cursor:pointer;font-size:13px;padding:7px 11px;width:100%;text-align:left;margin-top:2px}
+  .prevhist-panel{border:1px solid var(--line);border-top:none;border-radius:0 0 9px 9px;
+    margin-top:-1px;padding:4px 6px 6px;background:var(--card)}
+  .prevhist-row{display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 6px;color:var(--ink)}
+  .prevhist-row .no{color:var(--sub);width:18px;text-align:right;flex:none}
+  .bwtoggle{display:flex;gap:8px;margin:4px 0 4px}
+  .bwtoggle button{flex:1;border:1px solid var(--line);background:var(--card);color:var(--sub);
+    border-radius:9px;padding:9px;font-size:14px;cursor:pointer}
+  .bwtoggle button.on{background:var(--accent);color:var(--onAccent);border-color:var(--accent);font-weight:600}
   .toast{border-radius:11px;padding:11px 12px;margin-top:8px;font-size:14px}
   .toast.pr{background:var(--pr);color:var(--prink)}
   .toast.up{background:var(--green);color:var(--greenink)}
@@ -399,6 +409,14 @@
 <!-- ===== 記録 ===== -->
 <section id="s-log" class="screen active">
   <div id="bgPhotoSlot_log"></div>
+  <!-- iOSのSafariで開いている時だけ表示する「ホーム画面に追加」案内（一度閉じたら再表示しない） -->
+  <div class="card" id="a2hsCard" style="display:none">
+    <div class="between">
+      <div style="font-weight:600" id="a2hsTitle">📲 ホーム画面に追加がおすすめ</div>
+      <button class="btn sm" id="a2hsClose" type="button" style="padding:4px 9px;color:var(--sub)" aria-label="閉じる">✕</button>
+    </div>
+    <div class="muted" id="a2hsBody" style="margin-top:6px;line-height:1.6">Safariのまま使うと、しばらく開かなかったときに端末の仕組みで記録が消えてしまうことがあります。共有ボタン（□↑）→「ホーム画面に追加」にすると、全画面・オフラインで起動でき、記録も保たれやすくなります。</div>
+  </div>
   <div class="card" id="calCard">
     <div class="between">
       <button id="calPrev" class="cnav" type="button" data-i18n-aria="cal_prev" aria-label="前の月">‹</button>
@@ -539,6 +557,18 @@
   </div>
 
   <div class="h2" data-i18n="hist_history_title">記録の履歴</div>
+  <div class="card" id="histCalCard">
+    <div class="between">
+      <button id="histCalPrev" class="cnav" type="button" aria-label="前の月">‹</button>
+      <label class="lbl" id="histCalTitle" style="margin:0;font-size:15px;color:var(--ink);font-weight:600"></label>
+      <button id="histCalNext" class="cnav" type="button" aria-label="次の月">›</button>
+    </div>
+    <div class="calgrid" id="histCalGrid"></div>
+    <div class="between" id="histSelBar" style="margin-top:12px;display:none">
+      <span class="muted" id="histSelLabel" style="font-size:13px"></span>
+      <button type="button" class="btn ghost sm" id="histShowAll">すべて表示</button>
+    </div>
+  </div>
   <div class="muted" id="histGateLead" style="font-size:12px;margin:0 4px 6px;line-height:1.5;display:none"></div>
   <div id="histList"></div>
   <div id="histGateCard" class="mosaicWrap" style="display:none;margin:12px 4px" data-need="standard">
@@ -697,7 +727,7 @@
       <input type="text" id="unlockInput" placeholder="KINTORE-XXXX-XXXX-X" autocomplete="off" autocapitalize="characters" spellcheck="false">
       <button class="btn primary" id="unlockBtn" style="margin-top:10px;width:100%" data-i18n="unlock_btn">解除する</button>
       <div id="unlockMsg"></div>
-      <a class="vlink" target="_blank" rel="noopener noreferrer" href="__BOOTH_URL__" style="margin-top:10px" data-i18n="unlock_buy_link">解除コードの購入はこちら ↗</a>
+      <a class="vlink" target="_blank" rel="noopener noreferrer" href="https://aketore.booth.pm/" style="margin-top:10px" data-i18n="unlock_buy_link">解除コードの購入はこちら ↗</a>
     </div>
   </div>
   <div class="card" id="upgradeCard" style="display:none">
@@ -724,6 +754,7 @@
       <button class="btn" id="exportBtn" data-i18n="data_export">エクスポート（JSON）</button>
       <button class="btn" id="importBtn" data-i18n="data_import">インポート</button>
     </div>
+    <div class="muted" id="backupInfo" style="margin-top:8px;font-size:12px"></div>
     <input type="file" id="importFile" accept="application/json" style="display:none">
     <button class="btn ghost" id="resetBtn" style="margin-top:10px;color:var(--link);width:100%" data-i18n="data_reset">全データを消去</button>
   </div>
@@ -733,6 +764,7 @@
   </div>
   <div class="card">
     <div class="muted" id="swState" data-i18n="sw_checking">オフライン対応：確認中…</div>
+    <div class="muted" style="margin-top:4px;font-size:12px">あけトレ v37</div><!-- sw.jsのCACHE番号と必ず同時に上げる -->
   </div>
 </section>
 
@@ -1696,10 +1728,17 @@ function openSummarySheet(){
   }).join("");
   if(strengthToday.length){
     if(isStandardUp()){
-      const vol=volumeOf(strengthToday),best=Math.max(...strengthToday.map(r=>e1rm(r.weight,r.reps)));
-      html+=isJa
-        ?('<div class="statline" style="margin-top:10px">💪 計 <b>'+strengthToday.length+'</b>セット ・ 総ボリューム <b>'+fmtKg(vol)+'</b> kg ・ 推定1RM <b>'+fmt(best)+'</b> kg</div>')
-        :('<div class="statline" style="margin-top:10px">💪 <b>'+strengthToday.length+'</b>'+setsUnit+' ・ '+t("metric_vol")+' <b>'+fmtKg(vol)+'</b> kg ・ '+t("metric_e1rm")+' <b>'+fmt(best)+'</b> kg</div>');
+      if(strengthToday.every(r=>isBW(exById(r.exId))&&!r.weight)){ // 全て自重（加重ゼロ）は合計回数で表示
+        const reps=strengthToday.reduce((s,r)=>s+r.reps,0);
+        html+=isJa
+          ?('<div class="statline" style="margin-top:10px">💪 計 <b>'+strengthToday.length+'</b>セット ・ 合計 <b>'+reps+'</b> 回</div>')
+          :('<div class="statline" style="margin-top:10px">💪 <b>'+strengthToday.length+'</b>'+setsUnit+' ・ <b>'+reps+'</b> reps</div>');
+      }else{
+        const vol=volumeOf(strengthToday),best=Math.max(...strengthToday.map(r=>e1rm(r.weight,r.reps)));
+        html+=isJa
+          ?('<div class="statline" style="margin-top:10px">💪 計 <b>'+strengthToday.length+'</b>セット ・ 総ボリューム <b>'+fmtKg(vol)+'</b> kg ・ 推定1RM <b>'+fmt(best)+'</b> kg</div>')
+          :('<div class="statline" style="margin-top:10px">💪 <b>'+strengthToday.length+'</b>'+setsUnit+' ・ '+t("metric_vol")+' <b>'+fmtKg(vol)+'</b> kg ・ '+t("metric_e1rm")+' <b>'+fmt(best)+'</b> kg</div>');
+      }
     }else{
       html+='<div class="mosaicWrap" data-need="standard" style="margin-top:10px">'+
         '<div class="locked-mosaic lm-grid" style="height:40px;border-radius:9px"></div></div>';
@@ -1993,11 +2032,80 @@ function lastSessionBestE1rm(exId,exclDate){
   const dates=Object.keys(byDate).sort();if(!dates.length)return 0;return byDate[dates[dates.length-1]];
 }
 
+/* ---------- 自重種目＆前回セッション履歴のヘルパー ---------- */
+function isBW(ex){return !!ex&&ex.equip==="body";} // 自重（bodyweight）種目か
+function fmtMD(ds){const p=ds.split("-");return parseInt(p[1],10)+"/"+parseInt(p[2],10);}
+function fmtStrengthVal(r){ // セット表示：自重は「自重」/「自重＋Xkg」、それ以外は従来通り「Xkg × N」
+  const isJa=state.settings.lang==="ja";const ex=exById(r.exId);
+  if(isBW(ex)){const bw=isJa?"自重":"自重(BW)";
+    return r.weight>0?(bw+"＋"+fmt(r.weight)+"kg × "+r.reps):(bw+" × "+r.reps);}
+  return fmt(r.weight)+"kg × "+r.reps;
+}
+function prevSession(exId,date){ // dateより前で直近のトレ日の全セット（＝前回のトレーニング）を返す
+  const ex=exById(exId);const src=ex.type==="cardio"?state.cardio:state.records;
+  const dates=[...new Set(src.filter(r=>r.exId===exId&&r.date<date).map(r=>r.date))].sort();
+  if(!dates.length)return null;
+  const d=dates[dates.length-1];
+  const sets=src.filter(r=>r.exId===exId&&r.date===d).sort((a,b)=>a.ts-b.ts);
+  return {date:d,sets};
+}
+let openPrevHist=new Set(); // 前回履歴を開いている種目id（再描画をまたいで開閉状態を保持）
+const bwMode={}; // 自重種目の入力モード：exId -> "bw"（自重のみ）|"plus"（加重あり）
+function prevHistBlock(exId,date){ // 前回のトレーニングの全セットを展開表示できるブロック
+  const isJa=state.settings.lang==="ja";const ex=exById(exId);
+  const ps=prevSession(exId,date);
+  const wrap=document.createElement("div");wrap.style.margin="2px 0 6px";
+  if(!ps){
+    const none=document.createElement("div");none.className="muted";
+    none.textContent=isJa?"前回の記録はありません":"No previous record";
+    wrap.appendChild(none);return wrap;
+  }
+  const open=openPrevHist.has(exId);
+  const btn=document.createElement("button");btn.type="button";btn.className="prevhist-btn";
+  const head=isJa?("📋 前回 "+fmtMD(ps.date)+"（"+ps.sets.length+"セット）")
+                 :("📋 Last "+fmtMD(ps.date)+" ("+ps.sets.length+" sets)");
+  btn.innerHTML=head+'<span style="float:right;opacity:.7">'+(open?"▲":"▼")+'</span>';
+  btn.onclick=()=>{openPrevHist.has(exId)?openPrevHist.delete(exId):openPrevHist.add(exId);renderExCards();};
+  wrap.appendChild(btn);
+  if(open){
+    const panel=document.createElement("div");panel.className="prevhist-panel";
+    ps.sets.forEach((r,i)=>{
+      const row=document.createElement("div");row.className="prevhist-row";
+      const val=ex.type==="cardio"
+        ?(fmt(r.distance)+"km / "+Math.round(r.durSec/60)+(isJa?"分":" min"))
+        :fmtStrengthVal(r);
+      const no=document.createElement("span");no.className="no";no.textContent=(i+1);
+      const v=document.createElement("span");v.textContent=val;
+      row.appendChild(no);row.appendChild(v);panel.appendChild(row);
+      if(r.comment){const c=document.createElement("div");c.className="muted";
+        c.style.cssText="font-size:12px;margin:0 0 4px 26px";c.textContent="💬 "+r.comment;panel.appendChild(c);}
+    });
+    wrap.appendChild(panel);
+  }
+  return wrap;
+}
+
 /* ---------- 種目を終える：その日その種目の全セットを集計し、pr＞up＞noneの優先順で1回だけ褒める ---------- */
 function finishStrengthExercise(exId,date){
   const isJa=state.settings.lang==="ja";
+  const ex=exById(exId);
   const todays=state.records.filter(r=>r.exId===exId&&r.date===date);
   if(!todays.length)return;
+  // 自重（加重ゼロ）は推定1RMが0になり比較にならないため、最高回数で進歩を判定する
+  if(isBW(ex)&&todays.every(r=>!r.weight)){
+    const before=state.records.filter(r=>r.exId===exId&&r.date<date);
+    const prevBestAll=before.length?Math.max(...before.map(r=>r.reps)):0;
+    const prevDates=[...new Set(before.map(r=>r.date))].sort();
+    const lastD=prevDates[prevDates.length-1];
+    const lastSessBest=lastD?Math.max(...before.filter(r=>r.date===lastD).map(r=>r.reps)):0;
+    const bestCur=Math.max(...todays.map(r=>r.reps));
+    let bwKind="none";
+    if(prevBestAll===0||bestCur>prevBestAll)bwKind="pr";
+    else if(lastSessBest>0&&bestCur>lastSessBest)bwKind="up";
+    const bwInfo=isJa?("最高 "+bestCur+"回"):("Best "+bestCur+" reps");
+    const bp=praiseText(bwKind,bwInfo);if(bp)flashToast(exId,bp);
+    return;
+  }
   let kind="none",bestCur=0;
   todays.forEach(r=>{
     const ts=r.ts;
@@ -2067,12 +2175,19 @@ function renderExCards(){
       todays.forEach((r,i)=>card.appendChild(setLine(r,i)));
       if(todays.length){
         if(isStandardUp()){
-          const vol=volumeOf(todays),best=Math.max(...todays.map(r=>e1rm(r.weight,r.reps)));
           const stat=document.createElement("div");stat.className="statline";
           const setsUnit=isJa?"セット":(" "+t("sets_unit"));
-          stat.innerHTML=isJa
-            ?("💪 "+todays.length+"セット ・ 計 <b>"+fmtKg(vol)+"</b> kg ・ 推定1RM <b>"+fmt(best)+"</b> kg")
-            :("💪 "+todays.length+setsUnit+" ・ "+t("metric_vol")+" <b>"+fmtKg(vol)+"</b> kg ・ "+t("metric_e1rm")+" <b>"+fmt(best)+"</b> kg");
+          if(isBW(ex)&&todays.every(r=>!r.weight)){ // 自重（加重ゼロ）は合計回数で表示
+            const reps=todays.reduce((s,r)=>s+r.reps,0);
+            stat.innerHTML=isJa
+              ?("💪 "+todays.length+"セット ・ 合計 <b>"+reps+"</b> 回")
+              :("💪 "+todays.length+setsUnit+" ・ <b>"+reps+"</b> reps");
+          }else{
+            const vol=volumeOf(todays),best=Math.max(...todays.map(r=>e1rm(r.weight,r.reps)));
+            stat.innerHTML=isJa
+              ?("💪 "+todays.length+"セット ・ 計 <b>"+fmtKg(vol)+"</b> kg ・ 推定1RM <b>"+fmt(best)+"</b> kg")
+              :("💪 "+todays.length+setsUnit+" ・ "+t("metric_vol")+" <b>"+fmtKg(vol)+"</b> kg ・ "+t("metric_e1rm")+" <b>"+fmt(best)+"</b> kg");
+          }
           card.appendChild(stat);
         }else{
           const wrap=document.createElement("div");wrap.className="mosaicWrap";wrap.style.marginTop="6px";
@@ -2099,10 +2214,12 @@ function commentLine(text){
 }
 function setLine(r,i){
   const isJa=state.settings.lang==="ja";
+  const bw=isBW(exById(r.exId));
   const frag=document.createDocumentFragment();
   if(editingSetId===r.id){
+    const wlbl=bw?(isJa?"加重(kg・0で自重)":"Added kg (0=BW)"):(isJa?"重量(kg)":t("weight_kg"));
     const box=document.createElement("div");box.className="setline";box.style.cssText="display:block;padding:10px";
-    box.innerHTML='<div class="grid2"><div><label class="lbl">'+(isJa?"重量(kg)":t("weight_kg"))+'</label>'+stepper("ew_"+r.id,r.weight,2.5)+'</div>'+
+    box.innerHTML='<div class="grid2"><div><label class="lbl">'+wlbl+'</label>'+stepper("ew_"+r.id,r.weight,2.5)+'</div>'+
       '<div><label class="lbl">'+(isJa?"回数":t("reps_label"))+'</label>'+stepper("er_"+r.id,r.reps,1)+'</div></div>'+
       '<div style="margin-top:10px"><label class="lbl">'+(isJa?"コメント（任意）":t("comment_optional"))+'</label>'+
       '<input type="text" id="ec_'+r.id+'" value="'+(r.comment||"").replace(/"/g,"&quot;")+'"></div>';
@@ -2111,7 +2228,7 @@ function setLine(r,i){
     saveBtn.onclick=()=>{
       const wt=parseFloat(document.getElementById("ew_"+r.id).value)||0;
       const rp=parseInt(document.getElementById("er_"+r.id).value)||0;
-      if(wt<=0||rp<=0)return;
+      if(rp<=0||(!bw&&wt<=0))return; // 自重は加重0を許可（回数のみで成立）
       const cmt=document.getElementById("ec_"+r.id).value.trim();
       const rec=state.records.find(x=>x.id===r.id);
       if(rec){rec.weight=wt;rec.reps=rp;rec.comment=cmt;save();}
@@ -2125,7 +2242,7 @@ function setLine(r,i){
     return frag;
   }
   const d=document.createElement("div");d.className="setline";
-  d.innerHTML='<span class="no">'+(i+1)+'</span><span class="val">'+fmt(r.weight)+'kg × '+r.reps+'</span>';
+  d.innerHTML='<span class="no">'+(i+1)+'</span><span class="val">'+fmtStrengthVal(r)+'</span>';
   const edit=document.createElement("button");edit.className="del";edit.textContent=isJa?"✎ 編集":("✎ "+t("common_edit"));
   edit.onclick=()=>{editingSetId=r.id;renderExCards();};
   const del=document.createElement("button");del.className="del";del.textContent=isJa?"削除":t("common_delete");
@@ -2179,24 +2296,38 @@ function stepper(id,val,step){
 }
 function strengthInput(exId,date,card){
   const isJa=state.settings.lang==="ja";
+  const ex=exById(exId);const bw=isBW(ex);
   const last=lastRecord(exId,date);
-  const w=last?last.weight:20,r=last?last.reps:10;
+  const r=last?last.reps:10;
+  const w=bw?(last&&last.weight>0?last.weight:0):(last?last.weight:20);
   const box=document.createElement("div");box.style.marginTop="10px";
-  if(last){
-    const prev=document.createElement("div");prev.className="muted";
-    prev.textContent=isJa?("前回："+fmt(last.weight)+"kg × "+last.reps+"回"):t("prev_value_strength").replace("{w}",fmt(last.weight)).replace("{r}",last.reps);
-    box.appendChild(prev);
+  // 前回のトレーニングの記録（タップで前回セッションの全セットを展開）
+  box.appendChild(prevHistBlock(exId,date));
+  if(bw){ // 自重種目：重量入力の代わりに「自重／＋加重」を選べる
+    if(bwMode[exId]===undefined)bwMode[exId]=(last&&last.weight>0)?"plus":"bw";
+    const tg=document.createElement("div");tg.className="bwtoggle";
+    const b1=document.createElement("button");b1.type="button";b1.textContent=isJa?"自重":"自重(BW)";
+    const b2=document.createElement("button");b2.type="button";b2.textContent=isJa?"＋加重":"＋Weight";
+    (bwMode[exId]==="bw"?b1:b2).classList.add("on");
+    b1.onclick=()=>{bwMode[exId]="bw";renderExCards();};
+    b2.onclick=()=>{bwMode[exId]="plus";renderExCards();};
+    tg.appendChild(b1);tg.appendChild(b2);box.appendChild(tg);
+  }else{ // 自重以外のみプレート／ウォームアップ計算を表示（自重はバーベルが無く無意味）
+    const cbtns=document.createElement("div");cbtns.className="calcbtns";
+    const pb=document.createElement("button");pb.type="button";pb.className="btn sm";pb.textContent=isJa?"⚙ プレート計算":t("plate_calc_btn");
+    const wb=document.createElement("button");wb.type="button";wb.className="btn sm";wb.textContent=isJa?"⚙ ウォームアップ":t("warmup_calc_btn");
+    // 無料ユーザーがタップした場合はボトムシートを開かず、直接「プラン比較」へ遷移する（UX_課金機能設計.md §3-1）
+    pb.onclick=()=>{if(isStandardUp())openPlateCalc(parseFloat(document.getElementById("w_"+exId).value)||w,exId);else goToUnlockFromGate("standard");};
+    wb.onclick=()=>{if(isStandardUp())openWarmupCalc(parseFloat(document.getElementById("w_"+exId).value)||w,exId);else goToUnlockFromGate("standard");};
+    cbtns.appendChild(pb);cbtns.appendChild(wb);box.appendChild(cbtns);
   }
-  const cbtns=document.createElement("div");cbtns.className="calcbtns";
-  const pb=document.createElement("button");pb.type="button";pb.className="btn sm";pb.textContent=isJa?"⚙ プレート計算":t("plate_calc_btn");
-  const wb=document.createElement("button");wb.type="button";wb.className="btn sm";wb.textContent=isJa?"⚙ ウォームアップ":t("warmup_calc_btn");
-  // 無料ユーザーがタップした場合はボトムシートを開かず、直接「プラン比較」へ遷移する（UX_課金機能設計.md §3-1）
-  pb.onclick=()=>{if(isStandardUp())openPlateCalc(parseFloat(document.getElementById("w_"+exId).value)||w,exId);else goToUnlockFromGate("standard");};
-  wb.onclick=()=>{if(isStandardUp())openWarmupCalc(parseFloat(document.getElementById("w_"+exId).value)||w,exId);else goToUnlockFromGate("standard");};
-  cbtns.appendChild(pb);cbtns.appendChild(wb);box.appendChild(cbtns);
+  const showW=!bw||bwMode[exId]==="plus"; // 重量ステッパーを表示するか（自重のみモードは非表示）
+  const wlbl=bw?(isJa?"加重(kg)":"Added weight (kg)"):(isJa?"重量(kg)":t("weight_kg"));
   const grid=document.createElement("div");
-  grid.innerHTML='<div class="grid2"><div><label class="lbl">'+(isJa?"重量(kg)":t("weight_kg"))+'</label>'+stepper("w_"+exId,w,2.5)+'</div>'+
-    '<div><label class="lbl">'+(isJa?"回数":t("reps_label"))+'</label>'+stepper("r_"+exId,r,1)+'</div></div>';
+  grid.innerHTML=showW
+    ?('<div class="grid2"><div><label class="lbl">'+wlbl+'</label>'+stepper("w_"+exId,w,2.5)+'</div>'+
+      '<div><label class="lbl">'+(isJa?"回数":t("reps_label"))+'</label>'+stepper("r_"+exId,r,1)+'</div></div>')
+    :('<div><label class="lbl">'+(isJa?"回数":t("reps_label"))+'</label>'+stepper("r_"+exId,r,1)+'</div>');
   box.appendChild(grid);
   const cmtBox=document.createElement("div");cmtBox.style.marginTop="10px";
   cmtBox.innerHTML='<label class="lbl">'+(isJa?"コメント（任意）":t("comment_optional"))+'</label><input type="text" id="cmt_'+exId+'" placeholder="'+(isJa?"例 フォームを意識した":t("comment_ph_strength"))+'">';
@@ -2205,9 +2336,10 @@ function strengthInput(exId,date,card){
   const rec=document.createElement("button");rec.className="btn primary";rec.style.flex="1";rec.textContent=isJa?"このセットを記録":t("log_this_set_btn");
   const toast=document.createElement("div");
   rec.onclick=()=>{
-    const wt=parseFloat(document.getElementById("w_"+exId).value)||0;
+    const wEl=document.getElementById("w_"+exId);
+    const wt=wEl?(parseFloat(wEl.value)||0):0; // 自重のみモードは重量欄が無い→0
     const rp=parseInt(document.getElementById("r_"+exId).value)||0;
-    if(wt<=0||rp<=0)return;
+    if(rp<=0||(!bw&&wt<=0))return; // 自重は加重0でも記録可（回数のみで成立）
     const cmtEl=document.getElementById("cmt_"+exId);
     const cmt=cmtEl?cmtEl.value.trim():"";
     const ts=Date.now();
@@ -2232,11 +2364,8 @@ function cardioInput(exId,date,card){
   const last=lastRecord(exId,date);
   const dist=last?last.distance:3, mins=last?Math.round(last.durSec/60):20;
   const box=document.createElement("div");box.style.marginTop="10px";
-  if(last){
-    const prev=document.createElement("div");prev.className="muted";
-    prev.textContent=isJa?("前回："+fmt(last.distance)+"km / "+Math.round(last.durSec/60)+"分"):t("prev_value_cardio").replace("{d}",fmt(last.distance)).replace("{m}",Math.round(last.durSec/60));
-    box.appendChild(prev);
-  }
+  // 前回のトレーニングの記録（タップで前回セッションの全セットを展開）
+  box.appendChild(prevHistBlock(exId,date));
   const grid=document.createElement("div");
   grid.innerHTML='<div class="grid2"><div><label class="lbl">'+(isJa?"距離(km)":t("distance_km"))+'</label>'+stepper("d_"+exId,dist,0.5)+'</div>'+
     '<div><label class="lbl">'+(isJa?"時間(分)":t("time_min"))+'</label>'+stepper("t_"+exId,mins,1)+'</div></div>';
@@ -2461,19 +2590,29 @@ function renderHist(){
   renderMeasureTrend();
 
   const isJa=state.settings.lang==="ja";
+  renderHistCalendar();
   const list=document.getElementById("histList");list.innerHTML="";
   let dates=[...new Set([...state.records.map(r=>r.date),...state.cardio.map(r=>r.date)])].sort().reverse();
   const histGateLead=document.getElementById("histGateLead"),histGateCard=document.getElementById("histGateCard");
   const hiddenDateCount=dates.filter(d=>!isWithinFreeWindow(d)).length;
-  if(!isStandardUp()&&hiddenDateCount>0){
-    dates=dates.filter(isWithinFreeWindow);
+  const gateActive=!isStandardUp()&&hiddenDateCount>0;
+  if(gateActive)dates=dates.filter(isWithinFreeWindow);
+  // カレンダーで日付を選んでいれば、その日だけに絞り込む
+  if(histSelDate)dates=dates.filter(d=>d===histSelDate);
+  // ゲート案内は一覧表示のときだけ出す（単一日を見ているときは邪魔なので隠す）
+  if(gateActive&&!histSelDate){
     histGateLead.style.display="block";
     histGateLead.textContent=isJa?("直近7日分（"+freeWindowLabel()+"）を表示しています。"):t("hist_gate_lead").replace("{range}",freeWindowLabel());
     histGateCard.style.display="block";
   }else{
     histGateLead.style.display="none";histGateCard.style.display="none";
   }
-  if(!dates.length)list.innerHTML='<div class="muted card">'+(isJa?"まだ記録がありません。「記録」タブから始めましょう。":t("hist_empty"))+'</div>';
+  if(!dates.length){
+    const emptyMsg=histSelDate
+      ?(isJa?"この日の記録はありません。":(state.settings.lang==="zh"?"这一天没有记录。":"No records on this day."))
+      :(isJa?"まだ記録がありません。「記録」タブから始めましょう。":t("hist_empty"));
+    list.innerHTML='<div class="muted card">'+emptyMsg+'</div>';
+  }
   const minUnit=isJa?"分":((state.settings.lang==="zh")?"分":" min");
   dates.forEach(d=>{
     const card=document.createElement("div");card.className="card";
@@ -2961,6 +3100,45 @@ function renderCalendar(){
   };
   document.getElementById("calNext").onclick=()=>{calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();};
 }
+// ===== 履歴タブのカレンダー：日付を選ぶとその日の記録だけに絞り込む =====
+let histCalYear, histCalMonth, histSelDate=null; // histSelDate=null なら全期間の一覧
+function renderHistCalendar(){
+  if(histCalYear===undefined){const d=new Date();histCalYear=d.getFullYear();histCalMonth=d.getMonth();}
+  const days=workoutDays();
+  const isJa=state.settings.lang==="ja",isZh=state.settings.lang==="zh";
+  document.getElementById("histCalTitle").textContent=(isJa||isZh)?(histCalYear+"年"+(histCalMonth+1)+"月"):(t("cal_months").split(",")[histCalMonth]+" "+histCalYear);
+  const grid=document.getElementById("histCalGrid");grid.innerHTML="";
+  const weekdayNames=isJa?["日","月","火","水","木","金","土"]:t("cal_weekdays").split(",");
+  weekdayNames.forEach(w=>{const h=document.createElement("div");h.className="cawd";h.textContent=w;grid.appendChild(h);});
+  const first=new Date(histCalYear,histCalMonth,1).getDay();
+  const dim=new Date(histCalYear,histCalMonth+1,0).getDate();
+  for(let i=0;i<first;i++)grid.appendChild(document.createElement("div"));
+  const td=today();
+  for(let d=1;d<=dim;d++){
+    const ds=fmtDate(new Date(histCalYear,histCalMonth,d));
+    const cell=document.createElement("div");cell.className="caday";cell.textContent=d;
+    if(days.has(ds))cell.classList.add("on");
+    if(ds===td)cell.classList.add("today");
+    if(ds===histSelDate)cell.classList.add("sel");
+    cell.onclick=()=>{histSelDate=(histSelDate===ds)?null:ds;renderHist();}; // 同じ日を再タップで解除
+    grid.appendChild(cell);
+  }
+  // 選択日バー（選択中のみ表示・すべて表示ボタンで解除）
+  const bar=document.getElementById("histSelBar"),lbl=document.getElementById("histSelLabel"),showAll=document.getElementById("histShowAll");
+  showAll.textContent=isJa?"すべて表示":(isZh?"显示全部":"Show all");
+  showAll.onclick=()=>{histSelDate=null;renderHist();};
+  if(histSelDate){bar.style.display="flex";lbl.textContent=isJa?(histSelDate+" の記録"):histSelDate;}
+  else{bar.style.display="none";}
+  // 7日ゲート：無料ユーザーは直近7日を含む月より前へは戻れない（記録タブのカレンダーと同じ挙動）
+  const freeStart=sevenDayStartDate();
+  const freeStartYM=freeStart.getFullYear()*12+freeStart.getMonth();
+  const curYM=histCalYear*12+histCalMonth;
+  const canGoPrevMonth=isStandardUp()||curYM>freeStartYM;
+  const prev=document.getElementById("histCalPrev");
+  prev.disabled=!canGoPrevMonth;prev.style.opacity=canGoPrevMonth?"1":".45";
+  prev.onclick=()=>{if(!canGoPrevMonth)return;histCalMonth--;if(histCalMonth<0){histCalMonth=11;histCalYear--;}renderHistCalendar();};
+  document.getElementById("histCalNext").onclick=()=>{histCalMonth++;if(histCalMonth>11){histCalMonth=0;histCalYear++;}renderHistCalendar();};
+}
 function renderPB(){
   const isJa=state.settings.lang==="ja";
   const card=document.getElementById("pbCard"),allPbs=personalBests();
@@ -3396,6 +3574,7 @@ document.getElementById("exportBtn").onclick=()=>{
   // ここでJSON化してもPhotoDB（IndexedDB）の画像データは絶対に書き出されない（PRODUCT_課金モデル.md §5-1）。
   const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="kintore-memo-backup.json";a.click();
+  state.settings.lastExportTs=Date.now();save();renderBackupInfo(); // バックアップ時刻を記録（リマインド用）
 };
 document.getElementById("importBtn").onclick=()=>document.getElementById("importFile").click();
 document.getElementById("importFile").onchange=e=>{
@@ -3508,11 +3687,40 @@ document.getElementById("langSelect").onchange=e=>{
   state.settings.lang=e.target.value;save();location.reload(); // 全画面の表示言語を一括反映するため再読込
 };
 
+/* ---------- データ保護 ---------- */
+// バックアップ状況の表示（設定＞データ）。30日以上あいたら、そっと促す（データを人質にしない文言ルールに従い機能の話だけにする）
+function renderBackupInfo(){
+  const el=document.getElementById("backupInfo");if(!el)return;
+  const isJa=state.settings.lang==="ja";
+  const hasData=state.records.length||state.cardio.length||state.body.length;
+  if(!hasData){el.textContent="";return;}
+  const ts=state.settings.lastExportTs;
+  if(!ts){el.textContent=isJa?"💾 まだバックアップがありません。エクスポートしておくと安心です。":"💾 No backup yet. Exporting is recommended.";return;}
+  const days=Math.floor((Date.now()-ts)/86400000);
+  if(days>=30)el.textContent=isJa?("💾 最後のバックアップ："+days+"日前。そろそろエクスポートしておくと安心です。"):("💾 Last backup: "+days+" days ago. Exporting again is recommended.");
+  else el.textContent=isJa?("最後のバックアップ："+(days===0?"今日":days+"日前")):("Last backup: "+(days===0?"today":days+" days ago"));
+}
+// ストレージの自動削除を防ぐ宣言（通信ゼロ。ブラウザへの設定要求のみ・対応外の環境では静かに無視される）
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});}catch(e){}
+// iOSのSafariで開いている場合のみ「ホーム画面に追加」を案内（PWAとして起動中・他OS・一度閉じた後は出さない）
+(function(){
+  const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  const standalone=(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;
+  if(!isIOS||standalone||state.settings.a2hsDismissed)return;
+  const card=document.getElementById("a2hsCard");if(!card)return;
+  if(state.settings.lang!=="ja"){
+    document.getElementById("a2hsTitle").textContent="📲 Add to Home Screen (recommended)";
+    document.getElementById("a2hsBody").textContent="If you keep using this in Safari, the device may clear your records after a period of no use. Tap Share → \"Add to Home Screen\" for full-screen, offline start-up, and safer storage.";
+  }
+  card.style.display="block";
+  document.getElementById("a2hsClose").onclick=()=>{state.settings.a2hsDismissed=true;save();card.style.display="none";};
+})();
+
 /* ---------- init ---------- */
 document.getElementById("langSelect").value=state.settings.lang||"ja";
 applyI18nStatic();
 applyTheme(state.settings.theme);renderThemes();renderRestSec();
-loadCondFields();renderExCards();renderPraiseSeg();renderRoutines();
+loadCondFields();renderExCards();renderPraiseSeg();renderRoutines();renderBackupInfo();
 document.getElementById("routineCard").open=state.routines.length>0;
 renderBgPhotoSettings();renderBgPhotoLayers(); // 初期表示はs-log（記録画面）がactiveなので背景レイヤーも初回反映が必要
 
