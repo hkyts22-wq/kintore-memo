@@ -96,6 +96,7 @@
   .chip{padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card);
     font-size:14px;cursor:pointer;user-select:none}
   .chip.on{background:var(--accent);border-color:var(--accent);color:var(--onAccent);font-weight:600}
+  .chip:active{transform:scale(.97)}
   .chip.amber.on{background:var(--amber);border-color:var(--amberink);color:var(--amberink)}
   .step{display:flex;align-items:center;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
   .step button{width:46px;height:44px;border:none;background:var(--bg2);font-size:22px;cursor:pointer;color:var(--accent)}
@@ -105,13 +106,13 @@
   .setline{display:flex;align-items:center;gap:8px;font-size:14px;padding:7px 10px;border:1px solid var(--line);
     border-radius:9px;margin-top:6px}
   .setline .no{color:var(--sub);width:20px}
-  .setline .val{flex:1}
+  .setline .val{flex:1;font-variant-numeric:tabular-nums}
   .setline .del{color:var(--link);background:none;border:none;cursor:pointer;font-size:13px}
   .prevhist-btn{background:var(--bg2);border:1px solid var(--line);border-radius:9px;color:var(--ink);
     cursor:pointer;font-size:13px;padding:7px 11px;width:100%;text-align:left;margin-top:2px}
   .prevhist-panel{border:1px solid var(--line);border-top:none;border-radius:0 0 9px 9px;
     margin-top:-1px;padding:4px 6px 6px;background:var(--card)}
-  .prevhist-row{display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 6px;color:var(--ink)}
+  .prevhist-row{display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 6px;color:var(--ink);font-variant-numeric:tabular-nums}
   .prevhist-row .no{color:var(--sub);width:18px;text-align:right;flex:none}
   .bwtoggle{display:flex;gap:8px;margin:4px 0 4px}
   .bwtoggle button{flex:1;border:1px solid var(--line);background:var(--card);color:var(--sub);
@@ -169,16 +170,20 @@
   .caday.sel{outline:2px solid var(--ink);outline-offset:1px}
   .calstats{display:flex;gap:8px;margin-top:14px}
   .cstat{flex:1;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:9px 4px}
-  .cstat b{display:block;font-size:20px;color:var(--accent);font-variant-numeric:tabular-nums}
+  .cstat b{display:block;font-size:23px;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:-.015em}
   .cstat span{font-size:11px;color:var(--sub)}
   /* 自己ベストボード */
-  .pbrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+  .pbrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
   .pbrow:first-child{border-top:none}
+  .pbrow .pbmain{min-width:0}
   .pbrow .pname{font-weight:600;font-size:15px;color:var(--ink)}
-  .pbrow .pmeta{font-size:12px;color:var(--sub);margin-top:2px;font-variant-numeric:tabular-nums}
-  .pbrow .pv{text-align:right;white-space:nowrap}
-  .pbrow .pv b{font-size:16px;color:var(--accent);font-variant-numeric:tabular-nums}
-  .pbrow .pv span{display:block;font-size:11px;color:var(--sub)}
+  .pbrow .pbdid{font-size:13px;color:var(--ink);margin-top:3px;font-variant-numeric:tabular-nums}
+  .pbrow .pbdid b{font-weight:700}
+  .pbrow .pbdid .pbdate{color:var(--sub);font-weight:400;font-size:12px;margin-left:8px}
+  .pbrow .pv{text-align:right;white-space:nowrap;flex:none}
+  .pbrow .pv b{font-size:23px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.05}
+  .pbrow .pv b i{font-size:12px;font-style:normal;font-weight:600;letter-spacing:0;margin-left:2px}
+  .pbrow .pv span{display:block;font-size:11px;color:var(--sub);margin-top:1px}
   /* シフト別パフォーマンス（中央=自分の平均100%、左右に偏差） */
   .sfrow{margin:13px 0}
   .sfrow:first-child{margin-top:4px}
@@ -204,7 +209,7 @@
   #planCompareCard .plan-toggle-label{white-space:nowrap;flex-shrink:0}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   /* テーマ切替 */
-  body,.card,.navbar,.btn,.chip,input,select{transition:background-color .25s ease,border-color .25s ease,color .25s ease}
+  body,.card,.navbar,.btn,.chip,input,select{transition:background-color .25s ease,border-color .25s ease,color .25s ease,transform .09s ease}
   .themeGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
   .themeCard{border:1px solid var(--line);border-radius:12px;padding:10px;cursor:pointer;
     background:var(--card);text-align:left;font:inherit;color:var(--ink);display:flex;flex-direction:column;gap:8px}
@@ -216,6 +221,32 @@
   .themeCard .nm .ck{color:var(--accent);font-size:13px;opacity:0;font-weight:700}
   .themeCard.on .nm .ck{opacity:1}
   .themeCard .ds{font-size:11px;color:var(--sub);line-height:1.35}
+  /* 目的モード（¥480） */
+  .goalGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .goalChip{border:1px solid var(--line);border-radius:12px;padding:12px 11px;cursor:pointer;
+    background:var(--card);text-align:left;font:inherit;color:var(--ink);display:flex;flex-direction:column;gap:3px}
+  .goalChip:active{transform:scale(.985)}
+  .goalChip.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+  .goalChip .ge{font-size:20px;line-height:1}
+  .goalChip .gn{font-size:14px;font-weight:700;margin-top:3px}
+  .goalChip .gd{font-size:11px;color:var(--sub);line-height:1.35}
+  .goalChip .gr{font-size:11px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;margin-top:2px}
+  /* 振り返りの目的フォーカスカード（Phase2・記録画面の先頭） */
+  .goalfocus{display:flex;flex-direction:column;gap:4px}
+  .goalfocus[hidden]{display:none}
+  .goalfocus .gf-eyebrow{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;
+    font-size:12px;font-weight:700;color:var(--accent);background:var(--cardGlass);
+    border:1px solid var(--line);border-radius:999px;padding:4px 11px}
+  .goalfocus .gf-emoji{font-size:14px}
+  .goalfocus .gf-main{font-variant-numeric:tabular-nums;font-weight:800;font-size:38px;color:var(--ink);
+    line-height:1.02;letter-spacing:-.02em;margin-top:6px}
+  .goalfocus .gf-main b{font-weight:800}
+  .goalfocus .gf-main i{font-style:normal;font-size:16px;font-weight:700;color:var(--sub);margin-left:3px;letter-spacing:0}
+  .goalfocus .gf-sub{font-size:13px;color:var(--sub);line-height:1.45}
+  /* ヒートマップの目的ハイライト（Phase3・表示上の強調のみ。実測値は変えない） */
+  .heatrow.focus .hn{font-weight:700;color:var(--ink)}
+  .heatrow .hfocus{font-size:10px;font-weight:700;color:var(--accent);border:1px solid var(--accent);
+    border-radius:999px;padding:1px 6px;margin-left:7px;vertical-align:middle}
   /* レストタイマー */
   .restbar{position:fixed;left:0;right:0;bottom:calc(64px + env(safe-area-inset-bottom));
     max-width:520px;margin:0 auto;z-index:30;background:var(--card);border-top:1px solid var(--line);
@@ -225,7 +256,7 @@
     color:var(--ink);border-radius:9px;padding:8px 10px;cursor:pointer;font-size:13px;white-space:nowrap}
   .restbar .rb-adj:active,.restbar .rb-skip:active{transform:scale(.96)}
   .restbar .rb-mid{flex:1;min-width:0}
-  .restbar .rb-time{font-variant-numeric:tabular-nums;font-weight:700;font-size:19px;color:var(--accent);line-height:1.1}
+  .restbar .rb-time{font-variant-numeric:tabular-nums;font-weight:700;font-size:19px;color:var(--accent);line-height:1.1;letter-spacing:-.01em}
   .restbar .rb-track{height:5px;background:var(--line);border-radius:999px;overflow:hidden;margin-top:5px}
   .restbar .rb-track i{display:block;height:100%;width:100%;background:var(--accent);
     border-radius:999px;transition:width .25s linear}
@@ -475,6 +506,12 @@
 <!-- ===== 履歴 ===== -->
 <section id="s-hist" class="screen">
   <div id="bgPhotoSlot_hist"></div>
+  <!-- 目的フォーカス（¥480・目的モードがプレミアムかつ一般以外のときだけ表示。renderGoalFocus） -->
+  <div class="card goalfocus" id="goalFocusCard" hidden>
+    <div class="gf-eyebrow" id="gfEyebrow"></div>
+    <div class="gf-main" id="gfMain"></div>
+    <div class="gf-sub" id="gfSub"></div>
+  </div>
   <div class="sectionhead" data-i18n="hist_section_view">記録を見る</div>
   <div class="card" id="pbCard" hidden>
     <label class="lbl" data-i18n="hist_pb_title">自己ベスト（推定1RM）</label>
@@ -634,6 +671,15 @@
     <label class="lbl" data-i18n="set_theme_title">デザインテーマ</label>
     <div class="themeGrid" id="themeGrid"></div>
   </div>
+  <!-- 目的モード（¥480プレミアム）：ロック中はセクション全体を1ブロックのモザイクで覆い、目的チップ等をDOMに生成しない -->
+  <div class="card" id="goalCard">
+    <label class="lbl">🎯 <span data-i18n="set_goal_title">トレーニングの目的</span></label>
+    <div class="muted" style="font-size:12px;margin:-2px 0 10px;line-height:1.5" id="goalLead"></div>
+    <div id="goalBody"></div>
+    <div id="goalLockCard" class="mosaicWrap" style="display:none" data-need="premium">
+      <div class="locked-mosaic lm-rows" style="height:132px;border-radius:12px"></div>
+    </div>
+  </div>
   <!-- 背景画像（¥200・2026-06-25仕様確定）：ロック中はセクション全体を1ブロックのモザイクで覆い、
        「背景画像を選ぶ」「背景画像を削除」ボタン自体をDOMに生成しない（UX_課金機能設計.md §3-3-2(C)・§7-13）。 -->
   <div class="card" id="bgPhotoCard">
@@ -764,7 +810,7 @@
   </div>
   <div class="card">
     <div class="muted" id="swState" data-i18n="sw_checking">オフライン対応：確認中…</div>
-    <div class="muted" style="margin-top:4px;font-size:12px">あけトレ v37</div><!-- sw.jsのCACHE番号と必ず同時に上げる -->
+    <div class="muted" style="margin-top:4px;font-size:12px">あけトレ v40</div><!-- sw.jsのCACHE番号と必ず同時に上げる -->
   </div>
 </section>
 
@@ -917,12 +963,12 @@ const PRESET={
   ),
   biceps:[].concat(
     eqx("barbell","バーベルカール","EZバーカール","プリーチャーカール","ドラッグカール","バーベルリバースカール"),
-    eqx("dumbbell","ダンベルカール","インクラインダンベルカール","デクラインダンベルカール","ハンマーカール","コンセントレーションカール","スパイダーカール","ザットマンカール"),
+    eqx("dumbbell","ダンベルカール","インクラインダンベルカール","デクラインダンベルカール","ハンマーカール","インクラインハンマーカール","クロスボディハンマーカール","コンセントレーションカール","スパイダーカール","ダンベルプリーチャーカール","ザットマンカール"),
     eqx("cable","ケーブルカール","ハイケーブルカール","ケーブルハンマーカール","シングルアームケーブルカール"),
   ),
   triceps:[].concat(
     eqx("barbell","フレンチプレス","ライイングトライセプスエクステンション","ナローベンチプレス","JMプレス"),
-    eqx("dumbbell","キックバック","オーバーヘッドエクステンション","ダンベルトライセプスエクステンション"),
+    eqx("dumbbell","キックバック","オーバーヘッドエクステンション","シングルアームオーバーヘッドエクステンション","ダンベルトライセプスエクステンション","インクラインダンベルフレンチプレス","テートプレス"),
     eqx("cable","プレスダウン(ケーブル)","ローププレスダウン","シングルアームプレスダウン","リバースグリッププレスダウン","オーバーヘッドケーブルエクステンション"),
     eqx("body","ディップス(三頭)","ベンチディップス"),
   ),
@@ -1514,6 +1560,8 @@ function load(){
   }
   if(!["free","standard","premium"].includes(s.settings.tier))s.settings.tier="free";
   delete s.settings.adsOff;
+  // 目的モード（トレーニングの目的・¥480）：未設定/不正値は「一般」。効果はプレミアム時のみ（activeGoal参照）
+  if(!["general","power","builder","physique"].includes(s.settings.goal))s.settings.goal="general";
   if(s.settings.plateBar===undefined)s.settings.plateBar=20;
   if(!s.settings.plateOwned)s.settings.plateOwned={20:4,15:0,10:2,5:2,2.5:2,1.25:2};
   // 部位「前腕」「カーフ」を新設(2026-06-28)。旧「脚」に入っていたカーフ系種目は記録を保ったまま新部位へ付け替える。
@@ -1889,6 +1937,7 @@ document.getElementById("nav").addEventListener("click",e=>{
   document.querySelectorAll(".navbar button").forEach(x=>x.classList.toggle("on",x===b));
   document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("active",s.id===b.dataset.t));
   if(b.dataset.t==="s-hist")renderHist();
+  if(b.dataset.t==="s-set")renderGoal();
   if(b.dataset.t==="s-body")renderBody();
   if(b.dataset.t==="s-log"||b.dataset.t==="s-hist")renderBgPhotoLayers();
 });
@@ -1930,6 +1979,8 @@ document.getElementById("closePickerBtn").onclick=()=>{
   document.getElementById("pickerCard").style.display="none";
 };
 let pickedPart=null;
+let customExName=""; // 自作種目フォームの入力途中テキスト（器具チップ選択で再描画しても消えないよう保持）
+let customEquip=null; // 自作種目の器具カテゴリ（null=名前から自動推定）
 let editingSetId=null; // 編集中のセットid（筋トレ・有酸素で共用。uid()でユニークなため衝突しない）
 
 /* ---------- マイセット（よく使う構成） ---------- */
@@ -1969,7 +2020,7 @@ function renderPartChips(){
   PARTS.forEach(p=>{
     const c=document.createElement("div");
     c.className="chip"+(pickedPart===p.k?" on":"");c.textContent=partLabel(p.k);
-    c.onclick=()=>{pickedPart=p.k;renderPartChips();renderPartExs();};
+    c.onclick=()=>{pickedPart=p.k;customExName="";customEquip=null;renderPartChips();renderPartExs();};
     wrap.appendChild(c);
   });
   renderPartExs();
@@ -1991,10 +2042,50 @@ function renderPartExs(){
   const isJa=state.settings.lang==="ja";
   const box=document.getElementById("partExs");box.innerHTML="";
   if(!pickedPart)return;
+  const part=PARTS.find(p=>p.k===pickedPart);
+
+  // --- ①「この中に無い種目を作る」フォームを先頭に大きく配置（以前は種目リストの一番下に埋もれていた） ---
+  const mk=document.createElement("div");mk.className="card";mk.style.cssText="padding:12px;margin:12px 0;background:var(--bg2)";
+  const title=document.createElement("div");title.className="lbl";title.style.margin="0 0 8px";
+  title.textContent=isJa?"✏️ この中に無い種目を作る":"✏️ Create an exercise not listed";
+  mk.appendChild(title);
+  const nameIn=document.createElement("input");nameIn.id="newExName";nameIn.style.width="100%";
+  nameIn.placeholder=isJa?"種目名（例：ケーブルアップライトロウ）":t("routine_custom_ph");
+  nameIn.value=customExName;
+  nameIn.oninput=()=>{customExName=nameIn.value;};
+  mk.appendChild(nameIn);
+  if(pickedPart!=="cardio"){ // 有酸素は器具分けの意味が薄いので器具ピッカーなし
+    const eqlbl=document.createElement("div");eqlbl.className="lbl";eqlbl.style.cssText="margin:10px 0 4px;font-size:12px";
+    eqlbl.textContent=isJa?"器具（どこに分類するか）":"Equipment";
+    mk.appendChild(eqlbl);
+    const eqwrap=document.createElement("div");eqwrap.className="chips";
+    EQUIPS.forEach(g=>{
+      const c=document.createElement("div");
+      c.className="chip"+(customEquip===g.k?" on":"");
+      c.innerHTML='<span style="margin-right:4px">'+g.ic+'</span>'+equipLabel(g.k);
+      c.onclick=()=>{customEquip=(customEquip===g.k?null:g.k);renderPartExs();};
+      eqwrap.appendChild(c);
+    });
+    mk.appendChild(eqwrap);
+    const hint=document.createElement("div");hint.className="muted";hint.style.cssText="font-size:11px;margin-top:4px";
+    hint.textContent=isJa?"未選択なら名前から自動で振り分けます":"Auto-sorted from the name if left unselected";
+    mk.appendChild(hint);
+  }
+  const ab=document.createElement("button");ab.className="btn primary";ab.style.cssText="width:100%;margin-top:10px";
+  ab.textContent=isJa?"＋ この種目を追加":"＋ Add this exercise";
+  ab.onclick=()=>{
+    const v=customExName.trim();if(!v)return;
+    const ne={id:uid(),name:v,part:pickedPart,type:part.type,equip:(pickedPart==="cardio"?"other":(customEquip||guessEquip(v))),custom:true};
+    state.exercises.push(ne);activeExIds.push(ne.id);
+    customExName="";customEquip=null;save();renderExCards();renderPartExs();scrollToLastExCard();
+  };
+  mk.appendChild(ab);box.appendChild(mk);
+
+  // --- ② 既存の種目リスト（器具カテゴリーごとに見出し分け） ---
   const list=state.exercises.filter(e=>e.part===pickedPart);
   if(pickedPart==="cardio"){ // 有酸素は器具分けの意味が薄いので見出しなし
     list.forEach(e=>box.appendChild(exRow(e)));
-  }else{ // 器具カテゴリーごとに見出し分け
+  }else{
     EQUIPS.forEach(g=>{
       const items=list.filter(e=>(e.equip||"other")===g.k);
       if(!items.length)return;
@@ -2004,16 +2095,6 @@ function renderPartExs(){
       items.forEach(e=>box.appendChild(exRow(e)));
     });
   }
-  const add=document.createElement("div");add.className="exrow";
-  add.innerHTML='<input id="newExName" placeholder="'+(isJa?"自作の種目名を追加":t("routine_custom_ph"))+'" style="margin-right:8px">';
-  const ab=document.createElement("button");ab.className="btn sm primary";ab.textContent=isJa?"追加":t("common_add");
-  ab.onclick=()=>{
-    const v=document.getElementById("newExName").value.trim();if(!v)return;
-    const part=PARTS.find(p=>p.k===pickedPart);
-    const ne={id:uid(),name:v,part:pickedPart,type:part.type,equip:guessEquip(v),custom:true};
-    state.exercises.push(ne);activeExIds.push(ne.id);save();renderExCards();renderPartExs();scrollToLastExCard();
-  };
-  add.appendChild(ab);box.appendChild(add);
 }
 
 function lastRecord(exId,date){ // dateを指定すると、その日付以前で直近の1件を返す（カレンダーで過去日を編集中に未来の記録を前回値にしない）
@@ -2035,11 +2116,12 @@ function lastSessionBestE1rm(exId,exclDate){
 /* ---------- 自重種目＆前回セッション履歴のヘルパー ---------- */
 function isBW(ex){return !!ex&&ex.equip==="body";} // 自重（bodyweight）種目か
 function fmtMD(ds){const p=ds.split("-");return parseInt(p[1],10)+"/"+parseInt(p[2],10);}
-function fmtStrengthVal(r){ // セット表示：自重は「自重」/「自重＋Xkg」、それ以外は従来通り「Xkg × N」
+function fmtStrengthVal(r){ // セット表示：自重は「自重」/「自重＋Xkg」、それ以外は従来通り「Xkg × N」。アタッチメント指定時は先頭に表示
   const isJa=state.settings.lang==="ja";const ex=exById(r.exId);
+  const at=r.attach?attachLabel(r.attach)+" ・ ":"";
   if(isBW(ex)){const bw=isJa?"自重":"自重(BW)";
-    return r.weight>0?(bw+"＋"+fmt(r.weight)+"kg × "+r.reps):(bw+" × "+r.reps);}
-  return fmt(r.weight)+"kg × "+r.reps;
+    return at+(r.weight>0?(bw+"＋"+fmt(r.weight)+"kg × "+r.reps):(bw+" × "+r.reps));}
+  return at+fmt(r.weight)+"kg × "+r.reps;
 }
 function prevSession(exId,date){ // dateより前で直近のトレ日の全セット（＝前回のトレーニング）を返す
   const ex=exById(exId);const src=ex.type==="cardio"?state.cardio:state.records;
@@ -2051,6 +2133,38 @@ function prevSession(exId,date){ // dateより前で直近のトレ日の全セ�
 }
 let openPrevHist=new Set(); // 前回履歴を開いている種目id（再描画をまたいで開閉状態を保持）
 const bwMode={}; // 自重種目の入力モード：exId -> "bw"（自重のみ）|"plus"（加重あり）
+/* ---------- アタッチメント（バー/ハンドルの付け替え：ラットプルダウン等） ---------- */
+const ATTACHMENTS=[
+  {k:"wide",ja:"ワイドバー",en:"Wide bar"},
+  {k:"straight",ja:"ストレートバー",en:"Straight bar"},
+  {k:"vbar",ja:"Vバー",en:"V-bar"},
+  {k:"rope",ja:"ロープ",en:"Rope"},
+  {k:"ez",ja:"EZバー",en:"EZ bar"},
+  {k:"single",ja:"片手ハンドル",en:"Single handle"},
+];
+function attachLabel(k){const a=ATTACHMENTS.find(x=>x.k===k);if(!a)return k;return state.settings.lang==="ja"?a.ja:a.en;}
+function usesAttachment(ex){ // ケーブル種目＋ラットプルダウン/ローイング系（バーを付け替える種目）だけアタッチメント欄を出す
+  if(!ex||ex.type==="cardio")return false;
+  if((ex.equip||"")==="cable")return true;
+  return /プルダウン|ローイング|シーテッドロー/.test(ex.name);
+}
+const attachSel={}; // 入力フォームで選択中のアタッチメント：exId -> key（前回値で初期化）
+let editAttach=""; // セット編集中のアタッチメント
+function attachRow(curKey,onPick){ // アタッチメント選択チップ行（任意・タップで選択/解除）
+  const isJa=state.settings.lang==="ja";
+  const wrap=document.createElement("div");wrap.style.marginTop="10px";
+  const lbl=document.createElement("label");lbl.className="lbl";
+  lbl.textContent=isJa?"アタッチメント（任意）":"Attachment (optional)";
+  wrap.appendChild(lbl);
+  const chips=document.createElement("div");chips.className="chips";chips.style.marginTop="4px";
+  ATTACHMENTS.forEach(a=>{
+    const c=document.createElement("div");c.className="chip"+(curKey===a.k?" on":"");
+    c.textContent=isJa?a.ja:a.en;
+    c.onclick=()=>onPick(curKey===a.k?"":a.k);
+    chips.appendChild(c);
+  });
+  wrap.appendChild(chips);return wrap;
+}
 function prevHistBlock(exId,date){ // 前回のトレーニングの全セットを展開表示できるブロック
   const isJa=state.settings.lang==="ja";const ex=exById(exId);
   const ps=prevSession(exId,date);
@@ -2223,6 +2337,7 @@ function setLine(r,i){
       '<div><label class="lbl">'+(isJa?"回数":t("reps_label"))+'</label>'+stepper("er_"+r.id,r.reps,1)+'</div></div>'+
       '<div style="margin-top:10px"><label class="lbl">'+(isJa?"コメント（任意）":t("comment_optional"))+'</label>'+
       '<input type="text" id="ec_'+r.id+'" value="'+(r.comment||"").replace(/"/g,"&quot;")+'"></div>';
+    if(usesAttachment(exById(r.exId)))box.appendChild(attachRow(editAttach,(k)=>{editAttach=k;renderExCards();}));
     const btnrow=document.createElement("div");btnrow.className="row";btnrow.style.marginTop="10px";
     const saveBtn=document.createElement("button");saveBtn.className="btn sm primary";saveBtn.style.flex="1";saveBtn.textContent=isJa?"保存":t("common_save");
     saveBtn.onclick=()=>{
@@ -2231,7 +2346,7 @@ function setLine(r,i){
       if(rp<=0||(!bw&&wt<=0))return; // 自重は加重0を許可（回数のみで成立）
       const cmt=document.getElementById("ec_"+r.id).value.trim();
       const rec=state.records.find(x=>x.id===r.id);
-      if(rec){rec.weight=wt;rec.reps=rp;rec.comment=cmt;save();}
+      if(rec){rec.weight=wt;rec.reps=rp;rec.comment=cmt;rec.attach=(usesAttachment(exById(r.exId))?(editAttach||undefined):rec.attach);save();}
       editingSetId=null;renderExCards();
     };
     const cancelBtn=document.createElement("button");cancelBtn.className="btn sm";cancelBtn.style.flex="1";cancelBtn.textContent=isJa?"キャンセル":t("common_cancel");
@@ -2244,7 +2359,7 @@ function setLine(r,i){
   const d=document.createElement("div");d.className="setline";
   d.innerHTML='<span class="no">'+(i+1)+'</span><span class="val">'+fmtStrengthVal(r)+'</span>';
   const edit=document.createElement("button");edit.className="del";edit.textContent=isJa?"✎ 編集":("✎ "+t("common_edit"));
-  edit.onclick=()=>{editingSetId=r.id;renderExCards();};
+  edit.onclick=()=>{editingSetId=r.id;editAttach=r.attach||"";renderExCards();};
   const del=document.createElement("button");del.className="del";del.textContent=isJa?"削除":t("common_delete");
   del.onclick=()=>{state.records=state.records.filter(x=>x.id!==r.id);save();renderExCards();};
   d.appendChild(edit);d.appendChild(del);frag.appendChild(d);
@@ -2298,7 +2413,7 @@ function strengthInput(exId,date,card){
   const isJa=state.settings.lang==="ja";
   const ex=exById(exId);const bw=isBW(ex);
   const last=lastRecord(exId,date);
-  const r=last?last.reps:10;
+  const r=last?last.reps:goalDefaultReps(); // 前回値があれば優先、なければ目的モードの推奨回数（プレミアム時のみ効く）
   const w=bw?(last&&last.weight>0?last.weight:0):(last?last.weight:20);
   const box=document.createElement("div");box.style.marginTop="10px";
   // 前回のトレーニングの記録（タップで前回セッションの全セットを展開）
@@ -2329,6 +2444,17 @@ function strengthInput(exId,date,card){
       '<div><label class="lbl">'+(isJa?"回数":t("reps_label"))+'</label>'+stepper("r_"+exId,r,1)+'</div></div>')
     :('<div><label class="lbl">'+(isJa?"回数":t("reps_label"))+'</label>'+stepper("r_"+exId,r,1)+'</div>');
   box.appendChild(grid);
+  // 目的モードの推奨レップ数ヒント（プレミアム＋一般以外のときだけ。activeGoalが非プレミアムでは一般＝rep空）
+  const gcHint=goalCfg(activeGoal());
+  if(gcHint.rep){
+    const hint=document.createElement("div");hint.className="muted";hint.style.cssText="margin-top:6px;font-size:12px";
+    hint.textContent="🎯 "+(isJa?(goalName(gcHint.k)+"の目安："+gcHint.rep+"回"):(goalName(gcHint.k)+" target: "+gcHint.rep+" reps"));
+    box.appendChild(hint);
+  }
+  if(usesAttachment(ex)){ // ケーブル/ラットプルダウン系だけアタッチメント選択を出す（前回値を初期表示）
+    if(attachSel[exId]===undefined)attachSel[exId]=(last&&last.attach)?last.attach:"";
+    box.appendChild(attachRow(attachSel[exId],(k)=>{attachSel[exId]=k;renderExCards();}));
+  }
   const cmtBox=document.createElement("div");cmtBox.style.marginTop="10px";
   cmtBox.innerHTML='<label class="lbl">'+(isJa?"コメント（任意）":t("comment_optional"))+'</label><input type="text" id="cmt_'+exId+'" placeholder="'+(isJa?"例 フォームを意識した":t("comment_ph_strength"))+'">';
   box.appendChild(cmtBox);
@@ -2346,7 +2472,8 @@ function strengthInput(exId,date,card){
     const prevBest=bestE1rmBefore(exId,ts);
     const lastSess=lastSessionBestE1rm(exId,date);
     const cur=e1rm(wt,rp);
-    state.records.push({id:uid(),exId,date,shift:activeShift,weight:wt,reps:rp,comment:cmt,ts});save();
+    const at=usesAttachment(ex)?(attachSel[exId]||""):"";
+    state.records.push({id:uid(),exId,date,shift:activeShift,weight:wt,reps:rp,comment:cmt,attach:at||undefined,ts});save();
     let kind="none";
     if(prevBest>0&&cur>prevBest)kind="pr";
     else if(lastSess>0&&cur>lastSess)kind="up";
@@ -2569,6 +2696,7 @@ function appendDateEdit(card,d){
 
 /* ---------- history ---------- */
 function renderHist(){
+  renderGoalFocus();
   renderPB();
   const sel=document.getElementById("progExSel");
   const used=[...new Set(state.records.map(r=>r.exId))];
@@ -2788,10 +2916,14 @@ function renderHeatmap(){
   // リストは器具学習で使っている部位粒度（biceps/tricepsを分けたまま）で表示し、実際の記録の手応えを正確に伝える
   const sorted=[...PARTS].filter(p=>p.k!=="cardio").map(p=>({k:p.k,label:partLabel(p.k),n:counts[p.k]||0,ratio:(counts[p.k]||0)/max}))
     .sort((a,b)=>b.n-a.n);
-  listEl.innerHTML=sorted.map(p=>
-    '<div class="heatrow"><span class="hn"><span class="hd" style="background:var(--accent);opacity:'+(p.n>0?heatOpacityFor(p.ratio):0.15)+'"></span>'+p.label+'</span>'+
-    '<span class="hv">'+(isJa?(p.n+"セット"):(p.n+" "+t("sets_unit")))+'</span></div>'
-  ).join("");
+  // 目的モード「フィジーク系」のときだけ、Vシルエットに効く部位を表示上ハイライト（実測セット数は変えない）
+  const focusParts=activeGoal()==="physique"?goalCfg("physique").focus:[];
+  const focusTag=isJa?"磨きどき":"focus";
+  listEl.innerHTML=sorted.map(p=>{
+    const f=focusParts.includes(p.k);
+    return '<div class="heatrow'+(f?" focus":"")+'"><span class="hn"><span class="hd" style="background:var(--accent);opacity:'+(p.n>0?heatOpacityFor(p.ratio):0.15)+'"></span>'+p.label+(f?'<span class="hfocus">'+focusTag+'</span>':'')+'</span>'+
+    '<span class="hv">'+(isJa?(p.n+"セット"):(p.n+" "+t("sets_unit")))+'</span></div>';
+  }).join("");
   const under=sorted.filter(p=>p.n===0).map(p=>p.label);
   const noteEl=document.createElement("div");noteEl.className="muted";noteEl.style.marginTop="10px";noteEl.style.fontSize="12px";
   noteEl.textContent=under.length
@@ -3162,9 +3294,9 @@ function renderPB(){
     const ex=exById(p.exId);
     const row=document.createElement("div");row.className="pbrow";
     row.innerHTML=
-      '<div><div class="pname">'+(ex?exDisplayName(ex):"?")+'</div>'+
-      '<div class="pmeta">'+fmt(p.weight)+'kg × '+p.reps+' ・ '+p.date+'</div></div>'+
-      '<div class="pv"><b>'+fmt(p.e1rm)+'</b><span>kg</span></div>';
+      '<div class="pbmain"><div class="pname">'+(ex?exDisplayName(ex):"?")+'</div>'+
+      '<div class="pbdid"><b>'+fmt(p.weight)+'kg × '+p.reps+'</b><span class="pbdate">'+p.date+'</span></div></div>'+
+      '<div class="pv"><b>'+fmt(p.e1rm)+'<i>kg</i></b><span>'+(isJa?"推定1RM":"est. 1RM")+'</span></div>';
     wrap.appendChild(row);
   });
 }
@@ -3392,7 +3524,7 @@ document.getElementById("unlockBtn").onclick=()=>{
     const label=isJa?(state.settings.tier==="premium"?"プレミアム（¥480）":"スタンダード（¥200）"):(state.settings.tier==="premium"?t("tier_premium_label"):t("tier_standard_label"));
     unlockMsg.className="toast up";unlockMsg.textContent=isJa?("🎉 "+label+"を解除しました！応援ありがとうございます！"):t("unlock_success").replace("{tier}",label);
     unlockInput.value="";
-    renderUnlock();renderAffil();renderThemes();renderCalcButtons();renderHist();renderBgPhotoSettings();renderBgPhotoLayers(); // 各画面の該当機能を即時反映
+    renderUnlock();renderAffil();renderThemes();renderGoal();renderCalcButtons();renderHist();renderBgPhotoSettings();renderBgPhotoLayers(); // 各画面の該当機能を即時反映
   }else{
     const isJa=state.settings.lang==="ja";
     unlockMsg.className="toast calm";
@@ -3414,7 +3546,7 @@ document.getElementById("upgradeBtn").onclick=()=>{
     state.settings.tier="premium";save();
     upgradeMsg.className="toast up";upgradeMsg.textContent=isJa?"🎉 プレミアムになりました！":t("upgrade_success");
     upgradeInput.value="";
-    renderUnlock();renderThemes();renderCalcButtons();renderHist();renderBgPhotoSettings();renderBgPhotoLayers();
+    renderUnlock();renderThemes();renderGoal();renderCalcButtons();renderHist();renderBgPhotoSettings();renderBgPhotoLayers();
   }else{
     upgradeMsg.className="toast calm";
     upgradeMsg.textContent=v?(isJa?"コードが正しくないようです。アップグレード専用コードかご確認ください。":t("upgrade_code_wrong")):(isJa?"アップグレードコードを入力してください。":t("upgrade_code_empty"));
@@ -3460,6 +3592,94 @@ function renderThemes(){
     if(unlocked)b.onclick=()=>{state.settings.theme=th.k;applyTheme(th.k);save();renderThemes();};
     g.appendChild(b);
   });
+}
+
+/* ---------- 目的モード（トレーニングの目的・¥480プレミアム。UX_課金機能設計） ----------
+   4つの目的（一般/パワー系/ビルダー系/フィジーク系）で、推奨レップ数の初期値・おすすめテーマ・
+   振り返りの主役指標が変わる。効果はプレミアム時のみ（activeGoal参照。非プレミアムは常に「一般」挙動）。
+   ★データは一切改変しない：Phase3のヒートマップ強調は「表示上のハイライト」だけで、実測セット数は変えない。 */
+const GOALS=[
+  {k:"general", nm:"一般",       en:"General",  emoji:"⚖️", rep:"",      drep:10, theme:null,      ds:"バランスよく記録する",             dsEn:"Track everything, evenly",         focus:[]},
+  {k:"power",   nm:"パワー系",   en:"Power",    emoji:"🏋️", rep:"1〜5",  drep:3,  theme:"wild",    ds:"高重量・低レップで最大筋力を狙う", dsEn:"Heavy, low reps for max strength", focus:[]},
+  {k:"builder", nm:"ビルダー系", en:"Builder",  emoji:"💪", rep:"8〜12", drep:10, theme:"green",   ds:"中重量・中レップで筋肥大を狙う",   dsEn:"Moderate reps for muscle size",    focus:[]},
+  {k:"physique",nm:"フィジーク系",en:"Physique", emoji:"🔻", rep:"10〜15",drep:12, theme:"minimal", ds:"上半身のVシルエットを磨く",         dsEn:"Sculpt the upper-body V-taper",    focus:["shoulder","back","biceps","triceps"]}
+];
+function goalCfg(k){return GOALS.find(g=>g.k===k)||GOALS[0];}
+function activeGoal(){return isPremium()?goalCfg(state.settings.goal||"general").k:"general";} // 非プレミアムは常に一般
+function goalName(k){return state.settings.lang==="ja"?goalCfg(k).nm:goalCfg(k).en;}
+function goalDesc(k){return state.settings.lang==="ja"?goalCfg(k).ds:goalCfg(k).dsEn;}
+function goalDefaultReps(){return goalCfg(activeGoal()).drep;} // 新規種目の回数ステッパー初期値
+function renderGoal(){
+  const isJa=state.settings.lang==="ja";
+  const body=document.getElementById("goalBody");
+  const lock=document.getElementById("goalLockCard");
+  const lead=document.getElementById("goalLead");
+  if(!body||!lock)return;
+  lead.textContent=isJa?"目的に合わせて、回数の初期値・おすすめテーマ・振り返りの主役が変わります。":"Your goal tailors the default rep count, a suggested theme, and your review highlight.";
+  if(!isPremium()){ // ロック中：チップ等をDOMに生成せず、セクション全体をモザイクで覆う
+    body.innerHTML="";body.style.display="none";lock.style.display="block";return;
+  }
+  lock.style.display="none";body.style.display="block";body.innerHTML="";
+  const cur=state.settings.goal||"general";
+  const grid=document.createElement("div");grid.className="goalGrid";
+  GOALS.forEach(g=>{
+    const b=document.createElement("button");b.type="button";
+    b.className="goalChip"+(g.k===cur?" on":"");
+    b.innerHTML='<span class="ge">'+g.emoji+'</span><span class="gn">'+goalName(g.k)+'</span>'+
+      '<span class="gd">'+goalDesc(g.k)+'</span>'+
+      (g.rep?'<span class="gr">'+(isJa?"目安 ":"target ")+g.rep+(isJa?"回":" reps")+'</span>':'');
+    b.onclick=()=>{state.settings.goal=g.k;save();renderGoal();renderHist();};
+    grid.appendChild(b);
+  });
+  body.appendChild(grid);
+  // おすすめテーマの適用ボタン（一般はテーマ提案なし。現在のテーマと同じなら出さない）
+  const cfg=goalCfg(cur);
+  if(cfg.theme&&cfg.theme!==state.settings.theme){
+    const row=document.createElement("div");row.style.marginTop="12px";
+    const btn=document.createElement("button");btn.type="button";btn.className="btn sm";btn.style.width="100%";
+    btn.textContent=isJa?("おすすめテーマ「"+themeName(cfg.theme)+"」を使う"):("Apply suggested theme: "+themeName(cfg.theme));
+    btn.onclick=()=>{state.settings.theme=cfg.theme;applyTheme(cfg.theme);save();renderThemes();renderGoal();};
+    row.appendChild(btn);body.appendChild(row);
+  }
+}
+/* 振り返り画面の先頭に出す「目的フォーカス」カード（Phase2）。目的ごとに主役の1数値を大きく見せる。
+   すべて実測データから計算するだけで、値の水増し・改変はしない。 */
+function renderGoalFocus(){
+  const card=document.getElementById("goalFocusCard");if(!card)return;
+  const g=activeGoal();
+  if(g==="general"){card.hidden=true;return;} // 一般・非プレミアムは非表示
+  const isJa=state.settings.lang==="ja";
+  const cfg=goalCfg(g);
+  const badge=document.getElementById("gfEyebrow");
+  const main=document.getElementById("gfMain");
+  const sub=document.getElementById("gfSub");
+  badge.innerHTML='<span class="gf-emoji">'+cfg.emoji+'</span>'+goalName(g)+(isJa?"モード":" mode");
+  if(g==="power"){
+    const pbs=personalBests();
+    if(!pbs.length){main.innerHTML="—";sub.textContent=isJa?"重量×回数を記録すると、最高の推定1RMがここに出ます。":"Log weight × reps to see your top estimated 1RM.";}
+    else{
+      const top=pbs.reduce((a,b)=>b.e1rm>a.e1rm?b:a);const ex=exById(top.exId);
+      main.innerHTML='<b>'+fmt(top.e1rm)+'</b><i>kg</i>';
+      sub.textContent=(ex?exDisplayName(ex):"?")+" ・ "+fmt(top.weight)+"kg × "+top.reps+(isJa?"（自己最高の推定1RM）":" (top est. 1RM)");
+    }
+  }else if(g==="builder"){
+    const start=fmtDate((()=>{const d=new Date();d.setDate(d.getDate()-29);return d;})());
+    const recs30=state.records.filter(r=>r.date>=start&&r.date<=today());
+    main.innerHTML='<b>'+fmtKg(volumeOf(recs30))+'</b><i>kg</i>';
+    const counts=partVolumeInRange(30);const keys=Object.keys(counts);
+    const weak=keys.reduce((a,b)=>counts[b]<counts[a]?b:a,keys[0]);
+    sub.textContent=(isJa?"直近30日の総ボリューム":"30-day total volume")+
+      (counts[weak]===0?(isJa?" ・ 未実施：":" · missing: ")+partLabel(weak):(isJa?" ・ 手薄な部位：":" · light spot: ")+partLabel(weak));
+  }else if(g==="physique"){
+    const counts=partVolumeInRange(30);
+    const upper=["chest","shoulder","back","biceps","triceps","forearm"];
+    const upperN=upper.reduce((s,k)=>s+(counts[k]||0),0);
+    const totalN=Object.values(counts).reduce((a,b)=>a+b,0);
+    main.innerHTML='<b>'+(totalN?Math.round(upperN/totalN*100):0)+'</b><i>%</i>';
+    const vt=cfg.focus;const weak=vt.reduce((a,b)=>(counts[b]||0)<(counts[a]||0)?b:a,vt[0]);
+    sub.textContent=(isJa?"直近30日の上半身セット比率":"30-day upper-body set ratio")+(isJa?" ・ 磨きどき：":" · focus next: ")+partLabel(weak);
+  }
+  card.hidden=false;
 }
 
 /* ---------- 背景カスタム画像（¥200・2026-06-25仕様確定。UX_課金機能設計.md §3-3-2・§7-13・§7-14） ----------
@@ -3719,7 +3939,7 @@ try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().
 /* ---------- init ---------- */
 document.getElementById("langSelect").value=state.settings.lang||"ja";
 applyI18nStatic();
-applyTheme(state.settings.theme);renderThemes();renderRestSec();
+applyTheme(state.settings.theme);renderThemes();renderGoal();renderRestSec();
 loadCondFields();renderExCards();renderPraiseSeg();renderRoutines();renderBackupInfo();
 document.getElementById("routineCard").open=state.routines.length>0;
 renderBgPhotoSettings();renderBgPhotoLayers(); // 初期表示はs-log（記録画面）がactiveなので背景レイヤーも初回反映が必要
