@@ -146,6 +146,15 @@
   .eq-cable{border-bottom-color:#f59e0b}
   .eq-body{border-bottom-color:#14b8a6}
   .eq-other{border-bottom-color:#94a3b8}
+  /* 自作種目フォームの器具タブ（タップで器具チップを開閉） */
+  .eqtab{width:100%;display:flex;align-items:center;gap:8px;font:inherit;color:var(--ink);
+    background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;text-align:left}
+  .eqtab:active{transform:scale(.99)}
+  .eqtab.open{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+  .eqtab .eqtab-ic{font-size:16px;line-height:1}
+  .eqtab .eqtab-lb{flex:1;font-weight:600;font-size:14px}
+  .eqtab .eqtab-ar{color:var(--sub);transition:transform .18s ease}
+  .eqtab.open .eqtab-ar{transform:rotate(180deg)}
   .dateedit{margin-top:10px;color:var(--sub)}
   .h2{font-size:15px;font-weight:600;margin:14px 4px 4px}
   .pill{font-size:11px;padding:3px 9px;border-radius:999px}
@@ -810,7 +819,7 @@
   </div>
   <div class="card">
     <div class="muted" id="swState" data-i18n="sw_checking">オフライン対応：確認中…</div>
-    <div class="muted" style="margin-top:4px;font-size:12px">あけトレ v40</div><!-- sw.jsのCACHE番号と必ず同時に上げる -->
+    <div class="muted" style="margin-top:4px;font-size:12px">あけトレ v41</div><!-- sw.jsのCACHE番号と必ず同時に上げる -->
   </div>
 </section>
 
@@ -1981,6 +1990,7 @@ document.getElementById("closePickerBtn").onclick=()=>{
 let pickedPart=null;
 let customExName=""; // 自作種目フォームの入力途中テキスト（器具チップ選択で再描画しても消えないよう保持）
 let customEquip=null; // 自作種目の器具カテゴリ（null=名前から自動推定）
+let customEqOpen=false; // 器具タブの開閉状態（タップで器具チップを開く）
 let editingSetId=null; // 編集中のセットid（筋トレ・有酸素で共用。uid()でユニークなため衝突しない）
 
 /* ---------- マイセット（よく使う構成） ---------- */
@@ -2020,7 +2030,7 @@ function renderPartChips(){
   PARTS.forEach(p=>{
     const c=document.createElement("div");
     c.className="chip"+(pickedPart===p.k?" on":"");c.textContent=partLabel(p.k);
-    c.onclick=()=>{pickedPart=p.k;customExName="";customEquip=null;renderPartChips();renderPartExs();};
+    c.onclick=()=>{pickedPart=p.k;customExName="";customEquip=null;customEqOpen=false;renderPartChips();renderPartExs();};
     wrap.appendChild(c);
   });
   renderPartExs();
@@ -2058,18 +2068,32 @@ function renderPartExs(){
     const eqlbl=document.createElement("div");eqlbl.className="lbl";eqlbl.style.cssText="margin:10px 0 4px;font-size:12px";
     eqlbl.textContent=isJa?"器具（どこに分類するか）":"Equipment";
     mk.appendChild(eqlbl);
-    const eqwrap=document.createElement("div");eqwrap.className="chips";
-    EQUIPS.forEach(g=>{
-      const c=document.createElement("div");
-      c.className="chip"+(customEquip===g.k?" on":"");
-      c.innerHTML='<span style="margin-right:4px">'+g.ic+'</span>'+equipLabel(g.k);
-      c.onclick=()=>{customEquip=(customEquip===g.k?null:g.k);renderPartExs();};
-      eqwrap.appendChild(c);
-    });
-    mk.appendChild(eqwrap);
-    const hint=document.createElement("div");hint.className="muted";hint.style.cssText="font-size:11px;margin-top:4px";
-    hint.textContent=isJa?"未選択なら名前から自動で振り分けます":"Auto-sorted from the name if left unselected";
-    mk.appendChild(hint);
+    // タブ：現在の選択（未選択＝自動）を表示し、タップで器具チップを開閉する
+    const cur=customEquip?EQUIPS.find(g=>g.k===customEquip):null;
+    const tab=document.createElement("button");tab.type="button";tab.className="eqtab"+(customEqOpen?" open":"");
+    tab.innerHTML='<span class="eqtab-ic">'+(cur?cur.ic:"🏷️")+'</span>'+
+      '<span class="eqtab-lb">'+(cur?equipLabel(cur.k):(isJa?"自動（名前から振り分け）":"Auto (from name)"))+'</span>'+
+      '<span class="eqtab-ar">▾</span>';
+    tab.onclick=()=>{customEqOpen=!customEqOpen;renderPartExs();};
+    mk.appendChild(tab);
+    if(customEqOpen){ // 開いているときだけ器具チップを描画（選ぶと自動で閉じる）
+      const eqwrap=document.createElement("div");eqwrap.className="chips";eqwrap.style.marginTop="8px";
+      const auto=document.createElement("div");auto.className="chip"+(customEquip===null?" on":"");
+      auto.innerHTML='<span style="margin-right:4px">🏷️</span>'+(isJa?"自動":"Auto");
+      auto.onclick=()=>{customEquip=null;customEqOpen=false;renderPartExs();};
+      eqwrap.appendChild(auto);
+      EQUIPS.forEach(g=>{
+        const c=document.createElement("div");
+        c.className="chip"+(customEquip===g.k?" on":"");
+        c.innerHTML='<span style="margin-right:4px">'+g.ic+'</span>'+equipLabel(g.k);
+        c.onclick=()=>{customEquip=g.k;customEqOpen=false;renderPartExs();};
+        eqwrap.appendChild(c);
+      });
+      mk.appendChild(eqwrap);
+      const hint=document.createElement("div");hint.className="muted";hint.style.cssText="font-size:11px;margin-top:6px";
+      hint.textContent=isJa?"「自動」なら名前から振り分けます":"“Auto” sorts it from the name";
+      mk.appendChild(hint);
+    }
   }
   const ab=document.createElement("button");ab.className="btn primary";ab.style.cssText="width:100%;margin-top:10px";
   ab.textContent=isJa?"＋ この種目を追加":"＋ Add this exercise";
@@ -2077,7 +2101,7 @@ function renderPartExs(){
     const v=customExName.trim();if(!v)return;
     const ne={id:uid(),name:v,part:pickedPart,type:part.type,equip:(pickedPart==="cardio"?"other":(customEquip||guessEquip(v))),custom:true};
     state.exercises.push(ne);activeExIds.push(ne.id);
-    customExName="";customEquip=null;save();renderExCards();renderPartExs();scrollToLastExCard();
+    customExName="";customEquip=null;customEqOpen=false;save();renderExCards();renderPartExs();scrollToLastExCard();
   };
   mk.appendChild(ab);box.appendChild(mk);
 
