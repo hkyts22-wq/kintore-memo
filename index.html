@@ -134,11 +134,16 @@
   .partexs.open{display:block}
   .exrow{display:flex;align-items:center;justify-content:space-between;padding:8px 4px;border-bottom:1px solid var(--line)}
   .eqhead{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--ink);
-    background:var(--bg2);border-radius:9px 9px 0 0;padding:9px 11px;margin:18px 0 6px;
-    letter-spacing:.02em;border-bottom:3px solid var(--line)}
+    background:var(--bg2);border-radius:9px;padding:9px 11px;margin:18px 0 6px;
+    letter-spacing:.02em;border:none;border-bottom:3px solid var(--line);
+    width:100%;font-family:inherit;text-align:left;cursor:pointer;appearance:none;-webkit-appearance:none}
+  .eqhead:active{transform:scale(.99)}
+  .eqhead.open{border-radius:9px 9px 0 0}
   .eqhead .eqic{font-size:17px;line-height:1}
   .eqhead .eqct{margin-left:auto;font-size:12px;font-weight:600;color:var(--sub);
     background:var(--card);border:1px solid var(--line);border-radius:999px;padding:1px 9px;min-width:22px;text-align:center}
+  .eqhead .eqar{color:var(--sub);font-size:12px;transition:transform .18s ease}
+  .eqhead.open .eqar{transform:rotate(180deg)}
   /* 器具カテゴリーごとの色分け（区切り線。意味は文字＋アイコンで担保しているので色は装飾） */
   .eq-barbell{border-bottom-color:#3b82f6}
   .eq-dumbbell{border-bottom-color:#1f9d57}
@@ -189,6 +194,8 @@
   .pbrow .pbdid{font-size:13px;color:var(--ink);margin-top:3px;font-variant-numeric:tabular-nums}
   .pbrow .pbdid b{font-weight:700}
   .pbrow .pbdid .pbdate{color:var(--sub);font-weight:400;font-size:12px;margin-left:8px}
+  .pbrow .pbmax{font-size:12px;color:var(--sub);margin-top:2px}
+  .pbrow .pbmax b{color:var(--ink);font-weight:700}
   .pbrow .pv{text-align:right;white-space:nowrap;flex:none}
   .pbrow .pv b{font-size:23px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.05}
   .pbrow .pv b i{font-size:12px;font-style:normal;font-weight:600;letter-spacing:0;margin-left:2px}
@@ -523,7 +530,7 @@
   </div>
   <div class="sectionhead" data-i18n="hist_section_view">記録を見る</div>
   <div class="card" id="pbCard" hidden>
-    <label class="lbl" data-i18n="hist_pb_title">自己ベスト（推定1RM）</label>
+    <label class="lbl" data-i18n="hist_pb_title">自己ベスト</label>
     <div class="muted" id="pbGateLead" style="font-size:12px;margin:-2px 0 10px;line-height:1.5;display:none"></div>
     <div id="pbList"></div>
     <div id="pbGateCard" class="mosaicWrap" style="display:none" data-need="standard">
@@ -819,7 +826,7 @@
   </div>
   <div class="card">
     <div class="muted" id="swState" data-i18n="sw_checking">オフライン対応：確認中…</div>
-    <div class="muted" style="margin-top:4px;font-size:12px">あけトレ v41</div><!-- sw.jsのCACHE番号と必ず同時に上げる -->
+    <div class="muted" style="margin-top:4px;font-size:12px">あけトレ v42</div><!-- sw.jsのCACHE番号と必ず同時に上げる -->
   </div>
 </section>
 
@@ -1086,7 +1093,7 @@ const I18N={
     log_routine_title:"⭐ My sets (frequently used)",log_routine_save:"+ Save today's exercises as a My Set",
     log_today_ex:"Today's exercises",log_add_ex:"+ Add exercise",log_pick_part:"Choose a body part",
     log_end_workout:"🏁 Finish workout (today's summary)",
-    hist_section_view:"View your records",hist_pb_title:"Personal best (estimated 1RM)",hist_progress_title:"Track exercise progress",metric_e1rm:"Est. 1RM",metric_vol:"Total volume",
+    hist_section_view:"View your records",hist_pb_title:"Personal best",hist_progress_title:"Track exercise progress",metric_e1rm:"Est. 1RM",metric_vol:"Total volume",
     hist_section_understand:"Understand yourself",hist_shift_perf_title:"Performance by shift",hist_shift_perf_lead:"Estimated 1RM trend compared to your average (100%), adjusted per exercise.",
     hist_trend_title:"Shift × condition score trend",hist_trend_medicalnote:"*Not a medical diagnosis or claim of effect. This is statistical reference info based on your own records.",
     hist_heat_title:"Body part balance (heatmap)",range_7d:"7 days",range_30d:"30 days",range_all:"All time",
@@ -1160,7 +1167,7 @@ const I18N={
     log_routine_title:"⭐ 常用组合（My Set）",log_routine_save:"＋ 将今天的动作保存为常用组合",
     log_today_ex:"今天的动作",log_add_ex:"＋ 添加动作",log_pick_part:"选择部位",
     log_end_workout:"🏁 结束训练（查看今日总结）",
-    hist_section_view:"查看记录",hist_pb_title:"个人最佳（估算1RM）",hist_progress_title:"查看动作的进步",metric_e1rm:"估算1RM",metric_vol:"总训练量",
+    hist_section_view:"查看记录",hist_pb_title:"个人最佳",hist_progress_title:"查看动作的进步",metric_e1rm:"估算1RM",metric_vol:"总训练量",
     hist_section_understand:"了解自己",hist_shift_perf_title:"按班次划分的表现",hist_shift_perf_lead:"与你的平均值（100%）相比的估算1RM趋势，按动作分别校正后比较。",
     hist_trend_title:"班次×身体状况评分的统计趋势",hist_trend_medicalnote:"※本内容不构成医学诊断或疗效说明，仅为基于你自身记录的统计参考信息。",
     hist_heat_title:"部位平衡（热力图）",range_7d:"7天",range_30d:"30天",range_all:"全部",
@@ -1234,7 +1241,7 @@ const I18N={
     log_routine_title:"⭐ Mis sets (usados a menudo)",log_routine_save:"+ Guardar los ejercicios de hoy como My Set",
     log_today_ex:"Ejercicios de hoy",log_add_ex:"+ Añadir ejercicio",log_pick_part:"Elegir parte del cuerpo",
     log_end_workout:"🏁 Terminar entrenamiento (resumen de hoy)",
-    hist_section_view:"Ver tus registros",hist_pb_title:"Mejor marca personal (1RM estimado)",hist_progress_title:"Progreso por ejercicio",metric_e1rm:"1RM est.",metric_vol:"Volumen total",
+    hist_section_view:"Ver tus registros",hist_pb_title:"Mejor marca personal",hist_progress_title:"Progreso por ejercicio",metric_e1rm:"1RM est.",metric_vol:"Volumen total",
     hist_section_understand:"Entiéndete a ti mismo",hist_shift_perf_title:"Rendimiento por turno",hist_shift_perf_lead:"Tendencia del 1RM estimado comparado con tu media (100%), ajustada por ejercicio.",
     hist_trend_title:"Tendencia estadística turno × estado físico",hist_trend_medicalnote:"*No es un diagnóstico médico ni indica eficacia. Es información de referencia estadística basada en tus propios registros.",
     hist_heat_title:"Equilibrio por zona (mapa de calor)",range_7d:"7 días",range_30d:"30 días",range_all:"Todo",
@@ -1308,7 +1315,7 @@ const I18N={
     log_routine_title:"⭐ Mes sets (souvent utilisés)",log_routine_save:"+ Enregistrer les exercices du jour comme My Set",
     log_today_ex:"Exercices du jour",log_add_ex:"+ Ajouter un exercice",log_pick_part:"Choisir une zone",
     log_end_workout:"🏁 Terminer la séance (résumé du jour)",
-    hist_section_view:"Consulter vos données",hist_pb_title:"Record personnel (1RM estimé)",hist_progress_title:"Suivre la progression d'un exercice",metric_e1rm:"1RM est.",metric_vol:"Volume total",
+    hist_section_view:"Consulter vos données",hist_pb_title:"Record personnel",hist_progress_title:"Suivre la progression d'un exercice",metric_e1rm:"1RM est.",metric_vol:"Volume total",
     hist_section_understand:"Mieux se comprendre",hist_shift_perf_title:"Performance par type de garde",hist_shift_perf_lead:"Tendance du 1RM estimé par rapport à votre moyenne (100 %), ajustée par exercice.",
     hist_trend_title:"Tendance statistique garde × forme physique",hist_trend_medicalnote:"*Ceci n'est ni un diagnostic médical ni une preuve d'efficacité. C'est une information statistique de référence basée sur vos propres données.",
     hist_heat_title:"Équilibre par zone (carte de chaleur)",range_7d:"7 jours",range_30d:"30 jours",range_all:"Tout",
@@ -1382,7 +1389,7 @@ const I18N={
     log_routine_title:"⭐ Meine Sets (häufig genutzt)",log_routine_save:"+ Heutige Übungen als My Set speichern",
     log_today_ex:"Heutige Übungen",log_add_ex:"+ Übung hinzufügen",log_pick_part:"Körperregion wählen",
     log_end_workout:"🏁 Training beenden (heutige Zusammenfassung)",
-    hist_section_view:"Aufzeichnungen ansehen",hist_pb_title:"Persönliche Bestleistung (geschätztes 1RM)",hist_progress_title:"Fortschritt einer Übung verfolgen",metric_e1rm:"Geschätztes 1RM",metric_vol:"Gesamtvolumen",
+    hist_section_view:"Aufzeichnungen ansehen",hist_pb_title:"Persönliche Bestleistung",hist_progress_title:"Fortschritt einer Übung verfolgen",metric_e1rm:"Geschätztes 1RM",metric_vol:"Gesamtvolumen",
     hist_section_understand:"Sich selbst verstehen",hist_shift_perf_title:"Leistung nach Schicht",hist_shift_perf_lead:"Trend des geschätzten 1RM im Vergleich zu deinem Durchschnitt (100 %), pro Übung angepasst.",
     hist_trend_title:"Statistischer Trend: Schicht × Verfassung",hist_trend_medicalnote:"*Keine medizinische Diagnose und keine Wirksamkeitsaussage. Dies sind statistische Referenzinformationen auf Basis deiner eigenen Aufzeichnungen.",
     hist_heat_title:"Balance der Körperregionen (Heatmap)",range_7d:"7 Tage",range_30d:"30 Tage",range_all:"Gesamt",
@@ -1456,7 +1463,7 @@ const I18N={
     log_routine_title:"⭐ I miei set (usati spesso)",log_routine_save:"+ Salva gli esercizi di oggi come My Set",
     log_today_ex:"Esercizi di oggi",log_add_ex:"+ Aggiungi esercizio",log_pick_part:"Scegli una zona del corpo",
     log_end_workout:"🏁 Termina allenamento (riepilogo di oggi)",
-    hist_section_view:"Visualizza i tuoi dati",hist_pb_title:"Record personale (1RM stimato)",hist_progress_title:"Progressi per esercizio",metric_e1rm:"1RM stim.",metric_vol:"Volume totale",
+    hist_section_view:"Visualizza i tuoi dati",hist_pb_title:"Record personale",hist_progress_title:"Progressi per esercizio",metric_e1rm:"1RM stim.",metric_vol:"Volume totale",
     hist_section_understand:"Capire te stesso",hist_shift_perf_title:"Prestazioni per turno",hist_shift_perf_lead:"Andamento del 1RM stimato rispetto alla tua media (100%), corretto per ciascun esercizio.",
     hist_trend_title:"Andamento statistico turno × condizione fisica",hist_trend_medicalnote:"*Non è una diagnosi medica né un'indicazione di efficacia. È un'informazione statistica di riferimento basata sui tuoi dati.",
     hist_heat_title:"Equilibrio per zona (mappa di calore)",range_7d:"7 giorni",range_30d:"30 giorni",range_all:"Tutto il periodo",
@@ -1759,6 +1766,17 @@ function personalBests(){ // 種目ごとの最高推定1RMとその達成セッ
   });
   return Object.keys(best).map(id=>({exId:+id,...best[id]})).sort((a,b)=>a.date<b.date?1:-1);
 }
+function maxWeightBests(){ // 種目ごとの実測MAX重量（回数を問わず、実際に上げた一番重い重量）。
+  // 推定1RMは高回数セットが上位に来ることがあり「一番重い重量」とズレるため、PB表示ではこちらを別出しする。
+  const best={};
+  state.records.forEach(r=>{
+    if(!r.weight)return; // 自重(0kg)は対象外
+    const b=best[r.exId];
+    if(!b||r.weight>b.weight||(r.weight===b.weight&&r.date>=b.date))
+      best[r.exId]={weight:r.weight,reps:r.reps,date:r.date};
+  });
+  return best; // {exId: {weight,reps,date}}
+}
 
 /* ---------- 今日のサマリ（トレーニング終了ボタン・非破壊＝データは消さない） ---------- */
 function openSummarySheet(){
@@ -1991,6 +2009,8 @@ let pickedPart=null;
 let customExName=""; // 自作種目フォームの入力途中テキスト（器具チップ選択で再描画しても消えないよう保持）
 let customEquip=null; // 自作種目の器具カテゴリ（null=名前から自動推定）
 let customEqOpen=false; // 器具タブの開閉状態（タップで器具チップを開く）
+let openEqGroups=new Set(); // 既存種目リストで開いている器具グループ（"部位|器具キー"）。タップで開閉、再描画をまたいで保持
+let openPbGroups=new Set(); // 自己ベストボードで開いている部位グループ（部位キー）。タップで開閉、再描画をまたいで保持
 let editingSetId=null; // 編集中のセットid（筋トレ・有酸素で共用。uid()でユニークなため衝突しない）
 
 /* ---------- マイセット（よく使う構成） ---------- */
@@ -2113,10 +2133,13 @@ function renderPartExs(){
     EQUIPS.forEach(g=>{
       const items=list.filter(e=>(e.equip||"other")===g.k);
       if(!items.length)return;
-      const h=document.createElement("div");h.className="eqhead eq-"+g.k;
-      h.innerHTML='<span class="eqic">'+g.ic+'</span><span>'+equipLabel(g.k)+'</span><span class="eqct">'+items.length+'</span>';
+      const key=pickedPart+"|"+g.k;
+      const open=openEqGroups.has(key);
+      const h=document.createElement("button");h.type="button";h.className="eqhead eq-"+g.k+(open?" open":"");
+      h.innerHTML='<span class="eqic">'+g.ic+'</span><span>'+equipLabel(g.k)+'</span><span class="eqct">'+items.length+'</span><span class="eqar">▾</span>';
+      h.onclick=()=>{open?openEqGroups.delete(key):openEqGroups.add(key);renderPartExs();};
       box.appendChild(h);
-      items.forEach(e=>box.appendChild(exRow(e)));
+      if(open)items.forEach(e=>box.appendChild(exRow(e)));
     });
   }
 }
@@ -2161,10 +2184,15 @@ const bwMode={}; // 自重種目の入力モード：exId -> "bw"（自重のみ
 const ATTACHMENTS=[
   {k:"wide",ja:"ワイドバー",en:"Wide bar"},
   {k:"straight",ja:"ストレートバー",en:"Straight bar"},
+  {k:"narrow",ja:"ナローバー",en:"Narrow bar"},
   {k:"vbar",ja:"Vバー",en:"V-bar"},
+  {k:"parallel",ja:"パラレルバー",en:"Parallel-grip bar"},
+  {k:"multi",ja:"マルチグリップバー",en:"Multi-grip bar"},
+  {k:"mag",ja:"MAGグリップ",en:"MAG grip"},
   {k:"rope",ja:"ロープ",en:"Rope"},
   {k:"ez",ja:"EZバー",en:"EZ bar"},
   {k:"single",ja:"片手ハンドル",en:"Single handle"},
+  {k:"ankle",ja:"アンクルストラップ",en:"Ankle strap"},
 ];
 function attachLabel(k){const a=ATTACHMENTS.find(x=>x.k===k);if(!a)return k;return state.settings.lang==="ja"?a.ja:a.en;}
 function usesAttachment(ex){ // ケーブル種目＋ラットプルダウン/ローイング系（バーを付け替える種目）だけアタッチメント欄を出す
@@ -2810,7 +2838,7 @@ function drawProg(){
     ?(progMetric==="vol"?("最高 総ボリューム "+fmtKg(peak)+"kg"):("自己ベスト 推定1RM "+fmt(peak)+"kg"))
     :(progMetric==="vol"?(t("metric_max")+" "+t("metric_vol")+" "+fmtKg(peak)+"kg"):(t("metric_pb")+" "+t("metric_e1rm")+" "+fmt(peak)+"kg"));
   document.getElementById("progBest").textContent=peak?lbl:"";
-  lineChart(document.getElementById("progCanvas"),pts);
+  lineChart(document.getElementById("progCanvas"),pts,dates);
   const progGateLead=document.getElementById("progGateLead"),progGateCard=document.getElementById("progGateCard");
   if(gateOn){
     progGateLead.style.display="block";
@@ -3314,14 +3342,37 @@ function renderPB(){
   if(!pbs.length){
     wrap.innerHTML='<div class="muted">'+(isJa?"直近7日に更新した自己ベストはまだありません。":t("pb_empty"))+'</div>';return;
   }
+  const maxW=maxWeightBests();
+  // 部位ごとにグループ化し、部位タブ（タップで開閉）の下に一覧を出す（探しやすさのため）
+  const byPart={};
   pbs.forEach(p=>{
-    const ex=exById(p.exId);
-    const row=document.createElement("div");row.className="pbrow";
-    row.innerHTML=
-      '<div class="pbmain"><div class="pname">'+(ex?exDisplayName(ex):"?")+'</div>'+
-      '<div class="pbdid"><b>'+fmt(p.weight)+'kg × '+p.reps+'</b><span class="pbdate">'+p.date+'</span></div></div>'+
-      '<div class="pv"><b>'+fmt(p.e1rm)+'<i>kg</i></b><span>'+(isJa?"推定1RM":"est. 1RM")+'</span></div>';
-    wrap.appendChild(row);
+    const ex=exById(p.exId);const pk=(ex&&ex.part)||"other";
+    (byPart[pk]=byPart[pk]||[]).push(p);
+  });
+  PARTS.forEach(part=>{
+    const items=byPart[part.k];
+    if(!items||!items.length)return;
+    const key=part.k;
+    const open=openPbGroups.has(key);
+    const h=document.createElement("button");h.type="button";h.className="eqhead"+(open?" open":"");
+    h.innerHTML='<span>'+partLabel(part.k)+'</span><span class="eqct">'+items.length+'</span><span class="eqar">▾</span>';
+    h.onclick=()=>{open?openPbGroups.delete(key):openPbGroups.add(key);renderPB();};
+    wrap.appendChild(h);
+    if(!open)return;
+    items.forEach(p=>{
+      const ex=exById(p.exId);
+      const row=document.createElement("div");row.className="pbrow";
+      // 推定1RMの元セットより実際に重い重量を扱った記録があれば「MAX」として併記する（自己ベスト＝推定1RMだけだと誤解されるため）
+      const mw=maxW[p.exId];
+      const mwOk=mw&&mw.weight>p.weight&&(isStandardUp()||isWithinFreeWindow(mw.date));
+      row.innerHTML=
+        '<div class="pbmain"><div class="pname">'+(ex?exDisplayName(ex):"?")+'</div>'+
+        '<div class="pbdid"><b>'+fmt(p.weight)+'kg × '+p.reps+'</b><span class="pbdate">'+p.date+'</span></div>'+
+        (mwOk?('<div class="pbmax">'+(isJa?"MAX ":"Max ")+'<b>'+fmt(mw.weight)+'kg</b>'+(mw.date!==p.date?' <span class="pbdate">'+mw.date+'</span>':'')+'</div>'):'')+
+        '</div>'+
+        '<div class="pv"><b>'+fmt(p.e1rm)+'<i>kg</i></b><span>'+(isJa?"推定1RM":"est. 1RM")+'</span></div>';
+      wrap.appendChild(row);
+    });
   });
 }
 function renderAffil(){
@@ -3368,7 +3419,7 @@ function renderBody(){
   }
   formCard.style.display="block";graphCard.style.display="block";lock.style.display="none";
   const arr=[...state.body].sort((a,b)=>a.date<b.date?-1:1);
-  lineChart(document.getElementById("bodyCanvas"),arr.map(b=>b.weight));
+  lineChart(document.getElementById("bodyCanvas"),arr.map(b=>b.weight),arr.map(b=>b.date));
   list.innerHTML="";
   [...arr].reverse().forEach(b=>{const c=document.createElement("div");c.className="card";
     c.innerHTML='<div class="between"><b>'+b.date+'</b><span>'+fmt(b.weight)+'kg'+(b.fat?' ・ '+fmt(b.fat)+'%':'')+'</span></div>';list.appendChild(c);});
@@ -3443,7 +3494,7 @@ function renderMeasureTrend(){
   }).join("");
   metrics.forEach(m=>{
     const cv=document.getElementById("measureCanvas_"+m.k);
-    if(cv)lineChart(cv,arr.filter(a=>a[m.k]).map(a=>a[m.k]));
+    if(cv)lineChart(cv,arr.filter(a=>a[m.k]).map(a=>a[m.k]),arr.filter(a=>a[m.k]).map(a=>a.date));
   });
 }
 /* ---------- chart ---------- */
@@ -3451,19 +3502,42 @@ function themeColor(name,fallback){
   const v=getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   return v||fallback;
 }
-function lineChart(cv,pts){
+function lineChart(cv,pts,dates){ // datesは任意。渡すとx軸に日付を出し、最新の点を強調して「今どこにいるか」を分かりやすくする
   const ctx=cv.getContext("2d");const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
   const cLine=themeColor("--line","#e4e3dd"),cAcc2=themeColor("--accent2","#1d9e75"),
         cAcc=themeColor("--accent","#0f6e56"),cSub=themeColor("--sub","#6b6b66");
   if(pts.length<1){ctx.fillStyle=cSub;ctx.font="13px sans-serif";ctx.fillText(state.settings.lang==="ja"?"データがたまるとグラフが出ます":t("chart_empty"),12,H/2);return;}
-  const pad=24;const min=Math.min(...pts),max=Math.max(...pts);const rng=(max-min)||1;
-  const x=i=>pad+(W-2*pad)*(pts.length===1?0.5:i/(pts.length-1));
-  const y=v=>H-pad-(H-2*pad)*((v-min)/rng);
-  ctx.strokeStyle=cLine;ctx.beginPath();ctx.moveTo(pad,H-pad);ctx.lineTo(W-pad,H-pad);ctx.stroke();
-  ctx.strokeStyle=cAcc2;ctx.lineWidth=2;ctx.beginPath();
+  const padL=34,padR=14,padT=14,padB=dates&&dates.length?26:14;
+  const min=Math.min(...pts),max=Math.max(...pts);const rng=(max-min)||1;
+  const x=i=>padL+(W-padL-padR)*(pts.length===1?0.5:i/(pts.length-1));
+  const y=v=>H-padB-(H-padT-padB)*((v-min)/rng);
+  // 横グリッド線（上・中央・下の3本）：値の位置を目で追いやすくする補助線
+  ctx.strokeStyle=cLine;ctx.lineWidth=1;
+  [0,0.5,1].forEach(f=>{
+    const yy=padT+(H-padT-padB)*f;
+    ctx.beginPath();ctx.moveTo(padL,yy);ctx.lineTo(W-padR,yy);ctx.stroke();
+  });
+  ctx.strokeStyle=cAcc2;ctx.lineWidth=2.5;ctx.beginPath();
   pts.forEach((v,i)=>{i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v));});ctx.stroke();
-  ctx.fillStyle=cAcc;pts.forEach((v,i)=>{ctx.beginPath();ctx.arc(x(i),y(v),3,0,7);ctx.fill();});
-  ctx.fillStyle=cSub;ctx.font="11px sans-serif";ctx.fillText(fmt(max),2,y(max)+4);ctx.fillText(fmt(min),2,y(min)+4);
+  pts.forEach((v,i)=>{ // 最新の点だけ大きく強調表示
+    const last=i===pts.length-1;
+    ctx.fillStyle=last?cAcc:cAcc2;
+    ctx.beginPath();ctx.arc(x(i),y(v),last?5:3,0,7);ctx.fill();
+  });
+  ctx.fillStyle=cSub;ctx.font="11px sans-serif";ctx.textAlign="left";
+  ctx.fillText(fmt(max),2,Math.max(y(max)+4,padT+10));
+  if(max!==min)ctx.fillText(fmt(min),2,Math.min(y(min)+4,H-padB-2));
+  if(pts.length){ // 最新値を折れ線の点のそばに直接ラベル表示（凡例なしで「今の値」が分かる）
+    const li=pts.length-1;
+    ctx.fillStyle=cAcc;ctx.font="bold 12px sans-serif";
+    const lx=Math.min(x(li)+7,W-padR-38);
+    ctx.fillText(fmt(pts[li]),lx,Math.max(y(pts[li])-8,padT+10));
+  }
+  if(dates&&dates.length){ // x軸：最初と最新の日付
+    ctx.fillStyle=cSub;ctx.font="11px sans-serif";
+    ctx.textAlign="left";ctx.fillText(fmtMD(dates[0]),padL-4,H-8);
+    if(dates.length>1){ctx.textAlign="right";ctx.fillText(fmtMD(dates[dates.length-1]),W-padR,H-8);}
+  }
 }
 
 /* ---------- settings ---------- */
