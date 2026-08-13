@@ -3550,49 +3550,14 @@ function renderPraiseSeg(){
 }
 document.getElementById("praiseSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;
   state.settings.praiseStyle=b.dataset.v;save();renderPraiseSeg();};
-/* ---------- 購入・解除：完全オフラインのコード検証 ----------
-   仕組み（外部通信ゼロ）：
-   ・コードは「KINTORE-XXXX-XXXX-C」形式。本体8文字＋末尾1文字のチェックディジット。
-   ・末尾チェックディジットで打ち間違いを検知。
-   ・さらに本体8文字が「ゲート条件（秘密の重み付き合計が13で割り切れる）」を満たすコードだけ受理。
-     → でたらめな入力ではまず通らない（理論上の誤受理は約 1/32 × 1/13 ≒ 0.24%。
-        実用上は紙のコードを打つので問題ない水準。完全な防御は不可能だが「当てずっぽうでは通らない」を満たす）。
-   ・検証は関数判定なので、有効コードは無数に作れる＝将来「購入者ごとに違うコード」へ拡張可能。
-   ・端末に紐づけない＝同じコードを再入力すればデータ消去・機種変更後も復活できる。
-   【3種コードの判別】既存のチェック桁・ゲート判定はそのまま再利用し、
-   本体payload[0]（先頭1文字、値0-31）を3で割った余りで種類を埋め込む：
-     余り0 = standard用（¥200）／余り1 = premium用（¥480）／余り2 = upgrade用（¥200→¥480差額）
-   この方式なら既存のチェック桁計算・ゲート計算（payload全体に対する処理）を1文字も変えずに再利用でき、
-   誤受理率(~0.24%)・入力ゆらぎ吸収（小文字/全角空白/ハイフン無視）も完全に維持される。 */
-const UNLOCK_ALPHA="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // 紛らわしい I,O,0,1 を除いた32文字
-function unlockVal(c){return UNLOCK_ALPHA.indexOf(c);}
-function unlockCheckDigit(payload){ // 本体8文字→チェックディジット1文字
-  let s=0;for(let i=0;i<payload.length;i++)s+=unlockVal(payload[i])*(i%2===0?3:1);
-  return UNLOCK_ALPHA[((s%32)+32)%32];
-}
-function unlockGate(payload){ // ゲート条件（有効コードの「鍵穴」）
-  let g=0;for(let i=0;i<payload.length;i++)g+=unlockVal(payload[i])*(i+1);
-  return g%13===0;
-}
-function unlockKind(payload){ // payload[0]の値を3で割った余りでコード種別を埋め込む
-  const r=unlockVal(payload[0])%3;
-  return r===0?"standard":(r===1?"premium":"upgrade");
-}
-// 正規化（大小・ハイフン・全角含む空白を吸収）して payload/chk を取り出す。不正なら null。
+/* ---------- 購入・解除 ----------
+   このGitHub公開版では、コード判定ロジック（本家の販売版のみが持つ秘密の検証アルゴリズム）を
+   含めていません。常にコード無効として扱われ、有料プランはこのビルドでは解除できません。 */
 function parseUnlockCode(raw){
-  if(!raw)return null;
-  const code=String(raw).toUpperCase().replace(/[\s　\-]/g,""); // 半角/全角空白・ハイフンを除去
-  if(code.length!==16)return null;          // KINTORE(7)+本体(8)+チェック(1)
-  if(code.slice(0,7)!=="KINTORE")return null;
-  const payload=code.slice(7,15),chk=code.slice(15,16);
-  for(const c of payload)if(unlockVal(c)<0)return null; // 不正文字（I,O,0,1等）を拒否
-  if(unlockVal(chk)<0)return null;
-  if(unlockCheckDigit(payload)!==chk)return null;       // 打ち間違い検知
-  if(!unlockGate(payload))return null;                  // 鍵穴判定
-  return {payload,kind:unlockKind(payload)};
+  return null;
 }
-function verifyUnlockCode(raw){ // 後方互換：種類を問わず有効コードかどうかだけ見る
-  return !!parseUnlockCode(raw);
+function verifyUnlockCode(raw){
+  return false;
 }
 function renderUnlock(){
   const t=tier();
