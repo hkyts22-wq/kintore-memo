@@ -3,10 +3,11 @@
    電波がなくても（ジム等）起動できるようにする。
    外部サーバーへの通信は一切しない（同一オリジンのみ）。
    記録データには触れない（データは localStorage に各端末で保存）。 */
-const CACHE = "kintore-v46";
+const CACHE = "kintore-v47";
 const ASSETS = [
   "./",
   "./index.html",
+  "./history-edit.js",
   "./manifest.webmanifest",
   "./icon-180.png",
   "./icon-192.png",

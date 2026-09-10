@@ -161,6 +161,14 @@
   .eqtab .eqtab-ar{color:var(--sub);transition:transform .18s ease}
   .eqtab.open .eqtab-ar{transform:rotate(180deg)}
   .dateedit{margin-top:10px;color:var(--sub)}
+  .history-editor{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+  .history-editor-title{font-size:14px;font-weight:600;margin:0 0 8px}
+  .history-edit-row{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg2)}
+  .history-edit-row-title{font-size:14px;font-weight:600;margin-bottom:8px}
+  .history-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .history-edit-field .lbl{display:block;margin-bottom:4px}
+  .history-edit-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .history-edit-error{margin-top:8px;color:var(--red);font-size:13px;font-weight:600}
   .h2{font-size:15px;font-weight:600;margin:14px 4px 4px}
   .pill{font-size:11px;padding:3px 9px;border-radius:999px}
   .pill.amber{background:var(--amber);color:var(--amberink)}
@@ -827,9 +835,12 @@
     </div>
     <div class="muted" id="backupInfo" style="margin-top:8px;font-size:12px"></div>
     <input type="file" id="importFile" accept="application/json" style="display:none">
-    <button class="btn sm" id="aiExportBtn" style="margin-top:10px;width:100%" data-i18n="ai_export_btn">🤖 AI相談用にエクスポート（テキスト）</button>
-    <div class="muted" style="margin-top:6px;font-size:12px" data-i18n="ai_export_note">ChatGPTやClaudeなどのAIに貼り付けると、記録をもとに改善アドバイスをもらえます</div>
     <button class="btn ghost" id="resetBtn" style="margin-top:10px;color:var(--link);width:100%" data-i18n="data_reset">全データを消去</button>
+  </div>
+  <div class="card">
+    <div style="font-weight:600" data-i18n="aiexport_title">AI相談用エクスポート</div>
+    <div class="muted" style="margin-top:6px;font-size:13px" data-i18n="aiexport_note">記録をテキストとしてコピーし、AIチャットに貼り付けると弱い部位やトレーニングバランスについてアドバイスをもらえます。AIへの指示文もデータと一緒にコピーされます。</div>
+    <button class="btn sm" id="aiExportBtn" style="margin-top:10px;width:100%" data-i18n="aiexport_btn">AI相談用にコピー</button>
   </div>
   <div class="card">
     <div style="font-weight:600;margin-bottom:6px" data-i18n="privacy_title">プライバシー</div>
@@ -837,7 +848,7 @@
   </div>
   <div class="card">
     <div class="muted" id="swState" data-i18n="sw_checking">オフライン対応：確認中…</div>
-    <div class="muted" style="margin-top:4px;font-size:12px">あけトレ v46</div><!-- sw.jsのCACHE番号と必ず同時に上げる -->
+    <div class="muted" style="margin-top:4px;font-size:12px">あけトレ v43</div><!-- sw.jsのCACHE番号と必ず同時に上げる -->
   </div>
 </section>
 
@@ -941,6 +952,7 @@
   <button data-t="s-set"><span class="ic">⚙️</span><span data-i18n="nav_set">設定</span></button>
 </nav>
 
+<script src="./history-edit.js"></script>
 <script>
 "use strict";
 const KEY="kintoreMemo_v1";
@@ -1120,7 +1132,7 @@ const I18N={
     upgrade_title:"Add to Premium (¥280 difference)",upgrade_desc:"Adds the self-understanding features (shift × condition score trend, body composition, body measurements, body part heatmap) and the Gold Plate theme.",upgrade_input_label:"Upgrade code",upgrade_apply:"Apply",upgrade_open:"Enter upgrade code",
     photoexport_title:"Progress photos",photoexport_note:"Not included in JSON backups",photoexport_btn:"Export progress photos",
     data_title:"Data",data_export:"Export (JSON)",data_import:"Import",data_reset:"Erase all data",
-    ai_export_btn:"🤖 Export for AI feedback (text)",ai_export_note:"Paste this into ChatGPT, Claude, etc. to get advice based on your records",
+    aiexport_title:"AI consultation export",aiexport_note:"Copies your log as text you can paste into an AI chat to get advice on weak points or training balance. The instructions are copied along with the data.",aiexport_btn:"Copy for AI consultation",aiexport_done:"Copied ✓",
     privacy_title:"Privacy",privacy_body:"This app never connects to the internet. All records are stored only on this device. No account or login is required. Only video links and the recommendation slot open an external site, and only when tapped.",
     sw_checking:"Offline support: checking…",
     plate_title:"Plate calculator",plate_target:"Target weight (kg)",plate_bar_weight:"Barbell weight",plate_owned:"Plates you own (tap to adjust count)",
@@ -1195,7 +1207,7 @@ const I18N={
     upgrade_title:"升级到高级版（补差价¥280）",upgrade_desc:"可新增了解自己的功能（班次×身体状况评分趋势・体组成・身体围度・部位热力图）以及金牌主题。",upgrade_input_label:"升级码",upgrade_apply:"应用",upgrade_open:"输入升级码",
     photoexport_title:"进度照片",photoexport_note:"不包含在JSON备份中",photoexport_btn:"导出进度照片",
     data_title:"数据",data_export:"导出（JSON）",data_import:"导入",data_reset:"清除全部数据",
-    ai_export_btn:"🤖 导出供AI反馈用（文本）",ai_export_note:"粘贴到ChatGPT、Claude等AI中，即可根据你的记录获得改进建议",
+    aiexport_title:"AI咨询用导出",aiexport_note:"将训练记录复制为文本，粘贴到AI聊天中即可获得关于薄弱部位或训练平衡的建议。说明文字会与数据一起复制。",aiexport_btn:"复制以咨询AI",aiexport_done:"已复制 ✓",
     privacy_title:"隐私",privacy_body:"本应用完全不连接互联网，所有记录仅保存在本机中。无需注册账号或登录。只有视频链接和推荐位会在点击时打开外部网页。",
     sw_checking:"离线支持：检测中…",
     plate_title:"杠铃片计算器",plate_target:"目标重量(kg)",plate_bar_weight:"杠铃杆重量",plate_owned:"持有的杠铃片（点击增减数量）",
@@ -1270,7 +1282,7 @@ const I18N={
     upgrade_title:"Mejorar a Premium (diferencia de ¥280)",upgrade_desc:"Añade las funciones para entenderte mejor (tendencia turno × estado físico, composición corporal, medidas corporales, mapa de calor por zona) y el tema Placa dorada.",upgrade_input_label:"Código de mejora",upgrade_apply:"Aplicar",upgrade_open:"Introducir código de mejora",
     photoexport_title:"Fotos de progreso",photoexport_note:"No se incluyen en las copias de seguridad JSON",photoexport_btn:"Exportar fotos de progreso",
     data_title:"Datos",data_export:"Exportar (JSON)",data_import:"Importar",data_reset:"Borrar todos los datos",
-    ai_export_btn:"🤖 Exportar para feedback de IA (texto)",ai_export_note:"Pega esto en ChatGPT, Claude, etc. para recibir consejos basados en tus registros",
+    aiexport_title:"Exportación para consultar a una IA",aiexport_note:"Copia tu historial como texto para pegarlo en un chat de IA y recibir consejos sobre puntos débiles o el equilibrio del entrenamiento. Las instrucciones se copian junto con los datos.",aiexport_btn:"Copiar para consultar a una IA",aiexport_done:"Copiado ✓",
     privacy_title:"Privacidad",privacy_body:"Esta app nunca se conecta a internet. Todos los registros se guardan solo en este dispositivo. No necesitas cuenta ni iniciar sesión. Solo los enlaces de vídeo y el espacio de recomendaciones abren algo externo, y solo al tocarlos.",
     sw_checking:"Soporte sin conexión: comprobando…",
     plate_title:"Calculadora de discos",plate_target:"Peso objetivo (kg)",plate_bar_weight:"Peso de la barra",plate_owned:"Discos que tienes (toca para ajustar la cantidad)",
@@ -1345,7 +1357,7 @@ const I18N={
     upgrade_title:"Passer à Premium (différence de ¥280)",upgrade_desc:"Ajoute les fonctionnalités de connaissance de soi (tendance garde × forme physique, composition corporelle, mensurations, carte de chaleur par zone) ainsi que le thème Plaque dorée.",upgrade_input_label:"Code de mise à niveau",upgrade_apply:"Appliquer",upgrade_open:"Saisir le code de mise à niveau",
     photoexport_title:"Photos de progression",photoexport_note:"Non incluses dans les sauvegardes JSON",photoexport_btn:"Exporter les photos de progression",
     data_title:"Données",data_export:"Exporter (JSON)",data_import:"Importer",data_reset:"Effacer toutes les données",
-    ai_export_btn:"🤖 Exporter pour un retour de l'IA (texte)",ai_export_note:"Collez ceci dans ChatGPT, Claude, etc. pour obtenir des conseils basés sur vos données",
+    aiexport_title:"Export pour consultation IA",aiexport_note:"Copie votre historique en texte à coller dans un chat IA pour obtenir des conseils sur les points faibles ou l'équilibre de l'entraînement. Les instructions sont copiées avec les données.",aiexport_btn:"Copier pour consultation IA",aiexport_done:"Copié ✓",
     privacy_title:"Confidentialité",privacy_body:"Cette application ne se connecte jamais à internet. Toutes les données restent uniquement sur cet appareil. Aucun compte ni connexion requis. Seuls les liens vidéo et l'emplacement de recommandation ouvrent un site externe, et uniquement au moment où vous appuyez dessus.",
     sw_checking:"Support hors ligne : vérification…",
     plate_title:"Calculateur de plaques",plate_target:"Poids cible (kg)",plate_bar_weight:"Poids de la barre",plate_owned:"Plaques possédées (touchez pour ajuster la quantité)",
@@ -1420,7 +1432,7 @@ const I18N={
     upgrade_title:"Auf Premium erweitern (Differenz ¥280)",upgrade_desc:"Fügt die Funktionen zum Selbstverständnis (Trend Schicht × Verfassung, Körperzusammensetzung, Körpermaße, Heatmap der Körperregionen) sowie das Theme Goldene Platte hinzu.",upgrade_input_label:"Upgrade-Code",upgrade_apply:"Anwenden",upgrade_open:"Upgrade-Code eingeben",
     photoexport_title:"Fortschrittsfotos",photoexport_note:"Nicht im JSON-Backup enthalten",photoexport_btn:"Fortschrittsfotos exportieren",
     data_title:"Daten",data_export:"Exportieren (JSON)",data_import:"Importieren",data_reset:"Alle Daten löschen",
-    ai_export_btn:"🤖 Für KI-Feedback exportieren (Text)",ai_export_note:"Füge dies in ChatGPT, Claude usw. ein, um Ratschläge zu deinen Aufzeichnungen zu erhalten",
+    aiexport_title:"Export für KI-Beratung",aiexport_note:"Kopiert dein Trainingsprotokoll als Text zum Einfügen in einen KI-Chat, um Tipps zu Schwachstellen oder Trainingsbalance zu erhalten. Die Anweisung wird zusammen mit den Daten kopiert.",aiexport_btn:"Für KI-Beratung kopieren",aiexport_done:"Kopiert ✓",
     privacy_title:"Datenschutz",privacy_body:"Diese App verbindet sich nie mit dem Internet. Alle Aufzeichnungen werden ausschließlich auf diesem Gerät gespeichert. Kein Konto und kein Login erforderlich. Nur Video-Links und das Empfehlungsfeld öffnen beim Antippen eine externe Seite.",
     sw_checking:"Offline-Unterstützung: wird geprüft…",
     plate_title:"Plattenrechner",plate_target:"Zielgewicht (kg)",plate_bar_weight:"Stangengewicht",plate_owned:"Vorhandene Plates (zum Anpassen der Anzahl tippen)",
@@ -1495,7 +1507,7 @@ const I18N={
     upgrade_title:"Passa a Premium (differenza di ¥280)",upgrade_desc:"Aggiunge le funzioni per capire te stesso (andamento turno × condizione fisica, composizione corporea, misure corporee, mappa di calore per zona) e il tema Piastra dorata.",upgrade_input_label:"Codice di upgrade",upgrade_apply:"Applica",upgrade_open:"Inserisci codice di upgrade",
     photoexport_title:"Foto dei progressi",photoexport_note:"Non incluse nel backup JSON",photoexport_btn:"Esporta foto dei progressi",
     data_title:"Dati",data_export:"Esporta (JSON)",data_import:"Importa",data_reset:"Elimina tutti i dati",
-    ai_export_btn:"🤖 Esporta per il feedback dell'IA (testo)",ai_export_note:"Incollalo in ChatGPT, Claude, ecc. per ricevere consigli basati sui tuoi dati",
+    aiexport_title:"Esportazione per consulto IA",aiexport_note:"Copia il tuo registro come testo da incollare in una chat IA per ricevere consigli su punti deboli o equilibrio dell'allenamento. Le istruzioni vengono copiate insieme ai dati.",aiexport_btn:"Copia per consulto IA",aiexport_done:"Copiato ✓",
     privacy_title:"Privacy",privacy_body:"Questa app non si connette mai a internet. Tutti i dati vengono salvati solo su questo dispositivo. Non serve un account né l'accesso. Solo i link video e lo spazio dei consigliati apriranno un sito esterno, e solo quando vengono toccati.",
     sw_checking:"Supporto offline: verifica in corso…",
     plate_title:"Calcolatore dischi",plate_target:"Peso obiettivo (kg)",plate_bar_weight:"Peso del bilanciere",plate_owned:"Dischi posseduti (tocca per modificare la quantità)",
@@ -1794,141 +1806,6 @@ function maxWeightBests(){ // 種目ごとの実測MAX重量（回数を問わ�
       best[r.exId]={weight:r.weight,reps:r.reps,date:r.date};
   });
   return best; // {exId: {weight,reps,date}}
-}
-
-/* ---------- AI相談用エクスポート（テキスト） ----------
-   既存のJSONバックアップ（内部ID込みの生データ・復元用）とは別に、ChatGPT/Claude等に
-   そのまま貼り付けてアドバイスをもらうための人間可読テキストを組み立てる。
-   進捗写真・背景画像はJSONバックアップ同様に含めない（IndexedDB管理・対象外の既存方針を踏襲）。
-   文面はja/en以外は個別翻訳しない（exDisplayName/goalName等、既存の動的文言と同じ方針）。 */
-function buildAiExportText(){
-  const isJa=state.settings.lang==="ja";
-  const L=(ja,en)=>isJa?ja:en;
-  const out=[];
-  out.push(L("# あけトレ：トレーニング記録（AI相談用エクスポート）","# Aketore Training Log (AI feedback export)"));
-  out.push(L("生成日時：","Generated: ")+new Date().toISOString().slice(0,16).replace("T"," "));
-  out.push("");
-  out.push(L(
-    "以下は筋トレ記録アプリ「あけトレ」から書き出したトレーニング記録です。この記録を読んで、フォームの注意点・種目の組み方・ボリュームや頻度のバランスなど、改善できそうな点があれば具体的にアドバイスしてください。",
-    "Below is a training log exported from the workout-tracking app \"Aketore\". Please review it and give specific, actionable feedback: form cues, exercise selection, and whether the volume/frequency looks balanced."
-  ));
-  out.push("");
-
-  const trainDates=[...new Set([...state.records.map(r=>r.date),...state.cardio.map(r=>r.date)])].sort();
-  out.push(L("## 概要","## Overview"));
-  if(trainDates.length){
-    out.push(L("記録期間：","Period: ")+trainDates[0]+L(" 〜 "," to ")+trainDates[trainDates.length-1]);
-    out.push(L("トレーニング日数：","Training days: ")+trainDates.length+L("日",""));
-  }else{
-    out.push(L("（トレーニング記録はまだありません）","(No training records yet)"));
-  }
-  out.push(L("トレーニングの目的：","Training goal: ")+goalName(activeGoal()));
-  out.push("");
-
-  const pbs=personalBests(),mw=maxWeightBests();
-  out.push(L("## 自己ベスト（推定1RM）","## Personal Bests (est. 1RM)"));
-  if(!pbs.length){
-    out.push(L("（記録がありません）","(No records yet)"));
-  }else{
-    pbs.map(pb=>({pb,ex:exById(pb.exId)})).filter(x=>x.ex)
-      .sort((a,b)=>exDisplayName(a.ex).localeCompare(exDisplayName(b.ex)))
-      .forEach(({pb,ex})=>{
-        let line="- "+exDisplayName(ex)+"("+partLabel(ex.part)+"): "+
-          L("推定1RM ","est. 1RM ")+fmt(pb.e1rm)+"kg ("+pb.weight+"kg × "+pb.reps+L("回、",", ")+pb.date+")";
-        const best=mw[pb.exId];
-        if(best&&best.weight>pb.weight)line+=L("　実測MAX "," / actual max ")+best.weight+"kg × "+best.reps+L("回","");
-        out.push(line);
-      });
-  }
-  out.push("");
-
-  out.push(L("## 種目別の記録推移","## Progress by Exercise"));
-  if(!state.records.length){
-    out.push(L("（記録がありません）","(No records yet)"));
-  }else{
-    const byEx={};
-    state.records.forEach(r=>{(byEx[r.exId]=byEx[r.exId]||[]).push(r);});
-    Object.keys(byEx).map(id=>+id).map(id=>exById(id)).filter(Boolean)
-      .sort((a,b)=>exDisplayName(a).localeCompare(exDisplayName(b)))
-      .forEach(ex=>{
-        out.push(L("### ","### ")+exDisplayName(ex)+"("+partLabel(ex.part)+")");
-        const byDate={};
-        byEx[ex.id].forEach(r=>{(byDate[r.date]=byDate[r.date]||[]).push(r);});
-        Object.keys(byDate).sort().forEach(date=>{
-          const sets=byDate[date].slice().sort((a,b)=>a.ts-b.ts);
-          const setsStr=sets.map(r=>r.weight+"kg×"+r.reps).join(", ");
-          let line="- "+date+(sets[0].shift?" ["+shiftLabel(sets[0].shift)+"]":"")+": "+setsStr;
-          const cmts=sets.map(r=>r.comment).filter(Boolean);
-          if(cmts.length)line+=L("　メモ：","  note: ")+cmts.join(" / ");
-          out.push(line);
-        });
-        out.push("");
-      });
-  }
-
-  out.push(L("## 有酸素運動","## Cardio"));
-  if(!state.cardio.length){
-    out.push(L("（記録がありません）","(No records yet)"));
-  }else{
-    state.cardio.slice().sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:a.ts-b.ts).forEach(r=>{
-      const ex=exById(r.exId),mins=Math.round(r.durSec/60*10)/10;
-      let line="- "+r.date+(r.shift?" ["+shiftLabel(r.shift)+"]":"")+": "+(ex?exDisplayName(ex):"?")+" "+fmt(r.distance)+"km / "+mins+L("分"," min");
-      if(r.comment)line+=L("　メモ：","  note: ")+r.comment;
-      out.push(line);
-    });
-  }
-  out.push("");
-
-  out.push(L("## 体重・体脂肪率の推移","## Body Weight / Body Fat Trend"));
-  if(!state.body.length){
-    out.push(L("（記録がありません）","(No records yet)"));
-  }else{
-    state.body.slice().sort((a,b)=>a.date<b.date?-1:1).forEach(b=>{
-      let line="- "+b.date+": "+L("体重 ","weight ")+b.weight+"kg";
-      if(b.fat!==undefined&&b.fat!==null&&b.fat!=="")line+=L("・体脂肪率 ",", body fat ")+b.fat+"%";
-      out.push(line);
-    });
-  }
-  out.push("");
-
-  if(state.bodyMeasure.length){
-    out.push(L("## 体測定の推移","## Body Measurements Trend"));
-    state.bodyMeasure.slice().sort((a,b)=>a.date<b.date?-1:1).forEach(m=>{
-      const parts=[];
-      if(m.arm)parts.push(L("上腕 ","arm ")+m.arm+"cm");
-      if(m.waist)parts.push(L("ウエスト ","waist ")+m.waist+"cm");
-      if(m.thigh)parts.push(L("腿 ","thigh ")+m.thigh+"cm");
-      out.push("- "+m.date+": "+parts.join(L("・",", ")));
-    });
-    out.push("");
-  }
-
-  const condDates=Object.keys(state.cond).filter(d=>{const c=state.cond[d];return c&&(c.sleep||c.cond||c.memo);}).sort();
-  if(condDates.length){
-    out.push(L("## コンディション記録","## Condition Log"));
-    condDates.forEach(d=>{
-      const c=state.cond[d];
-      const parts=[];
-      if(c.sleep)parts.push(L("睡眠 ","sleep ")+c.sleep+L("時間","h"));
-      if(c.cond)parts.push(L("体調 ","condition ")+c.cond+"/5");
-      let line="- "+d+": "+parts.join(L("・",", "));
-      if(c.memo)line+=L("　メモ：","  note: ")+c.memo;
-      out.push(line);
-    });
-    out.push("");
-  }
-
-  const sp=shiftPerf();
-  if(sp.length){
-    out.push(L("## シフト別パフォーマンス傾向（推定1RMの相対値・全体平均＝100%）","## Performance by Shift (est. 1RM relative to your average, avg = 100%)"));
-    sp.forEach(s=>{
-      out.push("- "+shiftLabel(s.shift)+": "+fmt(s.pct)+"% "+L("（"+s.n+"セット）","("+s.n+" "+t("sets_unit")+")"));
-    });
-    out.push("");
-  }
-
-  out.push(L("※進捗写真・背景画像はこのテキストには含まれません。","* Progress photos and the background image are not included in this text export."));
-  return out.join("\n");
 }
 
 /* ---------- 今日のサマリ（トレーニング終了ボタン・非破壊＝データは消さない） ---------- */
@@ -2865,36 +2742,86 @@ document.getElementById("saveCond").onclick=()=>{
   setTimeout(()=>document.getElementById("saveCond").textContent=origLabel,1500);
 };
 
-/* ---------- 履歴：日付の修正（入力日を押し間違えたとき用） ---------- */
-function changeDayDate(oldD,newD){ // その日の記録・有酸素・コンディションをまるごと別日付へ移動
-  if(!newD||newD===oldD)return;
-  state.records.forEach(r=>{if(r.date===oldD)r.date=newD;});
-  state.cardio.forEach(r=>{if(r.date===oldD)r.date=newD;});
-  if(state.cond[oldD]){ // メモも一緒に移動（移動先が空のときだけ上書きしない）
-    if(!state.cond[newD])state.cond[newD]=state.cond[oldD];
-    delete state.cond[oldD];
-  }
-  save();renderHist();renderCalendar();
+/* ---------- 履歴：記録内容と日付の修正 ---------- */
+function makeHistoryEditField(label,type,value,attrs){
+  const wrap=document.createElement("div");wrap.className="history-edit-field";
+  const lbl=document.createElement("label");lbl.className="lbl";lbl.textContent=label;
+  const input=document.createElement("input");input.type=type;input.value=value==null?"":value;
+  Object.entries(attrs||{}).forEach(([key,val])=>input.setAttribute(key,val));
+  wrap.appendChild(lbl);wrap.appendChild(input);
+  return {wrap,input};
 }
-function appendDateEdit(card,d){
+function appendHistoryEdit(card,d){
   const isJa=state.settings.lang==="ja";
   const ed=document.createElement("button");
-  ed.className="btn sm dateedit";ed.textContent=isJa?"✎ 日付を修正":t("date_edit_btn");
+  ed.className="btn sm dateedit";ed.textContent=isJa?"✎ 記録を修正":t("common_edit");
   ed.onclick=()=>{
     ed.remove();
-    const panel=document.createElement("div");panel.className="row";
-    panel.style.cssText="gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center";
-    const inp=document.createElement("input");inp.type="date";inp.value=d;inp.style.cssText="flex:1;min-width:150px";
-    const ok=document.createElement("button");ok.className="btn sm primary";ok.textContent=isJa?"この日付に移動":t("date_edit_move");
+    const panel=document.createElement("div");panel.className="history-editor";
+    const title=document.createElement("div");title.className="history-editor-title";title.textContent=isJa?"記録内容を修正":"Edit record details";
+    panel.appendChild(title);
+
+    const dateField=makeHistoryEditField(isJa?"日付":t("log_pick_date"),"date",d,{required:""});
+    panel.appendChild(dateField.wrap);
+
+    const strengthFields=state.records.filter(r=>r.date===d).map((record,index)=>{
+      const row=document.createElement("div");row.className="history-edit-row";
+      const ex=exById(record.exId);
+      const rowTitle=document.createElement("div");rowTitle.className="history-edit-row-title";
+      rowTitle.textContent=(ex?exDisplayName(ex):"?")+" · "+(isJa?(index+1)+"セット目":"Set "+(index+1));
+      const grid=document.createElement("div");grid.className="history-edit-grid";
+      const weight=makeHistoryEditField(isJa?"重量（kg）":t("weight_kg"),"number",record.weight,{min:"0",step:"0.5",required:"",inputmode:"decimal"});
+      const reps=makeHistoryEditField(isJa?"回数":t("reps_label"),"number",record.reps,{min:"1",step:"1",required:"",inputmode:"numeric"});
+      const comment=makeHistoryEditField(isJa?"コメント（任意）":t("comment_optional"),"text",record.comment||"",{});
+      grid.appendChild(weight.wrap);grid.appendChild(reps.wrap);
+      row.appendChild(rowTitle);row.appendChild(grid);row.appendChild(comment.wrap);panel.appendChild(row);
+      return {id:record.id,weight:weight.input,reps:reps.input,comment:comment.input};
+    });
+
+    const cardioFields=state.cardio.filter(r=>r.date===d).map((record,index)=>{
+      const row=document.createElement("div");row.className="history-edit-row";
+      const ex=exById(record.exId);
+      const rowTitle=document.createElement("div");rowTitle.className="history-edit-row-title";
+      rowTitle.textContent=(ex?exDisplayName(ex):"?")+" · "+(isJa?(index+1)+"件目":"Entry "+(index+1));
+      const grid=document.createElement("div");grid.className="history-edit-grid";
+      const distance=makeHistoryEditField(isJa?"距離（km）":t("distance_km"),"number",record.distance,{min:"0.01",step:"0.01",required:"",inputmode:"decimal"});
+      const durMin=makeHistoryEditField(isJa?"時間（分）":t("time_min"),"number",record.durSec/60,{min:"1",step:"1",required:"",inputmode:"numeric"});
+      const comment=makeHistoryEditField(isJa?"コメント（任意）":t("comment_optional"),"text",record.comment||"",{});
+      grid.appendChild(distance.wrap);grid.appendChild(durMin.wrap);
+      row.appendChild(rowTitle);row.appendChild(grid);row.appendChild(comment.wrap);panel.appendChild(row);
+      return {id:record.id,distance:distance.input,durMin:durMin.input,comment:comment.input};
+    });
+
+    const condTitle=document.createElement("div");condTitle.className="history-editor-title";condTitle.style.marginTop="12px";
+    condTitle.textContent=isJa?"コンディション":"Condition";panel.appendChild(condTitle);
+    const c=state.cond[d]||{};
+    const condGrid=document.createElement("div");condGrid.className="history-edit-grid";
+    const sleep=makeHistoryEditField(isJa?"睡眠（時間）":t("log_sleep"),"number",c.sleep||"",{min:"0",step:"0.5",inputmode:"decimal"});
+    const condition=makeHistoryEditField(isJa?"体調（1〜5）":t("log_cond"),"number",c.cond||"",{min:"1",max:"5",step:"1",inputmode:"numeric"});
+    const memo=makeHistoryEditField(isJa?"ひとことメモ":t("log_memo"),"text",c.memo||"",{});
+    condGrid.appendChild(sleep.wrap);condGrid.appendChild(condition.wrap);panel.appendChild(condGrid);panel.appendChild(memo.wrap);
+
+    const error=document.createElement("div");error.className="history-edit-error";error.setAttribute("role","alert");error.hidden=true;panel.appendChild(error);
+    const actions=document.createElement("div");actions.className="history-edit-actions";
+    const ok=document.createElement("button");ok.className="btn sm primary";ok.textContent=isJa?"変更を保存":t("common_save");
     const cancel=document.createElement("button");cancel.className="btn sm";cancel.textContent=isJa?"やめる":t("date_edit_cancel");
     ok.onclick=()=>{
-      const nd=inp.value;
-      if(!nd||nd===d){renderHist();return;}
-      if(confirm(isJa?(d+" の記録を "+nd+" に移動します。よろしいですか？"):t("date_edit_confirm").replace("{old}",d).replace("{new}",nd)))changeDayDate(d,nd);
+      const invalid=[...panel.querySelectorAll("input")].find(input=>!input.checkValidity());
+      if(invalid){invalid.reportValidity();invalid.focus();return;}
+      const nd=dateField.input.value;
+      if(nd!==d&&!confirm(isJa?(d+" の記録を "+nd+" に移動し、内容も更新します。よろしいですか？"):t("date_edit_confirm").replace("{old}",d).replace("{new}",nd)))return;
+      const result=HistoryEdit.applyHistoryEdits(state,d,{
+        date:nd,
+        strength:strengthFields.map(field=>({id:field.id,weight:field.weight.value,reps:field.reps.value,comment:field.comment.value})),
+        cardio:cardioFields.map(field=>({id:field.id,distance:field.distance.value,durMin:field.durMin.value,comment:field.comment.value})),
+        condition:{sleep:sleep.input.value,cond:condition.input.value,memo:memo.input.value}
+      });
+      if(!result.ok){error.textContent=isJa?"入力内容を確認してください。":"Check the entered values.";error.hidden=false;return;}
+      save();renderHist();renderCalendar();
     };
     cancel.onclick=()=>renderHist();
-    panel.appendChild(inp);panel.appendChild(ok);panel.appendChild(cancel);
-    card.appendChild(panel);inp.focus();
+    actions.appendChild(ok);actions.appendChild(cancel);panel.appendChild(actions);
+    card.appendChild(panel);dateField.input.focus();
   };
   card.appendChild(ed);
 }
@@ -2967,7 +2894,7 @@ function renderHist(){
       const m=document.createElement("div");m.className="muted";m.style.marginTop="6px";
       m.textContent=isJa?("😴 "+(c.sleep||"-")+"h ・ 体調 "+(c.cond||"-")+" ・ "+(c.memo||"")):("😴 "+(c.sleep||"-")+"h ・ "+t("cond_label")+" "+(c.cond||"-")+" ・ "+(c.memo||""));card.appendChild(m);
     }
-    appendDateEdit(card,d);
+    appendHistoryEdit(card,d);
     list.appendChild(card);
   });
   renderAffil();
@@ -4047,10 +3974,6 @@ document.getElementById("exportBtn").onclick=()=>{
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="kintore-memo-backup.json";a.click();
   state.settings.lastExportTs=Date.now();save();renderBackupInfo(); // バックアップ時刻を記録（リマインド用）
 };
-document.getElementById("aiExportBtn").onclick=()=>{
-  const blob=new Blob([buildAiExportText()],{type:"text/plain"});
-  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="kintore-memo-ai-export-"+today()+".txt";a.click();
-};
 document.getElementById("importBtn").onclick=()=>document.getElementById("importFile").click();
 document.getElementById("importFile").onchange=e=>{
   const f=e.target.files[0];if(!f)return;const rd=new FileReader();
@@ -4058,6 +3981,91 @@ document.getElementById("importFile").onchange=e=>{
   rd.readAsText(f);
 };
 document.getElementById("resetBtn").onclick=()=>{if(confirm(state.settings.lang==="ja"?"全データを消去します。よろしいですか？":t("reset_confirm"))){localStorage.removeItem(KEY);location.reload();}};
+
+/* AI相談用エクスポート：記録をテキスト化し、AIへの指示文と一緒に1回のコピーでまとめて渡せるようにする
+   （指示文を別添にすると、AIの出力がプロンプト次第でぶれる問題への対処。2026-09-10） */
+function buildAiExportText(){
+  const isJa=state.settings.lang==="ja";
+  const now=new Date();
+  const pad=n=>String(n).padStart(2,"0");
+  const allDates=[].concat(state.records.map(r=>r.date),state.cardio.map(r=>r.date),state.body.map(b=>b.date)).sort();
+  const first=allDates[0],last=allDates[allDates.length-1];
+  const dayCount=new Set(allDates).size;
+  const goalLabel=goalName(activeGoal());
+  const L=[];
+  L.push(isJa?"# あけトレ：トレーニング記録（AI相談用エクスポート）":"# Aketore: Training Log (AI Consultation Export)");
+  L.push((isJa?"生成日時：":"Generated: ")+fmtDate(now)+" "+pad(now.getHours())+":"+pad(now.getMinutes()));
+  L.push("");
+  L.push(isJa
+    ?"以下は筋トレ記録アプリ「あけトレ」から書き出したトレーニング記録です。この記録を読んで、フォームの注意点・種目の組み方・ボリュームや頻度のバランスなど、改善できそうな点があれば具体的にアドバイスしてください。"
+    :"Below is a training log exported from the workout app \"Aketore\". Please review it and give specific advice on form cues, exercise selection/balance, and training volume or frequency where improvement seems possible.");
+  L.push("");
+  L.push(isJa?"## 概要":"## Overview");
+  L.push((isJa?"記録期間：":"Period: ")+(first?(first+" 〜 "+last):(isJa?"（記録がありません）":"(no data)")));
+  L.push((isJa?"トレーニング日数：":"Training days: ")+dayCount+(isJa?"日":""));
+  L.push((isJa?"トレーニングの目的：":"Training goal: ")+goalLabel);
+  L.push("");
+  L.push(isJa?"## 自己ベスト（推定1RM）":"## Personal bests (est. 1RM)");
+  // ※オブジェクトキーは文字列化されるため、exById（厳密比較）に渡す元のexIdは値として別途保持する
+  const bestByEx={};
+  state.records.forEach(r=>{
+    const v=e1rm(r.weight,r.reps);
+    if(!bestByEx[r.exId]||v>bestByEx[r.exId].v)bestByEx[r.exId]={v,weight:r.weight,reps:r.reps,date:r.date,exId:r.exId};
+  });
+  const bestKeys=Object.keys(bestByEx);
+  if(!bestKeys.length)L.push(isJa?"（記録がありません）":"(no data)");
+  else bestKeys.forEach(key=>{
+    const b=bestByEx[key];const ex=exById(b.exId);if(!ex)return;
+    L.push("- "+ex.name+"("+partLabel(ex.part)+"): "+(isJa?"推定1RM ":"est. 1RM ")+fmt(b.v)+"kg ("+b.weight+"kg × "+b.reps+(isJa?"回":" reps")+"、"+b.date+")");
+  });
+  L.push("");
+  L.push(isJa?"## 種目別の記録推移":"## Progress by exercise");
+  const byEx={};
+  state.records.forEach(r=>{(byEx[r.exId]=byEx[r.exId]||[]).push(r);});
+  const exKeys=Object.keys(byEx);
+  if(!exKeys.length)L.push(isJa?"（記録がありません）":"(no data)");
+  else exKeys.forEach(key=>{
+    const recs=byEx[key];const ex=exById(recs[0].exId);if(!ex)return;
+    L.push("### "+ex.name+"("+partLabel(ex.part)+")");
+    recs.slice().sort((a,b)=>a.date<b.date?-1:1).forEach(r=>{L.push("- "+r.date+": "+r.weight+"kg×"+r.reps);});
+  });
+  L.push("");
+  L.push(isJa?"## 有酸素運動":"## Cardio");
+  if(!state.cardio.length)L.push(isJa?"（記録がありません）":"(no data)");
+  else state.cardio.slice().sort((a,b)=>a.date<b.date?-1:1).forEach(r=>{
+    const ex=exById(r.exId);
+    const km=Math.round((r.distance||0)*10)/10;
+    const min=Math.round((r.durSec||0)/60);
+    L.push("- "+r.date+": "+(ex?ex.name:"")+" "+km+"km・"+min+(isJa?"分":"min"));
+  });
+  L.push("");
+  L.push(isJa?"## 体重・体脂肪率の推移":"## Weight / body fat trend");
+  if(!state.body.length)L.push(isJa?"（記録がありません）":"(no data)");
+  else state.body.slice().sort((a,b)=>a.date<b.date?-1:1).forEach(b=>{
+    L.push("- "+b.date+": "+b.weight+"kg"+((b.fat||b.fat===0)?(isJa?" (体脂肪率"+b.fat+"%)":" (body fat "+b.fat+"%)"):""));
+  });
+  L.push("");
+  L.push(isJa?"※進捗写真・背景画像はこのテキストには含まれません。":"※Progress photos and background images are not included in this text.");
+  return L.join("\n");
+}
+document.getElementById("aiExportBtn").onclick=async()=>{
+  const btn=document.getElementById("aiExportBtn");
+  const isJa=state.settings.lang==="ja";
+  const text=buildAiExportText();
+  try{
+    await navigator.clipboard.writeText(text);
+  }catch(err){
+    const ta=document.createElement("textarea");
+    ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);
+    ta.focus();ta.select();
+    try{document.execCommand("copy");}catch(e2){}
+    document.body.removeChild(ta);
+  }
+  const orig=btn.textContent;
+  btn.textContent=isJa?"コピーしました ✓":t("aiexport_done");
+  btn.disabled=true;
+  setTimeout(()=>{btn.textContent=orig;btn.disabled=false;},1800);
+};
 
 /* ---------- レストタイマー（通信ゼロ：音はWeb Audioで生成・ファイル不使用） ---------- */
 let restEndTs=0,restTick=null,audioCtx=null;
