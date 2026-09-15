@@ -2286,7 +2286,7 @@ function prevHistBlock(exId,date){ // 前回のトレーニングの全セット
         ?(fmt(r.distance)+"km / "+Math.round(r.durSec/60)+(isJa?"分":" min"))
         :fmtStrengthVal(r);
       const no=document.createElement("span");no.className="no";no.textContent=(i+1);
-      const v=document.createElement("span");v.textContent=val;
+      const v=document.createElement("span");v.innerHTML=val;
       row.appendChild(no);row.appendChild(v);panel.appendChild(row);
       if(r.comment){const c=document.createElement("div");c.className="muted";
         c.style.cssText="font-size:12px;margin:0 0 4px 26px";c.textContent="💬 "+r.comment;panel.appendChild(c);}
