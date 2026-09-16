@@ -14,6 +14,7 @@
 <meta name="apple-mobile-web-app-title" content="あけトレ">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
+<script src="equipment-icon-data-v2.js"></script>
 <style>
   :root{
     /* ===== 標準（グリーン）= デフォルトテーマ ===== */
@@ -141,7 +142,10 @@
     width:100%;font-family:inherit;text-align:left;cursor:pointer;appearance:none;-webkit-appearance:none}
   .eqhead:active{transform:scale(.99)}
   .eqhead.open{border-radius:9px 9px 0 0}
-  .eqhead .eqic{font-size:17px;line-height:1}
+  .eqhead .eqic,.eqtab .eqtab-ic{width:30px;height:22px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 30px;overflow:hidden}
+  .equipment-icon{display:block;width:100%;height:100%;object-fit:contain}
+  .equipment-icon--barbell{transform:scaleY(2)}
+  .equipment-icon-inline{display:inline-block;width:18px;height:18px;vertical-align:middle;margin-right:4px;object-fit:contain}
   .eqhead .eqct{margin-left:auto;font-size:12px;font-weight:600;color:var(--sub);
     background:var(--card);border:1px solid var(--line);border-radius:999px;padding:1px 9px;min-width:22px;text-align:center}
   .eqhead .eqar{color:var(--sub);font-size:12px;transition:transform .18s ease}
@@ -158,7 +162,6 @@
     background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;text-align:left}
   .eqtab:active{transform:scale(.99)}
   .eqtab.open{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
-  .eqtab .eqtab-ic{font-size:16px;line-height:1}
   .eqtab .eqtab-lb{flex:1;font-weight:600;font-size:14px}
   .eqtab .eqtab-ar{color:var(--sub);transition:transform .18s ease}
   .eqtab.open .eqtab-ar{transform:rotate(180deg)}
@@ -981,13 +984,17 @@ const PARTS=[
 ];
 // 器具カテゴリー（表示順）。種目選択パネルでこの順に見出し分けする。
 const EQUIPS=[
-  {k:"barbell",label:"バーベル",ic:"🏋️"},
-  {k:"dumbbell",label:"ダンベル",ic:"💪"},
-  {k:"machine",label:"マシン",ic:"⚙️"},
-  {k:"cable",label:"ケーブル",ic:"🔗"},
-  {k:"body",label:"自重",ic:"🤸"},
-  {k:"other",label:"その他",ic:"🏷️"},
+  {k:"barbell",label:"バーベル",ic:"barbell"},
+  {k:"dumbbell",label:"ダンベル",ic:"dumbbell"},
+  {k:"machine",label:"マシン",ic:"machine"},
+  {k:"cable",label:"ケーブル",ic:"cable"},
+  {k:"body",label:"自重",ic:"body"},
+  {k:"other",label:"その他",ic:"other"},
 ];
+function equipmentIconMarkup(equip,extraClass=""){
+  const source=(window.AKETORE_EQUIPMENT_ICON_DATA||{})[equip.ic];
+  return source?'<img class="equipment-icon equipment-icon--'+equip.ic+' '+extraClass+'" src="'+source+'" alt="" aria-hidden="true">':"🏷️";
+}
 function eqx(e,...names){return names.map(n=>({n,e}));} // 器具e付きの種目データをまとめて作る
 const PRESET={
   chest:[].concat(
@@ -1157,7 +1164,7 @@ const I18N={
     today_label:"Today",trend_bucket_1:"+1 day",trend_bucket_2:"+2 days",trend_bucket_3:"+3 days",trend_bucket_4:"+4 days+",
     praise_pr_hype:"🔥 New personal best! Amazing! ",praise_pr_carrotstick:"Well done, see you can do it! ",praise_pr_calm:"New personal best. ",
     praise_up_hype:"💪 You're improving! Keep it up!",praise_up_carrotstick:"Nice. But you've still got room to grow",praise_up_calm:"Better than last time.",
-    praise_done_carrotstick:"That's it for today. Next time, go beyond",
+    praise_done_carrotstick:"That's it for today. Next time, go beyond",praise_done_calm:"Recorded. Good work today.",
     routine_none:"(no exercises)",routine_add_this:"Add this set",common_delete:"Delete",common_edit:"Edit",common_save:"Save",common_cancel:"Cancel",routine_delete_confirm:'Delete "{name}"?',routine_save_alert:"Please add today's exercises first, then save",routine_save_prompt:"My Set name (e.g. Chest day / Post-night routine)",routine_toggle_added:"Added",routine_toggle_choose:"Choose",routine_custom_ph:"Add your own exercise name",common_add:"Add",
     howto_watch:"▶ Watch how-to (YouTube) ↗",howto_search_suffix:"how to",
     weight_kg:"Weight (kg)",reps_label:"Reps",distance_km:"Distance (km)",time_min:"Time (min)",comment_optional:"Comment (optional)",comment_ph_strength:"e.g. Focused on form",comment_ph_cardio:"e.g. Focused on pace",log_this_set_btn:"Log this set",common_record:"Log",pace_label:"Pace",unit_minkm:"min/km",sets_unit:"sets",plate_calc_btn:"⚙ Plate calculator",warmup_calc_btn:"⚙ Warm-up calculator",
@@ -1232,7 +1239,7 @@ const I18N={
     today_label:"今天",trend_bucket_1:"+1天",trend_bucket_2:"+2天",trend_bucket_3:"+3天",trend_bucket_4:"+4天以上",
     praise_pr_hype:"🔥 创造个人最佳记录了！太棒了！ ",praise_pr_carrotstick:"做得好，你看你能做到！ ",praise_pr_calm:"创造了新的个人最佳记录。",
     praise_up_hype:"💪 在进步！保持这个状态！",praise_up_carrotstick:"不错。但还有进步空间",praise_up_calm:"超过了上次。",
-    praise_done_carrotstick:"今天就到这里。下次再超越自己",
+    praise_done_carrotstick:"今天就到这里。下次再超越自己",praise_done_calm:"已记录。今天辛苦了。",
     routine_none:"（无动作）",routine_add_this:"添加这个组合",common_delete:"删除",common_edit:"编辑",common_save:"保存",common_cancel:"取消",routine_delete_confirm:"确定删除「{name}」吗？",routine_save_alert:"请先添加「今天的动作」后再保存",routine_save_prompt:"常用组合名称（例：胸部训练日／夜班后菜单）",routine_toggle_added:"已添加",routine_toggle_choose:"选择",routine_custom_ph:"添加自定义动作名称",common_add:"添加",
     howto_watch:"▶ 查看做法（YouTube）↗",howto_search_suffix:"做法",
     weight_kg:"重量(kg)",reps_label:"次数",distance_km:"距离(km)",time_min:"时间(分)",comment_optional:"备注（可选）",comment_ph_strength:"例 注重动作姿势",comment_ph_cardio:"例 注重配速",log_this_set_btn:"记录这一组",common_record:"记录",pace_label:"配速",unit_minkm:"分/公里",sets_unit:"组",plate_calc_btn:"⚙ 杠铃片计算",warmup_calc_btn:"⚙ 热身计算",
@@ -1307,7 +1314,7 @@ const I18N={
     today_label:"Hoy",trend_bucket_1:"+1 día",trend_bucket_2:"+2 días",trend_bucket_3:"+3 días",trend_bucket_4:"+4 días o más",
     praise_pr_hype:"🔥 ¡Nueva marca personal! ¡Genial! ",praise_pr_carrotstick:"¡Bien hecho, ves que puedes! ",praise_pr_calm:"Nueva marca personal. ",
     praise_up_hype:"💪 ¡Estás mejorando! ¡Sigue así!",praise_up_carrotstick:"Bien. Pero todavía tienes margen de mejora",praise_up_calm:"Has superado la vez anterior.",
-    praise_done_carrotstick:"Hasta aquí por hoy. La próxima vez, supérate",
+    praise_done_carrotstick:"Hasta aquí por hoy. La próxima vez, supérate",praise_done_calm:"Registrado. Buen trabajo hoy.",
     routine_none:"(sin ejercicios)",routine_add_this:"Añadir este conjunto",common_delete:"Eliminar",common_edit:"Editar",common_save:"Guardar",common_cancel:"Cancelar",routine_delete_confirm:'¿Eliminar "{name}"?',routine_save_alert:"Primero añade los ejercicios de hoy y luego guarda",routine_save_prompt:"Nombre del My Set (ej. Día de pecho / Rutina tras guardia)",routine_toggle_added:"Añadido",routine_toggle_choose:"Elegir",routine_custom_ph:"Añade tu propio nombre de ejercicio",common_add:"Añadir",
     howto_watch:"▶ Ver cómo hacerlo (YouTube) ↗",howto_search_suffix:"cómo hacerlo",
     weight_kg:"Peso (kg)",reps_label:"Repeticiones",distance_km:"Distancia (km)",time_min:"Tiempo (min)",comment_optional:"Comentario (opcional)",comment_ph_strength:"ej. Centrado en la técnica",comment_ph_cardio:"ej. Centrado en el ritmo",log_this_set_btn:"Registrar esta serie",common_record:"Registrar",pace_label:"Ritmo",unit_minkm:"min/km",sets_unit:"series",plate_calc_btn:"⚙ Calculadora de discos",warmup_calc_btn:"⚙ Calculadora de calentamiento",
@@ -1382,7 +1389,7 @@ const I18N={
     today_label:"Aujourd'hui",trend_bucket_1:"+1 jour",trend_bucket_2:"+2 jours",trend_bucket_3:"+3 jours",trend_bucket_4:"+4 jours ou plus",
     praise_pr_hype:"🔥 Nouveau record personnel ! Génial ! ",praise_pr_carrotstick:"Bien joué, tu vois que tu peux ! ",praise_pr_calm:"Nouveau record personnel. ",
     praise_up_hype:"💪 Tu progresses ! Continue comme ça !",praise_up_carrotstick:"Pas mal. Mais tu as encore de la marge",praise_up_calm:"Tu as dépassé la dernière fois.",
-    praise_done_carrotstick:"C'est tout pour aujourd'hui. La prochaine fois, vise plus haut",
+    praise_done_carrotstick:"C'est tout pour aujourd'hui. La prochaine fois, vise plus haut",praise_done_calm:"Enregistré. Bon travail aujourd'hui.",
     routine_none:"(aucun exercice)",routine_add_this:"Ajouter cette combinaison",common_delete:"Supprimer",common_edit:"Modifier",common_save:"Enregistrer",common_cancel:"Annuler",routine_delete_confirm:"Supprimer « {name} » ?",routine_save_alert:"Ajoute d'abord les exercices du jour, puis enregistre",routine_save_prompt:"Nom du My Set (ex. Jour pecs / Routine après garde)",routine_toggle_added:"Ajouté",routine_toggle_choose:"Choisir",routine_custom_ph:"Ajouter un nom d'exercice personnalisé",common_add:"Ajouter",
     howto_watch:"▶ Voir comment faire (YouTube) ↗",howto_search_suffix:"comment faire",
     weight_kg:"Poids (kg)",reps_label:"Répétitions",distance_km:"Distance (km)",time_min:"Durée (min)",comment_optional:"Commentaire (facultatif)",comment_ph_strength:"ex. Concentré sur la technique",comment_ph_cardio:"ex. Concentré sur l'allure",log_this_set_btn:"Enregistrer cette série",common_record:"Enregistrer",pace_label:"Allure",unit_minkm:"min/km",sets_unit:"séries",plate_calc_btn:"⚙ Calculateur de plaques",warmup_calc_btn:"⚙ Calculateur d'échauffement",
@@ -1457,7 +1464,7 @@ const I18N={
     today_label:"Heute",trend_bucket_1:"+1 Tag",trend_bucket_2:"+2 Tage",trend_bucket_3:"+3 Tage",trend_bucket_4:"+4 Tage oder mehr",
     praise_pr_hype:"🔥 Neue persönliche Bestleistung! Großartig! ",praise_pr_carrotstick:"Gut gemacht, du siehst, du kannst es! ",praise_pr_calm:"Neue persönliche Bestleistung. ",
     praise_up_hype:"💪 Du wirst besser! Weiter so!",praise_up_carrotstick:"Nicht schlecht. Aber da geht noch mehr",praise_up_calm:"Du hast dein letztes Mal übertroffen.",
-    praise_done_carrotstick:"Das war's für heute. Nächstes Mal noch mehr",
+    praise_done_carrotstick:"Das war's für heute. Nächstes Mal noch mehr",praise_done_calm:"Erfasst. Gute Arbeit heute.",
     routine_none:"(keine Übungen)",routine_add_this:"Diese Kombination hinzufügen",common_delete:"Löschen",common_edit:"Bearbeiten",common_save:"Speichern",common_cancel:"Abbrechen",routine_delete_confirm:'„{name}" löschen?',routine_save_alert:"Füge zuerst die heutigen Übungen hinzu und speichere dann",routine_save_prompt:"Name des My Sets (z. B. Brust-Tag / Routine nach Nachtdienst)",routine_toggle_added:"Hinzugefügt",routine_toggle_choose:"Auswählen",routine_custom_ph:"Eigenen Übungsnamen hinzufügen",common_add:"Hinzufügen",
     howto_watch:"▶ Anleitung ansehen (YouTube) ↗",howto_search_suffix:"Anleitung",
     weight_kg:"Gewicht (kg)",reps_label:"Wiederholungen",distance_km:"Strecke (km)",time_min:"Zeit (Min.)",comment_optional:"Kommentar (optional)",comment_ph_strength:"z. B. Auf Technik geachtet",comment_ph_cardio:"z. B. Auf Tempo geachtet",log_this_set_btn:"Diesen Satz speichern",common_record:"Speichern",pace_label:"Tempo",unit_minkm:"Min/km",sets_unit:"Sätze",plate_calc_btn:"⚙ Plattenrechner",warmup_calc_btn:"⚙ Aufwärmrechner",
@@ -1532,7 +1539,7 @@ const I18N={
     today_label:"Oggi",trend_bucket_1:"+1 giorno",trend_bucket_2:"+2 giorni",trend_bucket_3:"+3 giorni",trend_bucket_4:"+4 giorni o più",
     praise_pr_hype:"🔥 Nuovo record personale! Fantastico! ",praise_pr_carrotstick:"Ben fatto, vedi che puoi farlo! ",praise_pr_calm:"Nuovo record personale. ",
     praise_up_hype:"💪 Stai migliorando! Continua così!",praise_up_carrotstick:"Bene. Ma hai ancora margine di crescita",praise_up_calm:"Hai superato la volta precedente.",
-    praise_done_carrotstick:"Per oggi è tutto. La prossima volta supera te stesso",
+    praise_done_carrotstick:"Per oggi è tutto. La prossima volta supera te stesso",praise_done_calm:"Registrato. Buon lavoro oggi.",
     routine_none:"(nessun esercizio)",routine_add_this:"Aggiungi questa combinazione",common_delete:"Elimina",common_edit:"Modifica",common_save:"Salva",common_cancel:"Annulla",routine_delete_confirm:'Eliminare "{name}"?',routine_save_alert:"Aggiungi prima gli esercizi di oggi, poi salva",routine_save_prompt:"Nome del My Set (es. Giorno petto / Routine dopo notte)",routine_toggle_added:"Aggiunto",routine_toggle_choose:"Scegli",routine_custom_ph:"Aggiungi un nome di esercizio personalizzato",common_add:"Aggiungi",
     howto_watch:"▶ Guarda come si fa (YouTube) ↗",howto_search_suffix:"come si fa",
     weight_kg:"Peso (kg)",reps_label:"Ripetizioni",distance_km:"Distanza (km)",time_min:"Tempo (min)",comment_optional:"Commento (facoltativo)",comment_ph_strength:"es. Concentrato sulla tecnica",comment_ph_cardio:"es. Concentrato sul ritmo",log_this_set_btn:"Registra questa serie",common_record:"Registra",pace_label:"Ritmo",unit_minkm:"min/km",sets_unit:"serie",plate_calc_btn:"⚙ Calcolatore dischi",warmup_calc_btn:"⚙ Calcolatore di riscaldamento",
@@ -1652,6 +1659,12 @@ function syncPresets(s){
   s.exercises.forEach(e=>{if(!e.equip)e.equip=guessEquip(e.name);}); // 自作・旧データの取りこぼしを補完
 }
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function idsWithDataForDate(date){ // 指定日にすでに記録があるexIdの一覧（起動時のactiveExIds復元用。ページ再読み込みでセッションが消えたように見える不具合の対策）
+  const ids=new Set();
+  state.records.forEach(r=>{if(r.date===date)ids.add(r.exId);});
+  state.cardio.forEach(r=>{if(r.date===date)ids.add(r.exId);});
+  return [...ids];
+}
 function uid(){return Date.now()+Math.floor(Math.random()*1000);}
 
 /* ---------- 進捗写真：IndexedDB（¥480・2026-06-25仕様確定） ----------
@@ -1995,9 +2008,10 @@ function praiseText(kind,info){
     if(s==="carrotstick")return {cls:"up",txt:t("praise_up_carrotstick")};
     return {cls:"calm",txt:t("praise_up_calm")};
   }
-  // none / nudge
+  // none / nudge：「この種目を終える」は押しても何も表示されないと壊れているように見えるため、
+  // pr/upが出ないケース（大半のセッション）でも必ず何らかの反応を返す。
   if(s==="carrotstick" && activeShift!=="明け")return {cls:"calm",txt:isJa?"今日はここまで。次は超えていこう":t("praise_done_carrotstick")};
-  return null;
+  return {cls:"calm",txt:isJa?"記録しました。お疲れさまでした。":t("praise_done_calm")};
 }
 
 /* ---------- screens / nav ---------- */
@@ -2051,7 +2065,7 @@ let pickedPart=null;
 let customExName=""; // 自作種目フォームの入力途中テキスト（器具チップ選択で再描画しても消えないよう保持）
 let customEquip=null; // 自作種目の器具カテゴリ（null=名前から自動推定）
 let customEqOpen=false; // 器具タブの開閉状態（タップで器具チップを開く）
-let openEqGroups=new Set(); // 既存種目リストで開いている器具グループ（"部位|器具キー"）。タップで開閉、再描画をまたいで保持
+let openEqGroups=new Set(); // 既存種目リストで開いている器具グループ（"部位|器具キー"）。アコーディオン式＝新しいタブを開くと他は自動で閉じる（要素数は常に0か1）
 let openPbGroups=new Set(); // 自己ベストボードで開いている部位グループ（部位キー）。タップで開閉、再描画をまたいで保持
 let editingSetId=null; // 編集中のセットid（筋トレ・有酸素で共用。uid()でユニークなため衝突しない）
 
@@ -2133,7 +2147,7 @@ function renderPartExs(){
     // タブ：現在の選択（未選択＝自動）を表示し、タップで器具チップを開閉する
     const cur=customEquip?EQUIPS.find(g=>g.k===customEquip):null;
     const tab=document.createElement("button");tab.type="button";tab.className="eqtab"+(customEqOpen?" open":"");
-    tab.innerHTML='<span class="eqtab-ic">'+(cur?cur.ic:"🏷️")+'</span>'+
+    tab.innerHTML='<span class="eqtab-ic">'+(cur?equipmentIconMarkup(cur):"🏷️")+'</span>'+
       '<span class="eqtab-lb">'+(cur?equipLabel(cur.k):(isJa?"自動（名前から振り分け）":"Auto (from name)"))+'</span>'+
       '<span class="eqtab-ar">▾</span>';
     tab.onclick=()=>{customEqOpen=!customEqOpen;renderPartExs();};
@@ -2147,7 +2161,7 @@ function renderPartExs(){
       EQUIPS.forEach(g=>{
         const c=document.createElement("div");
         c.className="chip"+(customEquip===g.k?" on":"");
-        c.innerHTML='<span style="margin-right:4px">'+g.ic+'</span>'+equipLabel(g.k);
+        c.innerHTML=equipmentIconMarkup(g,"equipment-icon-inline")+equipLabel(g.k);
         c.onclick=()=>{customEquip=g.k;customEqOpen=false;renderPartExs();};
         eqwrap.appendChild(c);
       });
@@ -2178,8 +2192,9 @@ function renderPartExs(){
       const key=pickedPart+"|"+g.k;
       const open=openEqGroups.has(key);
       const h=document.createElement("button");h.type="button";h.className="eqhead eq-"+g.k+(open?" open":"");
-      h.innerHTML='<span class="eqic">'+g.ic+'</span><span>'+equipLabel(g.k)+'</span><span class="eqct">'+items.length+'</span><span class="eqar">▾</span>';
-      h.onclick=()=>{open?openEqGroups.delete(key):openEqGroups.add(key);renderPartExs();};
+      h.innerHTML='<span class="eqic">'+equipmentIconMarkup(g)+'</span><span>'+equipLabel(g.k)+'</span><span class="eqct">'+items.length+'</span><span class="eqar">▾</span>';
+      // アコーディオン：新しいタブを開くときは他を閉じる（複数の器具タブが開きっぱなしにならないように）
+      h.onclick=()=>{if(open){openEqGroups.delete(key);}else{openEqGroups.clear();openEqGroups.add(key);}renderPartExs();};
       box.appendChild(h);
       if(open)items.forEach(e=>box.appendChild(exRow(e)));
     });
@@ -4269,7 +4284,9 @@ try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().
 document.getElementById("langSelect").value=state.settings.lang||"ja";
 applyI18nStatic();
 applyTheme(state.settings.theme);renderThemes();renderGoal();renderRestSec();renderAlarmSound();renderAiExportPeriod();
-loadCondFields();renderExCards();renderPraiseSeg();renderRoutines();renderBackupInfo();
+loadCondFields();
+idsWithDataForDate(logDate.value).forEach(id=>{if(exById(id)&&!activeExIds.includes(id))activeExIds.push(id);}); // 起動時：今日すでに記録済みの種目をセッション表示に復元（ページ再読み込みで「今日のトレーニング」が消えて見える不具合の対策）
+renderExCards();renderPraiseSeg();renderRoutines();renderBackupInfo();
 document.getElementById("routineCard").open=state.routines.length>0;
 renderBgPhotoSettings();renderBgPhotoLayers(); // 初期表示はs-log（記録画面）がactiveなので背景レイヤーも初回反映が必要
 
