@@ -17,12 +17,14 @@ function buildHomeDashboard({ date, activeExerciseIds, activeShift, records, car
   const selectedDate = dateFromYmd(date);
   const weekStart = new Date(selectedDate);
   weekStart.setDate(selectedDate.getDate() - selectedDate.getDay());
-  let weekDays = 0;
+  // 日曜から土曜の7日分。記録か有酸素がある日が true（前月の日も入る）
+  const weekFlags = [];
   for (let day = 0; day < 7; day += 1) {
     const cursor = new Date(weekStart);
     cursor.setDate(weekStart.getDate() + day);
-    if (workoutDates.has(ymdFromDate(cursor))) weekDays += 1;
+    weekFlags.push(workoutDates.has(ymdFromDate(cursor)));
   }
+  const weekDays = weekFlags.filter(Boolean).length;   // バーの赤い本数と必ず一致させる
 
   let monthDays = 0;
   workoutDates.forEach((workoutDate) => {
@@ -46,7 +48,7 @@ function buildHomeDashboard({ date, activeExerciseIds, activeShift, records, car
     activeExerciseCount: activeIds.length,
     loggedSetCount,
     shift: activeShift || "",
-    metrics: { weekDays, monthDays, streakDays }
+    metrics: { weekDays, monthDays, streakDays, weekFlags }
   };
 }
 

@@ -68,7 +68,17 @@ function daysBetween(fromDate, toDate) {
   return Math.round((toUtc(toDate) - toUtc(fromDate)) / 86400000);
 }
 
-return { latestPartSession, suggestTarget, restoreShift, daysBetween };
+// その部位を最後にやってから date の何日前か。当日にやっていれば 0、一度もなければ null
+// 未来の日付の記録・削除済みの種目の記録は数えない
+function partDaysAgo({ records, cardio, exercises, part, date }) {
+  const ids = new Set(exercises.filter((e) => e.part === part).map((e) => e.id));
+  const source = part === "cardio" ? cardio : records;
+  if (source.some((x) => ids.has(x.exId) && x.date === date)) return 0;
+  const last = latestPartSession({ records, cardio, exercises, part, beforeDate: date });
+  return last ? daysBetween(last.date, date) : null;
+}
+
+return { latestPartSession, suggestTarget, restoreShift, daysBetween, partDaysAgo };
 })();
 
 if (typeof window !== "undefined") window.PartDay = PartDay;

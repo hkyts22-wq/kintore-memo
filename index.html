@@ -7,10 +7,10 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none';">
 <title>あけトレ ｜ 夜勤明けでも続く筋トレメモ</title>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0f6e56">
+<meta name="theme-color" content="#000000">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="あけトレ">
 <link rel="apple-touch-icon" href="icon-180.png?v=53">
 <link rel="icon" type="image/png" href="icon-192.png?v=53">
@@ -18,13 +18,43 @@
 <script src="free-open.js"></script>
 <style>
   :root{
-    /* ===== 標準（グリーン）= デフォルトテーマ ===== */
+    /* ===== 標準（黒×レッド）= デフォルトテーマ（キーは"green"のまま。v59で旧グリーンから入れ替え） ===== */
+    --bg:#000000; --card:#141414; --cardGlass:rgba(20,20,20,.55); --ink:#ffffff; --sub:#a3a3a3; --line:#262626;
+    --accent:#ff2d2d; --accent2:#ff5a4f; --onAccent:#ffffff;
+    --bg2:#0a0a0a; --navbg:#000000; --link:#ff6b5f;
+    --pr:#3a0d0b; --prink:#ff8a80;
+    --amber:#33260d; --amberink:#ffc04d; --blue:#0f2233; --blueink:#84c7ff;
+    --green:#13301a; --greenink:#9be7a8;
+    /* プレート・光彩・週バー用（記録画面ほか全画面がこの変数経由で塗る。値は設計書 §3-3） */
+    --plateTint:#b3241b;
+    --plateLine:#444444; --plateLineOn:#ff5a4f;
+    --glow:0 0 16px rgba(255,45,45,.6);
+    --barOff:#262626; --barOn:#ff2d2d;
+    /* 選択中プレートの文字色。全テーマの選択プレートは濃い・彩度の高い面なので白で足りる（コントラスト5:1前後以上）。通常プレートの文字は --ink */
+    --plateInkOn:#ffffff; --plateShadowOn:0 1px 2px rgba(0,0,0,.95),0 0 6px rgba(0,0,0,.8);
+    /* 明け(琥珀)プレートの通常時の文字色。暗いテーマは琥珀そのまま、明るいテーマは各テーマで濃い茶に上書き */
+    --plateAmberInk:var(--amberink);
+    /* 見出しの文字色。通常は --accent。--head＝カードの中の見出し、--headBare＝カードの外（地に直接乗る）の見出し。
+       背景写真オン時だけ、下の hasBgPhoto ブロックで読める色に差し替える（半透明カード／暗幕の上でも4.5:1を保つため） */
+    --head:var(--accent); --headBare:var(--accent);
+    /* 白文字を乗せる塗り（主ボタン・選択中チップ・選択日など）。通常は --accent と同じ。
+       標準だけ #ff2d2d では白文字が3.7:1しかないので、塗りだけ少し深い赤にする（光と線は #ff2d2d のまま） */
+    --accentFill:var(--accent);
+  }
+  :root:not([data-theme]){--accentFill:#e01b1b}
+  /* ===== クラシック（やさしいグリーン）= 旧「標準」の色をそのまま移したもの ===== */
+  :root[data-theme="classic"]{
     --bg:#f5f5f2; --card:#ffffff; --cardGlass:rgba(255,255,255,.62); --ink:#1c1c1a; --sub:#6b6b66; --line:#e4e3dd;
     --accent:#0f6e56; --accent2:#1d9e75; --onAccent:#ffffff;
     --bg2:#fafaf8; --navbg:#ffffff; --link:#a32d2d;
     --pr:#e1f5ee; --prink:#04342c;
     --amber:#faeeda; --amberink:#854f0b; --blue:#e6f1fb; --blueink:#185fa5;
     --green:#eaf3de; --greenink:#3b6d11;
+    --plateTint:#0f6e56;
+    --plateLine:#aab1b8; --plateLineOn:#1d9e75;
+    --plateAmberInk:#ffc04d; /* 明け(琥珀)の文字：プレートは写真の黒い円なので、どのテーマも明るい琥珀にする */
+    --glow:0 0 16px rgba(15,110,86,.55);
+    --barOff:#d9d8d2; --barOn:#0f6e56;
   }
   /* ===== ミッドナイト（クール・ダーク／シアン） ===== */
   :root[data-theme="midnight"]{
@@ -34,15 +64,10 @@
     --pr:#0c3b39; --prink:#5eead4;
     --amber:#3a2e12; --amberink:#fcd34d; --blue:#102a43; --blueink:#7dd3fc;
     --green:#13361f; --greenink:#86efac;
-  }
-  /* ===== ワイルド（ブラック×レッド） ===== */
-  :root[data-theme="wild"]{
-    --bg:#141210; --card:#201b18; --cardGlass:rgba(32,27,24,.42); --ink:#f5ece6; --sub:#b3998c; --line:#372c25;
-    --accent:#ef3a24; --accent2:#ff7a3c; --onAccent:#ffffff;
-    --bg2:#1a1512; --navbg:#1a1512; --link:#ff8a76;
-    --pr:#3a1410; --prink:#ff9d8a;
-    --amber:#3a2710; --amberink:#ffc04d; --blue:#102433; --blueink:#84c7ff;
-    --green:#1f3312; --greenink:#b6f09c;
+    --plateTint:#0b7285;
+    --plateLine:#3a4c63; --plateLineOn:#67e8f9;
+    --glow:0 0 16px rgba(34,211,238,.55);
+    --barOff:#2a394b; --barOn:#22d3ee;
   }
   /* ===== ネオン（サイバー・ダーク／ライム×マゼンタ） ===== */
   :root[data-theme="neon"]{
@@ -52,6 +77,10 @@
     --pr:#20330a; --prink:#d7ff66;
     --amber:#33270a; --amberink:#ffd84d; --blue:#1a1240; --blueink:#b39bff;
     --green:#14330a; --greenink:#aef06a;
+    --plateTint:#55730d;
+    --plateLine:#3a3a52; --plateLineOn:#d7ff66;
+    --glow:0 0 16px rgba(198,244,50,.5);
+    --barOff:#262638; --barOn:#c6f432;
   }
   /* ===== ミニマル（モノクロ） ===== */
   :root[data-theme="minimal"]{
@@ -61,6 +90,11 @@
     --pr:#18181b; --prink:#ffffff;
     --amber:#f4f4f5; --amberink:#3f3f46; --blue:#f4f4f5; --blueink:#3f3f46;
     --green:#f4f4f5; --greenink:#27272a;
+    --plateTint:#d4d4d8; --plateInkOn:#18181b; --plateShadowOn:none; /* 銀に染まるので選択中の文字は黒 */
+    --plateLine:#a1a1aa; --plateLineOn:#52525b;
+    --plateAmberInk:#ffc04d; /* 明け(琥珀)の文字：プレートは写真の黒い円なので、どのテーマも明るい琥珀にする */
+    --glow:0 0 16px rgba(24,24,27,.45);
+    --barOff:#e4e4e7; --barOn:#18181b;
   }
   /* ===== ゴールドプレート（スチール×ゴールド・本格仕様／明所での視認性優先） ===== */
   :root[data-theme="gold"]{
@@ -70,6 +104,11 @@
     --pr:#f7ecd2; --prink:#6b4a08;
     --amber:#fbe4cf; --amberink:#92450c; --blue:#e1ecf3; --blueink:#205777;
     --green:#e9f1de; --greenink:#3c6b16;
+    --plateTint:#8a640c;
+    --plateLine:#aab1b8; --plateLineOn:#d4a017;
+    --plateAmberInk:#ffc04d; /* 明け(琥珀)の文字：プレートは写真の黒い円なので、どのテーマも明るい琥珀にする */
+    --glow:0 0 16px rgba(212,160,23,.55);
+    --barOff:#cdd3d8; --barOn:#a06f0a;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
@@ -88,18 +127,20 @@
   input,select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);
     border-radius:10px;padding:9px 10px;width:100%}
   input:focus,select:focus{outline:none;border-color:var(--accent2)}
+  /* v59 入力欄は斜体にしない（font:inherit が親の斜体を拾わないよう明示。数字の斜体は表示用の数字だけ） */
+  input,select,textarea{font-style:normal}
   .btn{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);
     border-radius:10px;padding:9px 12px;cursor:pointer}
   .btn:active{transform:scale(.98)}
-  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--onAccent);font-weight:600}
+  .btn.primary{background:var(--accentFill);border-color:var(--accentFill);color:var(--onAccent);font-weight:800}
   .btn.ghost{background:transparent}
   .btn.sm{padding:6px 10px;font-size:14px}
   .chips{display:flex;flex-wrap:wrap;gap:8px}
   .chip{padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card);
     font-size:14px;cursor:pointer;user-select:none}
-  .chip.on{background:var(--accent);border-color:var(--accent);color:var(--onAccent);font-weight:600}
+  .chip.on{background:var(--accentFill);border-color:var(--accentFill);color:var(--onAccent);font-weight:800;box-shadow:var(--glow)}
   .chip:active{transform:scale(.97)}
-  .chip.amber.on{background:var(--amber);border-color:var(--amberink);color:var(--amberink)}
+  .chip.amber.on{background:var(--amber);border-color:var(--amberink);color:var(--amberink);box-shadow:0 0 14px 1px var(--amberink)}
   .step{display:flex;align-items:center;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
   .step button{flex:0 0 48px;width:48px;height:48px;border:none;background:var(--bg2);font-size:22px;cursor:pointer;color:var(--accent)} /* 縮まない48px */
   .step button:active{background:var(--line)}
@@ -111,7 +152,7 @@
     border-radius:9px;margin-top:6px} /* 幅が足りない言語・画面（de/frの320px）では編集・削除を次の行へ送り、横にはみ出さない */
   .setline .no{color:var(--sub);width:20px}
   .setline .val{flex:1 1 6.5em;font-variant-numeric:tabular-nums}
-  .setline .val b{font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-.01em}
+  .setline .val b{font-size:22px;font-weight:900;font-style:italic;color:var(--ink);letter-spacing:-.01em;padding-right:.08em}
   .setline .val .valsub{font-size:12px;color:var(--sub);font-weight:400;margin-left:2px}
   .setline .acts{display:flex;gap:12px;margin-left:auto;flex:0 0 auto} /* 編集・削除は1組で動かし、折り返したときは右寄せ */
   .setline .del{color:var(--link);background:none;border:1px solid var(--line);border-radius:9px;cursor:pointer;font-size:14px;
@@ -129,7 +170,7 @@
   .bwtoggle{display:flex;gap:8px;margin:4px 0 4px}
   .bwtoggle button{flex:1;border:1px solid var(--line);background:var(--card);color:var(--sub);
     border-radius:9px;padding:9px;font-size:14px;cursor:pointer}
-  .bwtoggle button.on{background:var(--accent);color:var(--onAccent);border-color:var(--accent);font-weight:600}
+  .bwtoggle button.on{background:var(--accentFill);color:var(--onAccent);border-color:var(--accentFill);font-weight:800;box-shadow:var(--glow)}
   .toast{border-radius:11px;padding:11px 12px;margin-top:8px;font-size:14px}
   .toast.pr{background:var(--pr);color:var(--prink)}
   .toast.up{background:var(--green);color:var(--greenink)}
@@ -141,7 +182,8 @@
   .navbar button{flex:1;border:none;background:none;font-size:11px;color:var(--sub);cursor:pointer;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
   .navbar button .ic{font-size:20px;line-height:1}
-  .navbar button.on{color:var(--accent);font-weight:600}
+  /* v59 タブ：選ばれている画面は白（明るいテーマでは --ink）の太字。光らせない */
+  .navbar button.on{color:var(--ink);font-weight:900;text-shadow:none;box-shadow:none}
   .partexs{display:none;margin-top:8px}
   .partexs.open{display:block}
   .exrow{display:flex;align-items:center;justify-content:space-between;padding:8px 4px;border-bottom:1px solid var(--line)}
@@ -183,17 +225,17 @@
   .history-edit-field .lbl{display:block;margin-bottom:4px}
   .history-edit-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
   .history-edit-error{margin-top:8px;color:var(--red);font-size:13px;font-weight:600}
-  .history-focus-label{font-size:13px;font-weight:700;letter-spacing:.04em;color:var(--accent);margin:16px 4px 2px}
+  .history-focus-label{font-size:13px;font-weight:900;letter-spacing:.08em;color:var(--headBare);margin:16px 4px 2px}
   .history-record{padding:16px;margin:8px 0 14px}
   .history-record.is-focus{border-color:var(--accent)}
   .history-record-head{padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:12px}
-  .history-record-date{font-size:20px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .history-record-date{font-size:20px;font-weight:900;font-style:italic;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
   .history-record-meta{display:flex;align-items:center;gap:8px;white-space:nowrap;font-variant-numeric:tabular-nums}
   .history-record-volume{font-size:13px;font-weight:700;color:var(--ink)}
   .history-exercise{padding:10px 0;border-bottom:1px solid var(--line)}
   .history-exercise:last-of-type{border-bottom:none}
   .history-exercise-name{display:block;font-size:14px;font-weight:700;margin-bottom:3px}
-  .history-exercise-values{display:block;font-size:19px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.35}
+  .history-exercise-values{display:block;font-size:19px;font-weight:900;font-style:italic;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.35}
   .history-condition{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 0;padding:10px;background:var(--bg2);border:1px solid var(--line);border-radius:10px}
   .history-condition-item{min-width:0}
   .history-condition-label{display:block;color:var(--sub);font-size:12px}
@@ -204,7 +246,8 @@
   .history-insights summary::-webkit-details-marker{display:none}
   .history-insights summary::after{content:"＋";float:right;color:var(--accent);font-size:19px;line-height:1}
   .history-insights[open] summary::after{content:"−"}
-  .h2{font-size:15px;font-weight:600;margin:14px 4px 4px}
+  /* v59 見出し：赤（--headBare）・小さめ・太字。カードの外の見出し（.h2 .sectionhead .home-section-title .history-focus-label）はここで統一 */
+  .h2{font-size:13px;font-weight:900;letter-spacing:.08em;color:var(--headBare);margin:14px 4px 4px}
   .pill{font-size:11px;padding:3px 9px;border-radius:999px}
   .pill.amber{background:var(--amber);color:var(--amberink)}
   .pill.blue{background:var(--blue);color:var(--blueink)}
@@ -215,19 +258,22 @@
   .best{font-size:12px;color:var(--accent);font-weight:600}
   .statline{margin-top:8px;padding:8px 11px;border-radius:9px;background:var(--bg2);
     border:1px solid var(--line);font-size:13px;color:var(--ink);font-variant-numeric:tabular-nums}
-  .statline b{color:var(--accent);font-weight:700}
+  .statline b{color:var(--head);font-weight:900;font-style:italic;padding-right:.08em}
   /* カレンダー＆ストリーク */
   .cnav{width:36px;height:36px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:9px;font-size:18px;line-height:1;cursor:pointer}
   .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px}
   .cawd{text-align:center;font-size:11px;color:var(--sub);padding:2px 0}
   .caday{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:14px;border-radius:8px;color:var(--ink);font-variant-numeric:tabular-nums;cursor:pointer}
-  .caday.on{background:var(--accent);color:var(--onAccent);font-weight:700}
+  .caday.on{background:var(--accentFill);color:var(--onAccent);font-weight:700}
   .caday.today{box-shadow:inset 0 0 0 2px var(--accent2)}
   .caday.on.today{box-shadow:inset 0 0 0 2px var(--onAccent)}
   .caday.sel{outline:2px solid var(--ink);outline-offset:1px}
+  /* 選んだ日だけ光る。today の影（inset）と重ならないよう、光は疑似要素に持たせる */
+  .caday{position:relative}
+  .caday.sel::after{content:"";position:absolute;inset:0;border-radius:8px;box-shadow:var(--glow);pointer-events:none}
   .calstats{display:flex;gap:8px;margin-top:14px}
   .cstat{flex:1;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:9px 4px}
-  .cstat b{display:block;font-size:23px;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:-.015em}
+  .cstat b{display:block;font-size:26px;font-weight:900;font-style:italic;color:var(--head);padding-right:.08em;font-variant-numeric:tabular-nums;letter-spacing:-.015em;line-height:1.15}
   .cstat span{font-size:11px;color:var(--sub)}
   /* 自己ベストボード */
   .pbrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
@@ -240,7 +286,7 @@
   .pbrow .pbmax{font-size:12px;color:var(--sub);margin-top:2px}
   .pbrow .pbmax b{color:var(--ink);font-weight:700}
   .pbrow .pv{text-align:right;white-space:nowrap;flex:none}
-  .pbrow .pv b{font-size:23px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.05}
+  .pbrow .pv b{font-size:24px;font-weight:900;font-style:italic;color:var(--head);font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.05;padding-right:.08em}
   .pbrow .pv b i{font-size:12px;font-style:normal;font-weight:600;letter-spacing:0;margin-left:2px}
   .pbrow .pv span{display:block;font-size:11px;color:var(--sub);margin-top:1px}
   /* シフト別パフォーマンス（中央=自分の平均100%、左右に偏差） */
@@ -258,9 +304,13 @@
   .sffill.up{background:var(--accent)}
   .sffill.dn{background:var(--amberink)}
   .sfn{font-size:11px;color:var(--sub);margin-top:4px;font-variant-numeric:tabular-nums}
-  .seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .seg{display:flex;border:1px solid var(--line);border-radius:10px}
   .seg button{flex:1;border:none;background:var(--card);color:var(--ink);padding:10px;cursor:pointer;font-size:14px}
-  .seg button.on{background:var(--accent);color:var(--onAccent);font-weight:600}
+  .seg button.on{background:var(--accentFill);color:var(--onAccent);font-weight:800;box-shadow:var(--glow);position:relative;z-index:1}
+  /* 光を切らないよう overflow:hidden をやめ、端のボタンに角丸を持たせる */
+  .seg button:first-child{border-radius:9px 0 0 9px}
+  .seg button:last-child{border-radius:0 9px 9px 0}
+  .seg button:only-child{border-radius:9px}
   details summary{cursor:pointer;color:var(--sub);font-size:14px;padding:6px 0}
   details summary::-webkit-details-marker{display:none}
   details summary{list-style:none}
@@ -273,7 +323,7 @@
   .themeCard{border:1px solid var(--line);border-radius:12px;padding:10px;cursor:pointer;
     background:var(--card);text-align:left;font:inherit;color:var(--ink);display:flex;flex-direction:column;gap:8px}
   .themeCard:active{transform:scale(.985)}
-  .themeCard.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+  .themeCard.on{position:relative;z-index:1;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset,var(--glow)}
   .themeCard .sw{display:flex;gap:5px;align-items:center}
   .themeCard .sw i{width:22px;height:22px;border-radius:6px;display:block;border:1px solid rgba(128,128,128,.25)}
   .themeCard .nm{font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:6px}
@@ -285,7 +335,7 @@
   .goalChip{border:1px solid var(--line);border-radius:12px;padding:12px 11px;cursor:pointer;
     background:var(--card);text-align:left;font:inherit;color:var(--ink);display:flex;flex-direction:column;gap:3px}
   .goalChip:active{transform:scale(.985)}
-  .goalChip.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+  .goalChip.on{position:relative;z-index:1;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset,var(--glow)}
   .goalChip .ge{font-size:20px;line-height:1}
   .goalChip .gn{font-size:14px;font-weight:700;margin-top:3px}
   .goalChip .gd{font-size:11px;color:var(--sub);line-height:1.35}
@@ -294,12 +344,12 @@
   .goalfocus{display:flex;flex-direction:column;gap:4px}
   .goalfocus[hidden]{display:none}
   .goalfocus .gf-eyebrow{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;
-    font-size:12px;font-weight:700;color:var(--accent);background:var(--cardGlass);
+    font-size:12px;font-weight:900;letter-spacing:.06em;color:var(--head);background:var(--cardGlass);
     border:1px solid var(--line);border-radius:999px;padding:4px 11px}
   .goalfocus .gf-emoji{font-size:14px}
-  .goalfocus .gf-main{font-variant-numeric:tabular-nums;font-weight:800;font-size:38px;color:var(--ink);
+  .goalfocus .gf-main{font-variant-numeric:tabular-nums;font-weight:900;font-style:italic;font-size:38px;color:var(--ink);
     line-height:1.02;letter-spacing:-.02em;margin-top:6px}
-  .goalfocus .gf-main b{font-weight:800}
+  .goalfocus .gf-main b{font-weight:900;padding-right:.06em}
   .goalfocus .gf-main i{font-style:normal;font-size:16px;font-weight:700;color:var(--sub);margin-left:3px;letter-spacing:0}
   .goalfocus .gf-sub{font-size:13px;color:var(--sub);line-height:1.45}
   /* ヒートマップの目的ハイライト（Phase3・表示上の強調のみ。実測値は変えない） */
@@ -315,7 +365,7 @@
     color:var(--ink);border-radius:9px;padding:8px 10px;cursor:pointer;font-size:13px;white-space:nowrap}
   .restbar .rb-adj:active,.restbar .rb-skip:active{transform:scale(.96)}
   .restbar .rb-mid{flex:1;min-width:0}
-  .restbar .rb-time{font-variant-numeric:tabular-nums;font-weight:700;font-size:19px;color:var(--accent);line-height:1.1;letter-spacing:-.01em}
+  .restbar .rb-time{font-variant-numeric:tabular-nums;font-weight:900;font-style:italic;font-size:22px;color:var(--accent);line-height:1.1;letter-spacing:-.01em}
   .restbar .rb-track{height:5px;background:var(--line);border-radius:999px;overflow:hidden;margin-top:5px}
   .restbar .rb-track i{display:block;height:100%;width:100%;background:var(--accent);
     border-radius:999px;transition:width .25s linear}
@@ -394,7 +444,7 @@
   .locked-mosaic.lm-bgphoto{background:linear-gradient(135deg, var(--accent) 0%, transparent 40%, var(--bg2) 100%)}
   .locked-mosaic.lm-bgphoto::before{content:"🖼";font-size:22px;opacity:.7}
   /* セクション見出し（振り返り画面：記録を見る／自分を理解する） */
-  .sectionhead{font-size:15px;font-weight:600;margin:18px 4px 6px;color:var(--ink)}
+  .sectionhead{font-size:13px;font-weight:900;letter-spacing:.08em;margin:18px 4px 6px;color:var(--headBare)}
   .sectionhead .pill{margin-left:6px;vertical-align:1px}
   /* シフト×コンディション傾向（¥480） */
   .trendbars{display:flex;align-items:flex-end;gap:10px;height:120px;margin-top:14px;padding:0 2px}
@@ -461,8 +511,13 @@
   /* 写真表示時のみラベル色（--sub）を上書き。通常時のテーマ配色には影響させない。
      2026-06-26 QA差し戻し対応：--subが本文より先に読めなくなるため専用に上書きする。
      data-theme属性は<html>（document.documentElement）に付与されるため、html側で判定する。
-     標準(green)テーマはdata-theme属性そのものが付与されない（applyTheme参照）。 */
-  html:not([data-theme]) body.hasBgPhoto #s-log, html:not([data-theme]) body.hasBgPhoto #s-hist,
+     標準(green＝黒×レッド)テーマはdata-theme属性そのものが付与されない（applyTheme参照）。
+     v59：旧標準のやさしいグリーンはclassicへ移ったので、暗い--subはclassic側に付け替える。
+     新標準（暗いカード）には、半透明カードの上でも読める明るめの--subを当てる（4.5:1の実測はTask 8）。 */
+  html:not([data-theme]) body.hasBgPhoto #s-log, html:not([data-theme]) body.hasBgPhoto #s-hist {
+    --sub: #c4c4c4;
+  }
+  html[data-theme="classic"] body.hasBgPhoto #s-log, html[data-theme="classic"] body.hasBgPhoto #s-hist,
   html[data-theme="minimal"] body.hasBgPhoto #s-log, html[data-theme="minimal"] body.hasBgPhoto #s-hist {
     --sub: #1c1c1a;
   }
@@ -472,12 +527,34 @@
   html[data-theme="midnight"] body.hasBgPhoto #s-log, html[data-theme="midnight"] body.hasBgPhoto #s-hist {
     --sub: #eef3f9;
   }
-  html[data-theme="wild"] body.hasBgPhoto #s-log, html[data-theme="wild"] body.hasBgPhoto #s-hist {
-    --sub: #f8f1ec;
-  }
   html[data-theme="neon"] body.hasBgPhoto #s-log, html[data-theme="neon"] body.hasBgPhoto #s-hist {
     --sub: #eeeef8;
   }
+  /* v59 見出しの色（--head＝カードの中／--headBare＝カードの外）。通常は赤（--accent）。
+     写真オン時は半透明カード・写真の上で赤文字が読めなくなるので、テーマごとに差し替える。
+     標準：明るい薄赤 #ffb0a8（暗いガラス上で約5.6:1）。ライト系：カード内は--ink、カード外は
+     写真の上に直接乗るので記録画面の部位見出しと同じ薄赤＋影。midnight/neon：--ink。 */
+  html:not([data-theme]) body.hasBgPhoto #s-log, html:not([data-theme]) body.hasBgPhoto #s-hist {
+    --head:#ffb0a8; --headBare:#ffb0a8;
+  }
+  html:is([data-theme="classic"],[data-theme="minimal"],[data-theme="gold"]) body.hasBgPhoto #s-log,
+  html:is([data-theme="classic"],[data-theme="minimal"],[data-theme="gold"]) body.hasBgPhoto #s-hist {
+    --head:var(--ink); --headBare:#ffb0a8;
+  }
+  html:is([data-theme="midnight"],[data-theme="neon"]) body.hasBgPhoto #s-log,
+  html:is([data-theme="midnight"],[data-theme="neon"]) body.hasBgPhoto #s-hist {
+    --head:var(--ink); --headBare:var(--ink);
+  }
+  /* 「記録の傾向を見る」はカードの外で写真に直接乗る。明るいテーマの --ink（濃色）では読めないので明るい色＋影にする */
+  html:is([data-theme="classic"],[data-theme="minimal"],[data-theme="gold"]) body.hasBgPhoto .history-insights summary,
+  html:is([data-theme="classic"],[data-theme="minimal"],[data-theme="gold"]) body.hasBgPhoto .history-insights summary::after{color:#e8e8e8;text-shadow:0 1px 3px rgba(0,0,0,.85)}
+  :root:is(:not([data-theme]),[data-theme="classic"],[data-theme="minimal"],[data-theme="gold"]) body.hasBgPhoto :is(#s-log,#s-hist) :is(.h2,.sectionhead,.home-section-title,.history-focus-label){text-shadow:0 1px 3px rgba(0,0,0,.85)}
+  /* カードの見出し：赤・小さめ・太字（入力欄のラベルは対象外。カード直下の先頭の見出しだけ） */
+  .ctitle,
+  #s-hist .card>label.lbl:first-child,#s-set .card>label.lbl:first-child,
+  #s-hist .card>.between:first-child>label.lbl:first-child,#s-body .card>.between:first-child>label.lbl:first-child{
+    font-size:13px;font-weight:900;letter-spacing:.08em;color:var(--head)}
+  #s-body .card>.between:first-child>.ctitle{margin:0}
   /* 設定画面：背景画像セクションの空枠／サムネイル */
   .bgPhotoThumbRow{display:flex;align-items:center;gap:12px}
   .bgPhotoThumb{width:80px;height:80px;border-radius:10px;flex-shrink:0;object-fit:cover;display:block}
@@ -490,35 +567,99 @@
   @keyframes bgPhotoSpin{to{transform:rotate(360deg)}}
   /* ホーム：記録フォームを開く前に、今日の行動と直近の継続を読めるダッシュボードにする。 */
   .home-dashboard{display:grid;gap:12px;margin:2px 0 14px}
-  .home-stage,.home-progress,.home-detail{border:1px solid var(--line);border-radius:16px;background:var(--card)}
-  .home-stage{padding:18px;overflow:hidden;position:relative}
-  .home-stage::after{content:"";position:absolute;right:-26px;bottom:-34px;width:150px;height:150px;border:1px solid var(--line);border-radius:50%;box-shadow:0 0 0 18px var(--card),0 0 0 19px var(--line);opacity:.75;pointer-events:none}
-  .home-stage-top{display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;z-index:1}
-  .home-date{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.02em}
-  .home-shift{border:1px solid var(--line);border-radius:999px;padding:4px 9px;font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap}
+  .home-detail{border:1px solid var(--line);border-radius:16px;background:var(--card)}
+  /* v59 部位のプレートは横幅いっぱいに並べるので、枠・余白・飾りの輪は付けない（375px幅で1枚およそ80pxにするため） */
+  .home-stage{position:relative}
+  /* v59 看板：記録画面だけ。高さは --hero-h の1か所だけ（375×667で部位が収まらなければここを縮める） */
+  .home-hero{--hero-h:160px;position:relative;height:var(--hero-h);margin:0 -14px;overflow:hidden}
+  /* 背の低い画面（375×667など）は看板を縮めて、11枚のプレートまでスクロールなしで見えるようにする */
+  @media (max-height:700px){ .home-hero{ --hero-h:96px } }
+  /* 下端は背景色（どのテーマでも var(--bg)）へなじませる。写真は飾りなので背景画像にして読み上げ対象から外す */
+  .home-hero-photo{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 72%,var(--bg) 100%),url(./icon-512.png?v=53) center 38%/cover no-repeat}
+  .home-hero-tags{position:absolute;top:10px;right:14px;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+  /* 札は写真の上の文字：テーマに関係なく黒地＋白文字にして、どのテーマ・写真でも読めるようにする */
+  .home-tag{padding:3px 8px;border-radius:6px;background:rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.22);color:#fff;font-size:12px;font-weight:800;line-height:1.3;letter-spacing:.06em;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .home-tag[hidden]{display:none}
+  /* 数字の列は写真に重ねない（写真の筆文字とぶつかるため） */
+  .home-stats{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 2px}
+  .home-stat{display:flex;align-items:center;gap:10px;min-width:0}
+  .home-stat-num{font-size:64px;line-height:.9;font-weight:900;font-style:italic;font-variant-numeric:tabular-nums;letter-spacing:-.03em;padding-right:6px}
+  .home-stat-cap{display:flex;flex-direction:column;gap:3px;min-width:0;font-size:12px;line-height:1.3;color:var(--sub)}
+  .home-streak{color:var(--accent);font-size:14px;font-weight:800}
+  .home-streak b{font-weight:900;font-variant-numeric:tabular-nums}
+  .home-logo{flex-shrink:0;font-size:20px;font-weight:900;line-height:1;letter-spacing:.04em;color:var(--ink)}
+  .home-logo b{font-weight:900;font-style:italic;color:var(--accent)}
+  /* 今週のバー（日曜始まり・赤の本数は「今週 N日」と同じ） */
+  .home-week{margin-top:10px;padding:0 2px}
+  .home-week-bars,.home-week-days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .home-week-bars i{display:block;height:6px;border-radius:3px;background:var(--barOff)}
+  .home-week-bars i.d{background:var(--barOn)}
+  .home-week-sum{margin:5px 0 2px;font-size:11px;font-weight:800;line-height:1.3;color:var(--sub)}
+  .home-week-sum b{color:var(--ink);font-variant-numeric:tabular-nums}
+  .home-week-days span{text-align:center;font-size:11px;line-height:1.3;color:var(--sub)}
+  /* 記録タブが開いている間だけヘッダーを隠す（body.on-log はタブ切り替えと起動時に付け外し）。上端のノッチ分は空ける */
+  body.on-log header{display:none}
+  body.on-log #s-log{padding-top:env(safe-area-inset-top)}
   .home-stage h2{font-size:28px;line-height:1.15;letter-spacing:-.035em;margin:22px 0 7px;position:relative;z-index:1}
   .home-stage-status{font-size:14px;line-height:1.5;color:var(--sub);min-height:21px;position:relative;z-index:1}
-  .home-primary-action{position:relative;z-index:1;min-height:48px;margin-top:12px;padding:0 18px;border:1px solid var(--accent);border-radius:12px;background:var(--accent);color:var(--onAccent);font:inherit;font-weight:700;font-size:15px;cursor:pointer}
-  .home-part-title{font-size:13px;color:var(--sub);margin:14px 0 8px;position:relative;z-index:1}
-  /* 部位の日：部位ボタン10個＋先頭に「明け」。どれも高さ48px以上。明けだけアンバー色で区別する */
-  .day-parts{display:flex;flex-wrap:wrap;gap:8px;position:relative;z-index:1}
-  .day-btn{min-height:48px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;font-size:15px;cursor:pointer;user-select:none}
-  .day-btn:active{transform:scale(.97)}
-  .day-btn:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
-  .day-btn.on{background:var(--accent);border-color:var(--accent);color:var(--onAccent);font-weight:700}
-  .day-btn.amber{border-color:var(--amberink);color:var(--amberink);background:var(--amber)}
-  .day-btn.amber.on{border-width:2px;padding:0 13px;font-weight:700} /* 選択中は塗らずに太枠＋✓（gold・minimal・neonで部位の塗りと色が近いため形で区別） */
-  .day-btn.amber.on::before{content:"✓ ";content:"✓ "/""}
+  .home-primary-action{position:relative;z-index:1;min-height:48px;margin-top:12px;padding:0 18px;border:1px solid var(--accentFill);border-radius:12px;background:var(--accentFill);color:var(--onAccent);font:inherit;font-weight:800;font-size:15px;cursor:pointer}
+  .home-part-title{font-size:11px;font-weight:900;color:var(--accent);letter-spacing:.08em;margin:2px 0 8px;position:relative;z-index:1}
+  /* 部位の日：バーベルのプレート型ボタン。先頭の「明け」＋部位10個を4列に並べる。
+     ボタン全体（円＋下の「N日前」）が押せる範囲。円は幅いっぱい（最大80px）で、どの幅でも48px以上 */
+  .day-parts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 6px;position:relative;z-index:1}
+  .day-btn{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;min-height:48px;padding:0;border:0;background:none;color:var(--ink);font:inherit;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
+  .day-btn:focus-visible{outline:none}
+  .day-btn:focus-visible .plate-face{outline:3px solid var(--accent2);outline-offset:2px}
+  /* 円：旧アイコンの黒いプレート写真（plate.png・20KG刻印は消してある）を全テーマ共通で敷く。写真は暗いので文字はどのテーマも白＋黒い影。
+     選択中だけ --plateTint を screen で重ねてテーマ色に染め、光彩をつける */
+  .plate-face{box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:2px;width:min(80px,100%);min-width:48px;aspect-ratio:1;padding:0 12%;border-radius:50%;border:1px solid var(--plateLine);background:#0c0c0c url(plate.png?v=1) center/100% 100% no-repeat;color:#ffffff;text-shadow:0 1px 2px rgba(0,0,0,.95),0 0 6px rgba(0,0,0,.8);text-align:center;font-size:16px;font-weight:800;line-height:1.15;transition:box-shadow .18s,border-color .18s,transform .12s}
+  .plate-name{min-width:0;overflow-wrap:anywhere}
+  /* 文字数で段階的に縮める（長い言語でも円からはみ出さない。最小11px） */
+  .plate-face.l5{font-size:14px}
+  .plate-face.l7{font-size:12px}
+  .plate-face.l8{font-size:11px}
+  .day-btn:active .plate-face{transform:scale(.95)}
+  /* 選んだ部位：写真をテーマ色に染める＋光彩（光るのは選択中だけ） */
+  .day-btn.on .plate-face{background-color:var(--plateTint);background-blend-mode:screen;border-color:var(--plateLineOn);box-shadow:var(--glow);color:var(--plateInkOn);text-shadow:var(--plateShadowOn)}
+  /* 明け：部位とは別の切り替え。通常は琥珀の文字、選択中は写真を琥珀に染める＋琥珀の光＋✓（テーマ色には染めない） */
+  .day-btn.amber .plate-face{color:var(--plateAmberInk)}
+  .day-btn.amber.on .plate-face{background-color:#b57a12;background-blend-mode:screen;border:2px solid var(--amberink);box-shadow:0 0 14px 1px var(--amberink);color:#1a1003;text-shadow:none}
+  /* ✓ は円の上寄りに絶対配置：名前の幅を食わないので、どの言語でも名前は1行のまま */
+  .plate-face{position:relative}
+  .day-btn.amber.on .plate-face::before{content:"✓";content:"✓"/"";position:absolute;top:10%;left:50%;transform:translateX(-50%);font-size:12px;font-weight:900;line-height:1}
+  /* プレートの下：今日／N日前／—（11px以上）。8日以上あいたら赤（--link） */
+  .plate-ago{display:block;max-width:100%;font-size:11px;font-weight:700;line-height:1.2;text-align:center;color:var(--sub);font-variant-numeric:tabular-nums}
+  .plate-ago.today{color:var(--ink)}
+  .plate-ago.stale{color:var(--link)}
+  /* 背景写真オン＋明るいテーマ：プレート周りは枠なしで写真（黒50%の暗幕越し）の上に直接乗るので、暗幕の上で読める明るい色にする。
+     暗いテーマは元から明るい文字色なので触らない。明るい写真でも読めるよう、うっすら暗い文字影を付ける
+     （灰色写真の暗幕越しで 8.5〜10:1、赤は 5.9:1） */
+  :root:is([data-theme="classic"],[data-theme="minimal"],[data-theme="gold"]) body.hasBgPhoto #s-log .plate-ago{color:#e8e8e8;text-shadow:0 1px 3px rgba(0,0,0,.85)}
+  :root:is([data-theme="classic"],[data-theme="minimal"],[data-theme="gold"]) body.hasBgPhoto #s-log .plate-ago.today{color:#ffffff}
+  /* 看板の下の数字・今週の行も同じく写真に直接乗る。--sub/--ink は明るいテーマでは暗い色なので、全テーマ明るい色＋影にそろえる */
+  body.hasBgPhoto #s-log :is(.home-stat-cap,.home-week-sum,.home-week-days span){color:#e8e8e8;text-shadow:0 1px 3px rgba(0,0,0,.85)}
+  body.hasBgPhoto #s-log :is(.home-stat-num,.home-week-sum b,.home-logo){color:#ffffff;text-shadow:0 1px 3px rgba(0,0,0,.85)}
+  /* 写真の上の赤・テーマ色の文字：標準の #ff2d2d は暗幕越しで 2.8:1、明るいテーマの濃い色はさらに低い。淡い赤にそろえる（暗いテーマの水色・ネオンは読めるので触らない） */
+  :root:is(:not([data-theme]),[data-theme="classic"],[data-theme="minimal"],[data-theme="gold"]) body.hasBgPhoto #s-log :is(.home-part-title,.home-streak,.home-logo b,.plate-ago.stale){color:#ffb0a8;text-shadow:0 1px 3px rgba(0,0,0,.85)}
+  @media (prefers-reduced-motion: reduce){
+    .plate-face{transition:none}
+    .day-btn:active .plate-face{transform:none}
+  }
   /* 部位の日：部位ごとの「前回」のまとまり。背景は --card にして、どのテーマ・写真背景でも読めるようにする */
   #partDayBlocks{position:relative;z-index:1}
   .pd-block{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink)}
   .pd-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-bottom:6px}
-  .pd-head b{font-size:16px}
+  .pd-head b{font-size:14px;font-weight:900;color:var(--head)}
   .pd-item{padding:8px 0;border-top:1px solid var(--line)}
   .pd-head + .pd-item{border-top:0}
   .pd-name{font-weight:600;font-size:15px}
   .pd-sets{font-size:14px;line-height:1.7}
-  .pd-set{white-space:nowrap}
+  /* 体組成の一覧：数字は斜体の太字。いちばん新しい行だけ大きく */
+  .bodyval{font-weight:900;font-style:italic;font-variant-numeric:tabular-nums;font-size:17px;color:var(--ink);padding-right:.08em}
+  .bodyval.latest{font-size:24px;color:var(--head)}
+  /* 320px幅だと「62.5kg ・ 18.5%」が24pxで2行に折れる。20pxなら1行に収まる（実測） */
+  @media (max-width:359px){.bodyval.latest{font-size:20px}}
+  .pd-set{white-space:nowrap;font-weight:900;font-style:italic;font-variant-numeric:tabular-nums;padding-right:.06em}
   .pd-sep{color:var(--sub)}
   .pd-target{font-size:13px;color:var(--sub)}
   .pd-block .exrow .btn{min-height:48px;min-width:64px}
@@ -529,25 +670,18 @@
   #freeOpenBannerClose{min-width:48px;min-height:48px}
   .home-primary-action:active{transform:scale(.98)}
   .home-primary-action:focus-visible,.home-detail summary:focus-visible{outline:3px solid var(--accent2);outline-offset:3px}
-  .home-progress{padding:14px 0 0;overflow:hidden}
-  .home-progress h2{font-size:15px;line-height:1.3;margin:0 14px 12px}
-  .home-metrics{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line)}
-  .home-metric{padding:13px 10px 14px;min-width:0}
-  .home-metric+.home-metric{border-left:1px solid var(--line)}
-  .home-metric b{display:block;font-size:25px;line-height:1;font-weight:800;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
-  .home-metric span{display:block;margin-top:6px;font-size:11px;line-height:1.35;color:var(--sub)}
   .home-detail{margin:12px 0;padding:0;overflow:hidden}
-  .home-detail>summary{list-style:none;cursor:pointer;padding:15px 14px;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .home-detail>summary{list-style:none;cursor:pointer;padding:15px 14px;font-size:13px;font-weight:900;letter-spacing:.08em;color:var(--head);display:flex;align-items:center;justify-content:space-between;gap:12px}
   .home-detail>summary::-webkit-details-marker{display:none}
   .home-detail>summary::after{content:"＋";font-size:19px;font-weight:400;color:var(--sub);line-height:1}
   .home-detail[open]>summary{border-bottom:1px solid var(--line)}
   .home-detail[open]>summary::after{content:"−"}
   .home-detail-body{padding:14px}
-  .home-detail-summary{font-size:12px;font-weight:400;color:var(--sub);margin-left:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .home-detail-summary{font-size:12px;font-weight:400;letter-spacing:0;color:var(--sub);margin-left:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .home-detail .grid2{gap:10px}
   .home-detail .card{margin:8px 0}
-  .home-section-title{font-size:18px;font-weight:800;letter-spacing:-.02em;margin:24px 4px 10px}
-  @media (max-width:360px){.home-stage h2{font-size:25px}.home-metric{padding-left:8px;padding-right:8px}.home-metric b{font-size:22px}.home-metric span{font-size:10px}}
+  .home-section-title{font-size:13px;font-weight:900;letter-spacing:.08em;color:var(--headBare);margin:24px 4px 10px}
+  @media (max-width:360px){.home-stage h2{font-size:25px}}
 </style>
 </head>
 <body>
@@ -564,24 +698,37 @@
     <button class="btn sm" id="freeOpenBannerClose" type="button" aria-label="閉じる" data-i18n-aria="common_close">✕</button>
   </div>
   <div class="home-dashboard" id="homeDashboard">
-    <section class="home-stage" aria-labelledby="homePartTitle">
-      <div class="home-stage-top">
-        <div class="home-date" id="homeDate"></div>
-        <div class="home-shift" id="homeShift" hidden></div>
+    <!-- v59 看板＋今月の数字＋今週のバー。看板の写真は飾り（aria-hidden）。日付札とシフト札は写真の上の文字なので読み上げ対象のまま -->
+    <div class="home-top">
+      <div class="home-hero">
+        <div class="home-hero-photo" aria-hidden="true"></div>
+        <div class="home-hero-tags">
+          <div class="home-tag" id="homeDate"></div>
+          <div class="home-tag" id="homeShift" hidden></div>
+        </div>
       </div>
+      <div class="home-stats">
+        <div class="home-stat">
+          <b class="home-stat-num" id="homeMonthDays">0</b>
+          <div class="home-stat-cap">
+            <span id="homeMonthDaysLabel">日／今月</span>
+            <span class="home-streak"><span id="homeStreakDaysLabel">連続</span> <b id="homeStreakDays">0</b><span id="homeStreakUnit">日</span></span>
+          </div>
+        </div>
+        <div class="home-logo">AKE<b>TORE</b></div>
+      </div>
+      <div class="home-week">
+        <div class="home-week-bars" id="homeWeekBars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="home-week-sum"><span id="homeWeekDaysLabel">今週</span> <b id="homeWeekDays">0</b><span id="homeWeekUnit">日</span></div>
+        <div class="home-week-days" id="homeWeekLabels" aria-hidden="true"><span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span></div>
+      </div>
+    </div>
+
+    <section class="home-stage" aria-labelledby="homePartTitle">
       <div class="home-part-title" id="homePartTitle" data-i18n="pd_pick">今日の部位</div>
       <div class="day-parts" id="dayPartBtns" role="group" aria-labelledby="homePartTitle"></div>
       <button class="home-primary-action" id="homePrimaryAction" type="button" hidden></button>
       <div id="partDayBlocks"></div>
-    </section>
-
-    <section class="home-progress" aria-labelledby="homeProgressTitle">
-      <h2 id="homeProgressTitle">今週の進捗</h2>
-      <div class="home-metrics">
-        <div class="home-metric"><b id="homeWeekDays">0</b><span id="homeWeekDaysLabel">今週の日数</span></div>
-        <div class="home-metric"><b id="homeMonthDays">0</b><span id="homeMonthDaysLabel">今月の日数</span></div>
-        <div class="home-metric"><b id="homeStreakDays">0</b><span id="homeStreakDaysLabel">連続日数</span></div>
-      </div>
     </section>
   </div>
 
@@ -784,7 +931,7 @@
     <div class="locked-mosaic lm-chart" style="height:90px;border-radius:14px"></div>
   </div>
   <div class="card" id="bodyGraphCard" style="display:none">
-    <div class="between"><span class="muted" data-i18n="body_weight_trend">体重の推移</span></div>
+    <div class="between"><span class="ctitle" data-i18n="body_weight_trend">体重の推移</span></div>
     <canvas id="bodyCanvas" width="480" height="160"></canvas>
   </div>
   <div id="bodyList"></div>
@@ -883,20 +1030,20 @@
   </div>
   <!-- 無料公開の告知（2026-10-30_設計_1か月無料公開.md）。文言は renderFreeOpen() が状態ごとに入れる -->
   <div class="card" id="freeOpenCard" style="display:none">
-    <div style="font-weight:600" id="freeOpenTitle"></div>
+    <div class="ctitle" id="freeOpenTitle"></div>
     <div class="muted" style="margin-top:2px" id="freeOpenText"></div>
     <div class="muted" style="margin-top:6px;font-size:13px" id="freeOpenNote"></div>
   </div>
   <!-- プラン比較一覧（新設・UX_課金機能設計.md§3-5）。無料は常時展開、¥200/¥480は<details>でキャッチのみ常時表示。 -->
   <div class="card" id="planCompareCard">
-    <div style="font-weight:600" data-i18n="plan_compare_title">プラン比較</div>
+    <div class="ctitle" data-i18n="plan_compare_title">プラン比較</div>
     <div id="planFreeBlock">
     <div class="h2" style="margin:10px 4px 4px" data-i18n="plan_free_title">無料でできること</div>
     <div class="muted" style="margin:0 4px" data-i18n-html="plan_free_body">
       ・記録・前回値プリセット・シフトタグ・休憩タイマー・自己ベストを褒める通知<br>
       ・体重/体脂肪の記録＋前回比較<br>
       ・データの書き出し/読み込み<br>
-      ・テーマ：標準/ミッドナイト/ワイルド
+      ・テーマ：スタンダード/クラシック/ミッドナイト
     </div>
     </div>
     <details id="planStandardDetails" style="margin-top:14px">
@@ -930,7 +1077,7 @@
     </details>
   </div>
   <div class="card" id="unlockCard">
-    <div style="font-weight:600" data-i18n="unlock_title">購入・解除</div>
+    <div class="ctitle" data-i18n="unlock_title">購入・解除</div>
     <div class="muted" style="margin-top:2px" id="unlockLead" data-i18n="unlock_lead">買い切りで、もっと記録を楽しむ機能を追加できます。購入後に届く解除コードを入力してください。</div>
     <div id="unlockActiveStandard" style="display:none">
       <div class="toast up" style="margin-top:10px" data-i18n="unlock_active_standard">✅ スタンダード（¥200）解除済みです。ありがとうございます！</div>
@@ -948,7 +1095,7 @@
     </div>
   </div>
   <div class="card" id="upgradeCard" style="display:none">
-    <div style="font-weight:600" data-i18n="upgrade_title">プレミアムに足す（差額¥280）</div>
+    <div class="ctitle" data-i18n="upgrade_title">プレミアムに足す（差額¥280）</div>
     <div class="muted" style="margin-top:2px" data-i18n="upgrade_desc">自分を理解する機能（シフト×体調スコアの統計的傾向・体組成・ボディメジャー・部位ヒートマップ）と、ゴールドプレートテーマを追加できます。</div>
     <div id="upgradeForm" style="margin-top:10px;display:none">
       <label class="lbl" for="upgradeInput" data-i18n="upgrade_input_label">アップグレード用コード</label>
@@ -960,13 +1107,13 @@
   </div>
   <!-- 進捗写真の書き出し（¥480購入済み・1枚以上ある時だけ表示。UX_課金機能設計.md §3-4） -->
   <div class="card" id="photoExportCard" style="display:none">
-    <div style="font-weight:600" data-i18n="photoexport_title">進捗写真</div>
+    <div class="ctitle" data-i18n="photoexport_title">進捗写真</div>
     <div class="muted" style="margin-top:6px" id="photoStorageInfo"></div>
     <div class="muted" style="margin-top:6px;font-size:13px" data-i18n="photoexport_note">JSONバックアップには含まれません</div>
     <button class="btn sm" id="photoExportBtn" style="margin-top:10px;width:100%" data-i18n="photoexport_btn">進捗写真を書き出す</button>
   </div>
   <div class="card">
-    <div style="font-weight:600;margin-bottom:8px" data-i18n="data_title">データ</div>
+    <div class="ctitle" style="margin-bottom:8px" data-i18n="data_title">データ</div>
     <div class="grid2">
       <button class="btn" id="exportBtn" data-i18n="data_export">エクスポート（JSON）</button>
       <button class="btn" id="importBtn" data-i18n="data_import">インポート</button>
@@ -976,7 +1123,7 @@
     <button class="btn ghost" id="resetBtn" style="margin-top:10px;color:var(--link);width:100%" data-i18n="data_reset">全データを消去</button>
   </div>
   <div class="card">
-    <div style="font-weight:600" data-i18n="aiexport_title">AI相談用エクスポート</div>
+    <div class="ctitle" data-i18n="aiexport_title">AI相談用エクスポート</div>
     <div class="muted" style="margin-top:6px;font-size:13px" data-i18n="aiexport_note">記録をテキストとしてコピーし、AIチャットに貼り付けると弱い部位やトレーニングバランスについてアドバイスをもらえます。AIへの指示文もデータと一緒にコピーされます。</div>
     <div style="margin-top:10px">
       <label class="lbl" data-i18n="aiexport_period_label">対象期間</label>
@@ -990,12 +1137,12 @@
     <button class="btn sm" id="aiExportBtn" style="margin-top:10px;width:100%" data-i18n="aiexport_btn">AI相談用にコピー</button>
   </div>
   <div class="card">
-    <div style="font-weight:600;margin-bottom:6px" data-i18n="privacy_title">プライバシー</div>
+    <div class="ctitle" style="margin-bottom:6px" data-i18n="privacy_title">プライバシー</div>
     <div class="muted" data-i18n="privacy_body">このアプリはインターネットに一切通信しません。記録はすべてこの端末の中だけに保存されます。アカウント登録もログインも不要です。動画リンクとおすすめ枠だけ、タップした時に外部が開きます。</div>
   </div>
   <div class="card">
     <div class="muted" id="swState" data-i18n="sw_checking">オフライン対応：確認中…</div>
-    <div class="muted" style="margin-top:4px;font-size:12px">あけトレ v58</div><!-- sw.jsのCACHE番号と必ず同時に上げる -->
+    <div class="muted" style="margin-top:4px;font-size:12px">あけトレ v59</div><!-- sw.jsのCACHE番号と必ず同時に上げる -->
   </div>
 </section>
 
@@ -1262,6 +1409,9 @@ const I18N={
     fo_title:"無料公開について",fo_open:"12月31日まで全機能無料。期間中に記録を付けた人は、有料版が出てもずっと全機能無料です（バックアップから復元した端末も対象）。",fo_open_note:"2027年1月から有料版の予定（価格は販売開始時にお知らせします）",
     fo_ended_founding:"無料期間は終了しました。この端末はずっと全機能無料の対象です。",fo_ended_other:"無料期間は終了しました。有料版は準備中です（準備ができるまで全機能を使えます）。",fo_sale_founding:"先行ユーザー：この端末はずっと全機能無料です。ありがとうございます。",
     pd_pick:"今日の部位",pd_continue:"記録を続ける",
+    hm_month_cap:"日／今月",hm_streak:"連続",hm_week:"今週",hm_unit:"日",hm_weekdays:"日,月,火,水,木,金,土",
+    part_short_chest:"胸",part_short_shoulder:"肩",part_short_back:"背中",part_short_biceps:"二頭",part_short_triceps:"三頭",part_short_forearm:"前腕",part_short_abs:"腹",part_short_legs:"脚",part_short_calf:"カーフ",part_short_cardio:"有酸素",
+    pd_post_short:"明け",pd_today:"今日",pd_ago:"{n}日前",pd_never:"—",
     pd_last:"前回 {md}（{n}日前）",pd_no_record:"まだ記録がありません。種目を選んでください",pd_start:"この内容で始める",pd_target:"目安 {v}",
     fo_banner_open:"12/31まで全機能無料（詳しくは設定）",fo_banner_ended_founding:"この端末はずっと全機能無料です",fo_banner_ended_other:"無料期間は終了しました（詳しくは設定）",fo_banner_sale_founding:"先行ユーザー：ずっと全機能無料です"},
   en:{
@@ -1283,7 +1433,7 @@ const I18N={
     body_measure_title:"Body measurements",body_measure_arm:"Arm (cm)",body_measure_arm_ph:"e.g. 30",body_measure_waist:"Waist (cm)",body_measure_waist_ph:"e.g. 78",body_measure_thigh:"Thigh (cm)",body_measure_thigh_ph:"e.g. 52",body_measure_save:"Save today's measurements",
     set_theme_title:"Design theme",set_bgphoto_title:"Background photo",set_praise_title:"Praise style",praise_hype:"🔥 Hype",praise_carrotstick:"🍬 Carrot & stick",praise_calm:"❄️ Calm",
     set_rest_title:"Rest timer",set_rest_desc:"Shows a countdown after logging a set and plays a sound when it ends",set_rest_len:"Rest length",sec_60:"60s",sec_90:"90s",min_2:"2 min",min_3:"3 min",set_alarm_title:"Alarm sound",alarm_bell:"Bell",alarm_pulse:"Pulse beep",alarm_siren:"Siren",alarm_soft:"Soft chime",
-    plan_compare_title:"Compare plans",plan_free_title:"What's free",plan_free_body:"・Logging, last-time presets, shift tags, rest timer, personal-best praise notifications<br>・Weight/body fat logging + comparison with last time<br>・Export/import data<br>・Themes: Standard / Midnight / Wild",
+    plan_compare_title:"Compare plans",plan_free_title:"What's free",plan_free_body:"・Logging, last-time presets, shift tags, rest timer, personal-best praise notifications<br>・Weight/body fat logging + comparison with last time<br>・Export/import data<br>・Themes: Standard / Classic / Midnight",
     plan_standard_name:"Standard ¥200",plan_standard_tagline:"“Look back and enjoy the records you've built up”",plan_toggle_label:"See what's included ▾",plan_standard_body:"・Live stats (estimated 1RM / total volume)<br>・Per-exercise graphs, calendar & streaks, personal-best board (all shown for all time)<br>・Plate calculator / warm-up calculator<br>・Themes: Neon / Minimal",plan_enter_code:"Enter unlock code",
     plan_premium_name:"Premium ¥480",plan_premium_includes:"(includes Standard ¥200)",plan_premium_tagline:"“Understand and take pride in your consistency”",plan_premium_body:"・Statistical trend of shift × condition score<br>・All-time weight/body fat graphs<br>・Body measurements (arm, waist, thigh, etc.) logging & trends<br>・Body part heatmap<br>・Hide the recommendation slot<br>・Theme: Gold Plate<br>*If you've already bought ¥200, you can upgrade for the ¥280 difference",
     unlock_title:"Purchase / Unlock",unlock_lead:"Add features that make tracking more enjoyable with a one-time purchase. Enter the unlock code you receive after purchase.",unlock_active_standard:"✅ Standard (¥200) unlocked. Thank you!",unlock_active_premium:"✅ Premium (¥480) unlocked. Thank you!",unlock_active_premium_note:"*If you erase your data or change devices, entering the same unlock code again will restore it.",unlock_input_label:"Unlock code (works for both Standard and Premium)",unlock_btn:"Unlock",unlock_buy_link:"Buy an unlock code here ↗",
@@ -1326,7 +1476,7 @@ const I18N={
     chart_empty:"Graph will appear once data builds up",
     sample_prefix:"e.g.) ",sample_calm_suffix:" (e.g. +2.5kg vs last time)",
     tier_standard_label:"Standard (¥200)",tier_premium_label:"Premium (¥480)",unlock_success:"🎉 {tier} unlocked! Thanks for your support!",unlock_code_wrong:"That code doesn't look right. Please check it carefully, including the hyphens, and try again.",unlock_code_empty:"Please enter an unlock code.",upgrade_success:"🎉 You're now Premium!",upgrade_code_wrong:"That code doesn't look right. Please check it's the dedicated upgrade code.",upgrade_code_empty:"Please enter an upgrade code.",
-    theme_green_nm:"Standard",theme_green_ds:"Gentle green",theme_midnight_nm:"Midnight",theme_midnight_ds:"Cool nighttime cyan",theme_wild_nm:"Wild",theme_wild_ds:"Black × red fighting spirit",theme_neon_nm:"Neon",theme_neon_ds:"Cyber lime",theme_minimal_nm:"Minimal",theme_minimal_ds:"Refined monochrome",theme_gold_nm:"Gold Plate",theme_gold_ds:"Steel × gold, the real deal",theme_in_use:"● In use",
+    theme_green_nm:"Standard (Black × Red)",theme_green_ds:"Same as the icon: a dark gym and red lights",theme_classic_nm:"Classic (Gentle green)",theme_classic_ds:"Gentle green",theme_midnight_nm:"Midnight",theme_midnight_ds:"Cool nighttime cyan",theme_neon_nm:"Neon",theme_neon_ds:"Cyber lime",theme_minimal_nm:"Minimal",theme_minimal_ds:"Refined monochrome",theme_gold_nm:"Gold Plate",theme_gold_ds:"Steel × gold, the real deal",theme_in_use:"● In use",
     bg_empty:"No background photo set yet",bg_choose_btn:"🖼 Choose background photo",bg_alt:"Current background photo",bg_desc:"Used as the background on the Log and Review screens",bg_delete_btn:"Delete background photo",bg_json_note:"Not included in JSON backups",bg_delete_confirm:"Delete the background photo?",bg_processing:"Processing…",bg_set_fail:"Couldn't set the background photo. Please try again.",
     plan_toggle_label_open:"Hide what's included ▴",
     import_fail:"Couldn't load the file.",reset_confirm:"This will erase all data. Are you sure?",
@@ -1341,6 +1491,9 @@ const I18N={
     fo_title:"About the free period",fo_open:"All features are free until December 31. If you log a record during this period, every feature stays free for you forever, even after the paid version launches (devices restored from a backup are included).",fo_open_note:"A paid version is planned from January 2027 (prices will be announced when sales begin).",
     fo_ended_founding:"The free period has ended. This device keeps every feature free forever.",fo_ended_other:"The free period has ended. The paid version is in preparation (all features stay available until then).",fo_sale_founding:"Early user: every feature on this device is free forever. Thank you!",
     pd_pick:"Today's body part",pd_continue:"Continue logging",
+    hm_month_cap:"days / this month",hm_streak:"Streak",hm_week:"This week",hm_unit:"d",hm_weekdays:"Sun,Mon,Tue,Wed,Thu,Fri,Sat",
+    part_short_chest:"Chest",part_short_shoulder:"Delts",part_short_back:"Back",part_short_biceps:"Biceps",part_short_triceps:"Triceps",part_short_forearm:"Forearm",part_short_abs:"Abs",part_short_legs:"Legs",part_short_calf:"Calves",part_short_cardio:"Cardio",
+    pd_post_short:"Post-N",pd_today:"Today",pd_ago:"{n}d ago",pd_never:"—",
     pd_last:"Last time {md} ({n} d ago)",pd_no_record:"No records yet. Choose an exercise.",pd_start:"Start with this",pd_target:"Target {v}",
     fo_banner_open:"All features free until Dec 31 (see Settings)",fo_banner_ended_founding:"This device stays free forever",fo_banner_ended_other:"The free period has ended (see Settings)",fo_banner_sale_founding:"Early user: free forever"
   },
@@ -1363,7 +1516,7 @@ const I18N={
     body_measure_title:"身体围度",body_measure_arm:"上臂（cm）",body_measure_arm_ph:"例 30",body_measure_waist:"腰围（cm）",body_measure_waist_ph:"例 78",body_measure_thigh:"大腿（cm）",body_measure_thigh_ph:"例 52",body_measure_save:"保存今天的围度",
     set_theme_title:"界面主题",set_bgphoto_title:"背景图片",set_praise_title:"鼓励风格",praise_hype:"🔥 热血",praise_carrotstick:"🍬 软硬兼施",praise_calm:"❄️ 冷静",
     set_rest_title:"休息计时器",set_rest_desc:"记录一组后显示倒计时，结束时发出提示音",set_rest_len:"休息时长",sec_60:"60秒",sec_90:"90秒",min_2:"2分钟",min_3:"3分钟",set_alarm_title:"闹钟音",alarm_bell:"铃声",alarm_pulse:"连续蜂鸣",alarm_siren:"警报声",alarm_soft:"柔和提示音",
-    plan_compare_title:"套餐对比",plan_free_title:"免费可用功能",plan_free_body:"・记录・上次数值预设・班次标签・休息计时器・刷新个人最佳时的提示<br>・体重/体脂记录＋与上次对比<br>・数据导出/导入<br>・主题：标准/午夜/野性",
+    plan_compare_title:"套餐对比",plan_free_title:"免费可用功能",plan_free_body:"・记录・上次数值预设・班次标签・休息计时器・刷新个人最佳时的提示<br>・体重/体脂记录＋与上次对比<br>・数据导出/导入<br>・主题：标准/经典/午夜",
     plan_standard_name:"标准版 ¥200",plan_standard_tagline:"“回顾并享受自己积累的记录”",plan_toggle_label:"查看详情 ▾",plan_standard_body:"・实时统计（估算1RM/总训练量）<br>・各动作图表・日历与连续记录・个人最佳榜（均可查看全部历史）<br>・杠铃片计算器／热身计算器<br>・主题：霓虹/极简",plan_enter_code:"输入解锁码",
     plan_premium_name:"高级版 ¥480",plan_premium_includes:"（含标准版¥200）",plan_premium_tagline:"“理解并为坚持下来的自己感到自豪”",plan_premium_body:"・班次×身体状况评分的统计趋势<br>・体重・体脂的全期间图表<br>・身体围度（上臂・腰围・大腿等）记录与趋势<br>・部位热力图<br>・隐藏推荐位<br>・主题：金牌<br>※已购买¥200的话，补差价¥280即可升级",
     unlock_title:"购买・解锁",unlock_lead:"一次性购买即可添加更多功能。请输入购买后收到的解锁码。",unlock_active_standard:"✅ 标准版（¥200）已解锁。感谢支持！",unlock_active_premium:"✅ 高级版（¥480）已解锁。感谢支持！",unlock_active_premium_note:"※即使清除数据或更换设备，重新输入同一解锁码即可恢复。",unlock_input_label:"解锁码（标准版／高级版均可在此输入）",unlock_btn:"解锁",unlock_buy_link:"点此购买解锁码 ↗",
@@ -1406,7 +1559,7 @@ const I18N={
     chart_empty:"数据积累后会显示图表",
     sample_prefix:"例）",sample_calm_suffix:"（例如比上次 +2.5kg）",
     tier_standard_label:"标准版（¥200）",tier_premium_label:"高级版（¥480）",unlock_success:"🎉 已解锁{tier}！感谢支持！",unlock_code_wrong:"解锁码似乎不正确。请仔细确认（包括连字符）后重试。",unlock_code_empty:"请输入解锁码。",upgrade_success:"🎉 已升级为高级版！",upgrade_code_wrong:"升级码似乎不正确，请确认是否为专用升级码。",upgrade_code_empty:"请输入升级码。",
-    theme_green_nm:"标准",theme_green_ds:"柔和的绿色",theme_midnight_nm:"午夜",theme_midnight_ds:"清凉的夜间青色",theme_wild_nm:"野性",theme_wild_ds:"黑×红的斗魂",theme_neon_nm:"霓虹",theme_neon_ds:"赛博风荧光绿",theme_minimal_nm:"极简",theme_minimal_ds:"精致的黑白配色",theme_gold_nm:"金牌",theme_gold_ds:"钢铁×黄金的正式装备",theme_in_use:"● 使用中",
+    theme_green_nm:"标准（黑×红）",theme_green_ds:"和图标一样，昏暗的健身房与红色灯光",theme_classic_nm:"经典（柔和绿色）",theme_classic_ds:"柔和的绿色",theme_midnight_nm:"午夜",theme_midnight_ds:"清凉的夜间青色",theme_neon_nm:"霓虹",theme_neon_ds:"赛博风荧光绿",theme_minimal_nm:"极简",theme_minimal_ds:"精致的黑白配色",theme_gold_nm:"金牌",theme_gold_ds:"钢铁×黄金的正式装备",theme_in_use:"● 使用中",
     bg_empty:"尚未设置背景图片",bg_choose_btn:"🖼 选择背景图片",bg_alt:"当前设置的背景图片",bg_desc:"用作「记录」和「回顾」画面的背景",bg_delete_btn:"删除背景图片",bg_json_note:"不包含在JSON备份中",bg_delete_confirm:"确定删除背景图片吗？",bg_processing:"处理中…",bg_set_fail:"无法设置背景图片，请重试。",
     plan_toggle_label_open:"收起详情 ▴",
     import_fail:"无法读取文件。",reset_confirm:"将清除所有数据。确定吗？",
@@ -1421,6 +1574,9 @@ const I18N={
     fo_title:"关于免费开放",fo_open:"12月31日前所有功能免费。在此期间记录过的用户，即使推出付费版也可永久免费使用全部功能（从备份恢复的设备同样适用）。",fo_open_note:"计划自2027年1月起推出付费版（价格将在开始销售时公布）。",
     fo_ended_founding:"免费期已结束。本设备可永久免费使用全部功能。",fo_ended_other:"免费期已结束。付费版正在准备中（准备完成前可使用全部功能）。",fo_sale_founding:"早期用户：本设备可永久免费使用全部功能。感谢支持！",
     pd_pick:"今日部位",pd_continue:"继续记录",
+    hm_month_cap:"天／本月",hm_streak:"连续",hm_week:"本周",hm_unit:"天",hm_weekdays:"日,一,二,三,四,五,六",
+    part_short_chest:"胸",part_short_shoulder:"肩",part_short_back:"背",part_short_biceps:"二头",part_short_triceps:"三头",part_short_forearm:"前臂",part_short_abs:"腹",part_short_legs:"腿",part_short_calf:"小腿",part_short_cardio:"有氧",
+    pd_post_short:"夜班后",pd_today:"今天",pd_ago:"{n}天前",pd_never:"—",
     pd_last:"上次 {md}（{n}天前）",pd_no_record:"还没有记录。请选择动作",pd_start:"按此内容开始",pd_target:"参考 {v}",
     fo_banner_open:"12/31前全部功能免费（详见设置）",fo_banner_ended_founding:"本设备可永久免费使用",fo_banner_ended_other:"免费期已结束（详见设置）",fo_banner_sale_founding:"早期用户：永久免费使用"
   },
@@ -1443,7 +1599,7 @@ const I18N={
     body_measure_title:"Medidas corporales",body_measure_arm:"Brazo (cm)",body_measure_arm_ph:"ej. 30",body_measure_waist:"Cintura (cm)",body_measure_waist_ph:"ej. 78",body_measure_thigh:"Muslo (cm)",body_measure_thigh_ph:"ej. 52",body_measure_save:"Guardar medidas de hoy",
     set_theme_title:"Tema de diseño",set_bgphoto_title:"Foto de fondo",set_praise_title:"Estilo de ánimo",praise_hype:"🔥 Intenso",praise_carrotstick:"🍬 Premio y castigo",praise_calm:"❄️ Tranquilo",
     set_rest_title:"Temporizador de descanso",set_rest_desc:"Muestra una cuenta atrás tras registrar una serie y avisa con un sonido al terminar",set_rest_len:"Duración del descanso",sec_60:"60 s",sec_90:"90 s",min_2:"2 min",min_3:"3 min",set_alarm_title:"Sonido de alarma",alarm_bell:"Campana",alarm_pulse:"Pitido repetido",alarm_siren:"Sirena",alarm_soft:"Tono suave",
-    plan_compare_title:"Comparar planes",plan_free_title:"Qué incluye lo gratuito",plan_free_body:"・Registro, valores anteriores precargados, etiquetas de turno, temporizador de descanso, aviso al superar tu mejor marca<br>・Registro de peso/grasa corporal + comparación con la vez anterior<br>・Exportar/importar datos<br>・Temas: Estándar/Medianoche/Salvaje",
+    plan_compare_title:"Comparar planes",plan_free_title:"Qué incluye lo gratuito",plan_free_body:"・Registro, valores anteriores precargados, etiquetas de turno, temporizador de descanso, aviso al superar tu mejor marca<br>・Registro de peso/grasa corporal + comparación con la vez anterior<br>・Exportar/importar datos<br>・Temas: Estándar/Clásico/Medianoche",
     plan_standard_name:"Estándar ¥200",plan_standard_tagline:"“Mira y disfruta los registros que has acumulado”",plan_toggle_label:"Ver qué incluye ▾",plan_standard_body:"・Estadísticas en vivo (1RM estimado/volumen total)<br>・Gráficos por ejercicio, calendario y rachas, tabla de mejores marcas (todo con historial completo)<br>・Calculadora de discos / calculadora de calentamiento<br>・Temas: Neón/Minimalista",plan_enter_code:"Introducir código de desbloqueo",
     plan_premium_name:"Premium ¥480",plan_premium_includes:"(incluye Estándar ¥200)",plan_premium_tagline:"“Comprende y siéntete orgulloso de tu constancia”",plan_premium_body:"・Tendencia estadística turno × estado físico<br>・Gráficos de peso/grasa corporal de todo el historial<br>・Registro y tendencia de medidas corporales (brazo, cintura, muslo, etc.)<br>・Mapa de calor por zona<br>・Ocultar el espacio de recomendaciones<br>・Tema: Placa dorada<br>*Si ya compraste el de ¥200, puedes mejorar pagando la diferencia de ¥280",
     unlock_title:"Comprar / Desbloquear",unlock_lead:"Añade funciones para disfrutar más del seguimiento con una compra única. Introduce el código que recibas tras la compra.",unlock_active_standard:"✅ Estándar (¥200) desbloqueado. ¡Gracias!",unlock_active_premium:"✅ Premium (¥480) desbloqueado. ¡Gracias!",unlock_active_premium_note:"*Si borras tus datos o cambias de dispositivo, puedes restaurarlo introduciendo el mismo código otra vez.",unlock_input_label:"Código de desbloqueo (sirve tanto para Estándar como para Premium)",unlock_btn:"Desbloquear",unlock_buy_link:"Comprar un código de desbloqueo aquí ↗",
@@ -1486,7 +1642,7 @@ const I18N={
     chart_empty:"El gráfico aparecerá cuando haya más datos",
     sample_prefix:"ej.) ",sample_calm_suffix:" (ej. +2,5kg respecto a la vez anterior)",
     tier_standard_label:"Estándar (¥200)",tier_premium_label:"Premium (¥480)",unlock_success:"🎉 ¡{tier} desbloqueado! ¡Gracias por tu apoyo!",unlock_code_wrong:"Ese código no parece correcto. Compruébalo con calma, incluidos los guiones, e inténtalo de nuevo.",unlock_code_empty:"Introduce un código de desbloqueo.",upgrade_success:"🎉 ¡Ahora tienes Premium!",upgrade_code_wrong:"Ese código no parece correcto. Comprueba que sea el código de mejora específico.",upgrade_code_empty:"Introduce un código de mejora.",
-    theme_green_nm:"Estándar",theme_green_ds:"Verde suave",theme_midnight_nm:"Medianoche",theme_midnight_ds:"Cian fresco nocturno",theme_wild_nm:"Salvaje",theme_wild_ds:"Espíritu de lucha negro × rojo",theme_neon_nm:"Neón",theme_neon_ds:"Lima cibernética",theme_minimal_nm:"Minimalista",theme_minimal_ds:"Monocromo refinado",theme_gold_nm:"Placa dorada",theme_gold_ds:"Acero × oro, edición auténtica",theme_in_use:"● En uso",
+    theme_green_nm:"Estándar (negro × rojo)",theme_green_ds:"Como el icono: un gimnasio oscuro y luces rojas",theme_classic_nm:"Clásico (verde suave)",theme_classic_ds:"Verde suave",theme_midnight_nm:"Medianoche",theme_midnight_ds:"Cian fresco nocturno",theme_neon_nm:"Neón",theme_neon_ds:"Lima cibernética",theme_minimal_nm:"Minimalista",theme_minimal_ds:"Monocromo refinado",theme_gold_nm:"Placa dorada",theme_gold_ds:"Acero × oro, edición auténtica",theme_in_use:"● En uso",
     bg_empty:"Aún no se ha configurado una foto de fondo",bg_choose_btn:"🖼 Elegir foto de fondo",bg_alt:"Foto de fondo actual",bg_desc:"Se usa como fondo en las pantallas de Registro y Resumen",bg_delete_btn:"Eliminar foto de fondo",bg_json_note:"No se incluye en las copias de seguridad JSON",bg_delete_confirm:"¿Eliminar la foto de fondo?",bg_processing:"Procesando…",bg_set_fail:"No se pudo establecer la foto de fondo. Inténtalo de nuevo.",
     plan_toggle_label_open:"Ocultar lo que incluye ▴",
     import_fail:"No se pudo cargar el archivo.",reset_confirm:"Esto borrará todos los datos. ¿Confirmas?",
@@ -1501,6 +1657,9 @@ const I18N={
     fo_title:"Sobre el periodo gratuito",fo_open:"Todas las funciones son gratis hasta el 31 de diciembre. Si registras algo durante este periodo, tendrás todas las funciones gratis para siempre, incluso cuando salga la versión de pago (también en dispositivos restaurados desde una copia de seguridad).",fo_open_note:"Se prevé una versión de pago a partir de enero de 2027 (los precios se anunciarán al comenzar la venta).",
     fo_ended_founding:"El periodo gratuito ha terminado. Este dispositivo mantiene todas las funciones gratis para siempre.",fo_ended_other:"El periodo gratuito ha terminado. La versión de pago está en preparación (hasta entonces puedes usar todas las funciones).",fo_sale_founding:"Usuario pionero: todas las funciones de este dispositivo son gratis para siempre. ¡Gracias!",
     pd_pick:"Zona de hoy",pd_continue:"Seguir registrando",
+    hm_month_cap:"días / este mes",hm_streak:"Racha",hm_week:"Esta semana",hm_unit:"d",hm_weekdays:"dom,lun,mar,mié,jue,vie,sáb",
+    part_short_chest:"Pecho",part_short_shoulder:"Hombro",part_short_back:"Espalda",part_short_biceps:"Bíceps",part_short_triceps:"Tríceps",part_short_forearm:"Antebr.",part_short_abs:"Abs",part_short_legs:"Piernas",part_short_calf:"Gemelos",part_short_cardio:"Cardio",
+    pd_post_short:"Tras G.",pd_today:"Hoy",pd_ago:"hace {n}d",pd_never:"—",
     pd_last:"Última vez {md} (hace {n} d)",pd_no_record:"Aún no hay registros. Elige un ejercicio.",pd_start:"Empezar con esto",pd_target:"Referencia {v}",
     fo_banner_open:"Todo gratis hasta el 31 dic (ver Ajustes)",fo_banner_ended_founding:"Este dispositivo es gratis para siempre",fo_banner_ended_other:"El periodo gratuito ha terminado (ver Ajustes)",fo_banner_sale_founding:"Usuario pionero: gratis para siempre"
   },
@@ -1523,7 +1682,7 @@ const I18N={
     body_measure_title:"Mensurations",body_measure_arm:"Bras (cm)",body_measure_arm_ph:"ex. 30",body_measure_waist:"Taille (cm)",body_measure_waist_ph:"ex. 78",body_measure_thigh:"Cuisse (cm)",body_measure_thigh_ph:"ex. 52",body_measure_save:"Enregistrer les mensurations du jour",
     set_theme_title:"Thème visuel",set_bgphoto_title:"Photo de fond",set_praise_title:"Style d'encouragement",praise_hype:"🔥 Survolté",praise_carrotstick:"🍬 Carotte et bâton",praise_calm:"❄️ Calme",
     set_rest_title:"Minuteur de repos",set_rest_desc:"Affiche un compte à rebours après une série et joue un son à la fin",set_rest_len:"Durée du repos",sec_60:"60 s",sec_90:"90 s",min_2:"2 min",min_3:"3 min",set_alarm_title:"Son d'alarme",alarm_bell:"Cloche",alarm_pulse:"Bip répété",alarm_siren:"Sirène",alarm_soft:"Son doux",
-    plan_compare_title:"Comparer les formules",plan_free_title:"Ce qui est gratuit",plan_free_body:"・Journal, dernières valeurs préremplies, étiquettes de garde, minuteur de repos, notification de record personnel<br>・Suivi du poids/masse grasse + comparaison avec la dernière fois<br>・Export/import des données<br>・Thèmes : Standard/Minuit/Sauvage",
+    plan_compare_title:"Comparer les formules",plan_free_title:"Ce qui est gratuit",plan_free_body:"・Journal, dernières valeurs préremplies, étiquettes de garde, minuteur de repos, notification de record personnel<br>・Suivi du poids/masse grasse + comparaison avec la dernière fois<br>・Export/import des données<br>・Thèmes : Standard/Classique/Minuit",
     plan_standard_name:"Standard ¥200",plan_standard_tagline:"« Relire et savourer les données accumulées »",plan_toggle_label:"Voir le contenu ▾",plan_standard_body:"・Statistiques en direct (1RM estimé/volume total)<br>・Graphiques par exercice, calendrier et séries, tableau des records (historique complet)<br>・Calculateur de plaques / calculateur d'échauffement<br>・Thèmes : Néon/Minimaliste",plan_enter_code:"Saisir le code de déblocage",
     plan_premium_name:"Premium ¥480",plan_premium_includes:"(inclut Standard ¥200)",plan_premium_tagline:"« Comprendre et être fier de sa régularité »",plan_premium_body:"・Tendance statistique garde × forme physique<br>・Graphiques du poids/masse grasse sur tout l'historique<br>・Suivi et évolution des mensurations (bras, taille, cuisse, etc.)<br>・Carte de chaleur par zone<br>・Masquer l'emplacement de recommandation<br>・Thème : Plaque dorée<br>*Si vous avez déjà acheté la version ¥200, vous pouvez passer à Premium pour la différence de ¥280",
     unlock_title:"Achat / Déblocage",unlock_lead:"Ajoutez des fonctionnalités avec un achat unique. Saisissez le code de déblocage reçu après l'achat.",unlock_active_standard:"✅ Standard (¥200) débloqué. Merci !",unlock_active_premium:"✅ Premium (¥480) débloqué. Merci !",unlock_active_premium_note:"*Si vous effacez vos données ou changez d'appareil, ressaisir le même code de déblocage permet de tout restaurer.",unlock_input_label:"Code de déblocage (valable pour Standard et Premium)",unlock_btn:"Débloquer",unlock_buy_link:"Acheter un code de déblocage ici ↗",
@@ -1566,7 +1725,7 @@ const I18N={
     chart_empty:"Le graphique apparaîtra une fois les données accumulées",
     sample_prefix:"ex.) ",sample_calm_suffix:" (ex. +2,5kg par rapport à la dernière fois)",
     tier_standard_label:"Standard (¥200)",tier_premium_label:"Premium (¥480)",unlock_success:"🎉 {tier} débloqué ! Merci pour votre soutien !",unlock_code_wrong:"Ce code ne semble pas correct. Vérifiez-le attentivement, y compris les tirets, et réessayez.",unlock_code_empty:"Veuillez saisir un code de déblocage.",upgrade_success:"🎉 Vous êtes maintenant Premium !",upgrade_code_wrong:"Ce code ne semble pas correct. Vérifiez qu'il s'agit bien du code de mise à niveau dédié.",upgrade_code_empty:"Veuillez saisir un code de mise à niveau.",
-    theme_green_nm:"Standard",theme_green_ds:"Vert doux",theme_midnight_nm:"Minuit",theme_midnight_ds:"Cyan frais nocturne",theme_wild_nm:"Sauvage",theme_wild_ds:"Esprit combatif noir × rouge",theme_neon_nm:"Néon",theme_neon_ds:"Citron vert cyber",theme_minimal_nm:"Minimaliste",theme_minimal_ds:"Monochrome raffiné",theme_gold_nm:"Plaque dorée",theme_gold_ds:"Acier × or, le vrai matériel",theme_in_use:"● Utilisé",
+    theme_green_nm:"Standard (noir × rouge)",theme_green_ds:"Comme l'icône : une salle sombre et des lumières rouges",theme_classic_nm:"Classique (vert doux)",theme_classic_ds:"Vert doux",theme_midnight_nm:"Minuit",theme_midnight_ds:"Cyan frais nocturne",theme_neon_nm:"Néon",theme_neon_ds:"Citron vert cyber",theme_minimal_nm:"Minimaliste",theme_minimal_ds:"Monochrome raffiné",theme_gold_nm:"Plaque dorée",theme_gold_ds:"Acier × or, le vrai matériel",theme_in_use:"● Utilisé",
     bg_empty:"Aucune photo de fond définie pour le moment",bg_choose_btn:"🖼 Choisir une photo de fond",bg_alt:"Photo de fond actuelle",bg_desc:"Utilisée comme fond sur les écrans Journal et Bilan",bg_delete_btn:"Supprimer la photo de fond",bg_json_note:"Non incluses dans les sauvegardes JSON",bg_delete_confirm:"Supprimer la photo de fond ?",bg_processing:"Traitement…",bg_set_fail:"Impossible de définir la photo de fond. Veuillez réessayer.",
     plan_toggle_label_open:"Masquer le contenu ▴",
     import_fail:"Impossible de charger le fichier.",reset_confirm:"Cela effacera toutes les données. Confirmer ?",
@@ -1581,6 +1740,9 @@ const I18N={
     fo_title:"À propos de la période gratuite",fo_open:"Toutes les fonctions sont gratuites jusqu'au 31 décembre. Si vous enregistrez une séance pendant cette période, toutes les fonctions restent gratuites pour toujours, même après la sortie de la version payante (y compris sur un appareil restauré depuis une sauvegarde).",fo_open_note:"Une version payante est prévue à partir de janvier 2027 (les prix seront annoncés au lancement des ventes).",
     fo_ended_founding:"La période gratuite est terminée. Cet appareil garde toutes les fonctions gratuites pour toujours.",fo_ended_other:"La période gratuite est terminée. La version payante est en préparation (toutes les fonctions restent disponibles d'ici là).",fo_sale_founding:"Utilisateur pionnier : toutes les fonctions de cet appareil sont gratuites pour toujours. Merci !",
     pd_pick:"Zone du jour",pd_continue:"Continuer",
+    hm_month_cap:"jours / ce mois",hm_streak:"Série",hm_week:"Cette semaine",hm_unit:"j",hm_weekdays:"dim,lun,mar,mer,jeu,ven,sam",
+    part_short_chest:"Pecs",part_short_shoulder:"Épaule",part_short_back:"Dos",part_short_biceps:"Biceps",part_short_triceps:"Triceps",part_short_forearm:"Av-bras",part_short_abs:"Abdos",part_short_legs:"Jambes",part_short_calf:"Mollets",part_short_cardio:"Cardio",
+    pd_post_short:"Ap. G.",pd_today:"Auj.",pd_ago:"il y a {n}j",pd_never:"—",
     pd_last:"Dernière fois {md} (il y a {n} j)",pd_no_record:"Aucun enregistrement. Choisissez un exercice.",pd_start:"Commencer avec ceci",pd_target:"Repère {v}",
     fo_banner_open:"Tout gratuit jusqu'au 31 déc. (voir Réglages)",fo_banner_ended_founding:"Cet appareil reste gratuit pour toujours",fo_banner_ended_other:"La période gratuite est terminée (voir Réglages)",fo_banner_sale_founding:"Utilisateur pionnier : gratuit pour toujours"
   },
@@ -1603,7 +1765,7 @@ const I18N={
     body_measure_title:"Körpermaße",body_measure_arm:"Oberarm (cm)",body_measure_arm_ph:"z. B. 30",body_measure_waist:"Taille (cm)",body_measure_waist_ph:"z. B. 78",body_measure_thigh:"Oberschenkel (cm)",body_measure_thigh_ph:"z. B. 52",body_measure_save:"Heutige Maße speichern",
     set_theme_title:"Design-Thema",set_bgphoto_title:"Hintergrundbild",set_praise_title:"Art der Motivation",praise_hype:"🔥 Hyped",praise_carrotstick:"🍬 Zuckerbrot und Peitsche",praise_calm:"❄️ Ruhig",
     set_rest_title:"Pausen-Timer",set_rest_desc:"Zeigt nach einem gespeicherten Satz einen Countdown an und gibt am Ende einen Ton aus",set_rest_len:"Pausenlänge",sec_60:"60 s",sec_90:"90 s",min_2:"2 Min.",min_3:"3 Min.",set_alarm_title:"Alarmton",alarm_bell:"Glocke",alarm_pulse:"Pieptonfolge",alarm_siren:"Sirene",alarm_soft:"Sanfter Ton",
-    plan_compare_title:"Pläne vergleichen",plan_free_title:"Was kostenlos enthalten ist",plan_free_body:"・Tagebuch, Voreinstellung der letzten Werte, Schicht-Tags, Pausen-Timer, Benachrichtigung bei persönlicher Bestleistung<br>・Gewicht/Körperfett erfassen + Vergleich zum letzten Mal<br>・Daten exportieren/importieren<br>・Themes: Standard/Mitternacht/Wild",
+    plan_compare_title:"Pläne vergleichen",plan_free_title:"Was kostenlos enthalten ist",plan_free_body:"・Tagebuch, Voreinstellung der letzten Werte, Schicht-Tags, Pausen-Timer, Benachrichtigung bei persönlicher Bestleistung<br>・Gewicht/Körperfett erfassen + Vergleich zum letzten Mal<br>・Daten exportieren/importieren<br>・Themes: Standard/Klassisch/Mitternacht",
     plan_standard_name:"Standard ¥200",plan_standard_tagline:"„Die gesammelten Aufzeichnungen betrachten und genießen“",plan_toggle_label:"Inhalte ansehen ▾",plan_standard_body:"・Live-Statistiken (geschätztes 1RM/Gesamtvolumen)<br>・Diagramme pro Übung, Kalender & Streaks, Bestleistungs-Tabelle (jeweils über den gesamten Zeitraum)<br>・Plattenrechner / Aufwärmrechner<br>・Themes: Neon/Minimal",plan_enter_code:"Freischaltcode eingeben",
     plan_premium_name:"Premium ¥480",plan_premium_includes:"(enthält Standard ¥200)",plan_premium_tagline:"„Die eigene Beständigkeit verstehen und stolz darauf sein“",plan_premium_body:"・Statistischer Trend Schicht × Verfassung<br>・Gewichts-/Körperfettdiagramme über den gesamten Zeitraum<br>・Erfassung und Verlauf der Körpermaße (Oberarm, Taille, Oberschenkel usw.)<br>・Heatmap der Körperregionen<br>・Empfehlungsfeld ausblenden<br>・Theme: Goldene Platte<br>*Wer bereits ¥200 gekauft hat, kann für die Differenz von ¥280 upgraden",
     unlock_title:"Kauf / Freischaltung",unlock_lead:"Schalte mit einem einmaligen Kauf zusätzliche Funktionen frei. Gib den Freischaltcode ein, den du nach dem Kauf erhältst.",unlock_active_standard:"✅ Standard (¥200) freigeschaltet. Danke!",unlock_active_premium:"✅ Premium (¥480) freigeschaltet. Danke!",unlock_active_premium_note:"*Auch nach dem Löschen der Daten oder einem Gerätewechsel kannst du mit demselben Freischaltcode alles wiederherstellen.",unlock_input_label:"Freischaltcode (gilt sowohl für Standard als auch für Premium)",unlock_btn:"Freischalten",unlock_buy_link:"Freischaltcode hier kaufen ↗",
@@ -1646,7 +1808,7 @@ const I18N={
     chart_empty:"Das Diagramm erscheint, sobald genug Daten vorliegen",
     sample_prefix:"z. B.) ",sample_calm_suffix:" (z. B. +2,5kg im Vergleich zum letzten Mal)",
     tier_standard_label:"Standard (¥200)",tier_premium_label:"Premium (¥480)",unlock_success:"🎉 {tier} freigeschaltet! Danke für deine Unterstützung!",unlock_code_wrong:"Der Code scheint nicht korrekt zu sein. Bitte überprüfe ihn sorgfältig, einschließlich der Bindestriche, und versuche es erneut.",unlock_code_empty:"Bitte gib einen Freischaltcode ein.",upgrade_success:"🎉 Du bist jetzt Premium!",upgrade_code_wrong:"Der Code scheint nicht korrekt zu sein. Bitte prüfe, ob es sich um den speziellen Upgrade-Code handelt.",upgrade_code_empty:"Bitte gib einen Upgrade-Code ein.",
-    theme_green_nm:"Standard",theme_green_ds:"Sanftes Grün",theme_midnight_nm:"Mitternacht",theme_midnight_ds:"Kühles nächtliches Cyan",theme_wild_nm:"Wild",theme_wild_ds:"Schwarz × Rot Kampfgeist",theme_neon_nm:"Neon",theme_neon_ds:"Cyber-Limette",theme_minimal_nm:"Minimal",theme_minimal_ds:"Raffiniertes Monochrom",theme_gold_nm:"Goldene Platte",theme_gold_ds:"Stahl × Gold, das echte Setup",theme_in_use:"● In Verwendung",
+    theme_green_nm:"Standard (Schwarz × Rot)",theme_green_ds:"Wie das Icon: dunkles Gym und rotes Licht",theme_classic_nm:"Klassisch (sanftes Grün)",theme_classic_ds:"Sanftes Grün",theme_midnight_nm:"Mitternacht",theme_midnight_ds:"Kühles nächtliches Cyan",theme_neon_nm:"Neon",theme_neon_ds:"Cyber-Limette",theme_minimal_nm:"Minimal",theme_minimal_ds:"Raffiniertes Monochrom",theme_gold_nm:"Goldene Platte",theme_gold_ds:"Stahl × Gold, das echte Setup",theme_in_use:"● In Verwendung",
     bg_empty:"Noch kein Hintergrundbild festgelegt",bg_choose_btn:"🖼 Hintergrundbild wählen",bg_alt:"Aktuelles Hintergrundbild",bg_desc:"Wird als Hintergrund im Tagebuch- und Rückblick-Bildschirm verwendet",bg_delete_btn:"Hintergrundbild löschen",bg_json_note:"Nicht im JSON-Backup enthalten",bg_delete_confirm:"Hintergrundbild löschen?",bg_processing:"Wird verarbeitet…",bg_set_fail:"Hintergrundbild konnte nicht gesetzt werden. Bitte erneut versuchen.",
     plan_toggle_label_open:"Inhalte ausblenden ▴",
     import_fail:"Datei konnte nicht geladen werden.",reset_confirm:"Dadurch werden alle Daten gelöscht. Bist du sicher?",
@@ -1661,6 +1823,9 @@ const I18N={
     fo_title:"Zum kostenlosen Zeitraum",fo_open:"Alle Funktionen sind bis zum 31. Dezember kostenlos. Wer in diesem Zeitraum etwas einträgt, nutzt alle Funktionen für immer kostenlos – auch nach dem Start der Bezahlversion (auch auf Geräten, die aus einer Sicherung wiederhergestellt wurden).",fo_open_note:"Eine Bezahlversion ist ab Januar 2027 geplant (die Preise werden zum Verkaufsstart bekanntgegeben).",
     fo_ended_founding:"Der kostenlose Zeitraum ist beendet. Auf diesem Gerät bleiben alle Funktionen für immer kostenlos.",fo_ended_other:"Der kostenlose Zeitraum ist beendet. Die Bezahlversion ist in Vorbereitung (bis dahin sind alle Funktionen nutzbar).",fo_sale_founding:"Früher Nutzer: Alle Funktionen auf diesem Gerät sind für immer kostenlos. Danke!",
     pd_pick:"Heutige Muskelgruppe",pd_continue:"Weiter erfassen",
+    hm_month_cap:"Tage / Monat",hm_streak:"Serie",hm_week:"Diese Woche",hm_unit:"T",hm_weekdays:"So,Mo,Di,Mi,Do,Fr,Sa",
+    part_short_chest:"Brust",part_short_shoulder:"Schulter",part_short_back:"Rücken",part_short_biceps:"Bizeps",part_short_triceps:"Trizeps",part_short_forearm:"Unterarm",part_short_abs:"Bauch",part_short_legs:"Beine",part_short_calf:"Waden",part_short_cardio:"Cardio",
+    pd_post_short:"Nach ND",pd_today:"Heute",pd_ago:"vor {n} T",pd_never:"—",
     pd_last:"Zuletzt {md} (vor {n} T.)",pd_no_record:"Noch keine Einträge. Wähle eine Übung.",pd_start:"Damit starten",pd_target:"Richtwert {v}",
     fo_banner_open:"Bis 31. Dez. alles kostenlos (siehe Einstellungen)",fo_banner_ended_founding:"Dieses Gerät bleibt für immer kostenlos",fo_banner_ended_other:"Der kostenlose Zeitraum ist beendet (siehe Einstellungen)",fo_banner_sale_founding:"Früher Nutzer: für immer kostenlos"
   },
@@ -1683,7 +1848,7 @@ const I18N={
     body_measure_title:"Misure corporee",body_measure_arm:"Braccio (cm)",body_measure_arm_ph:"es. 30",body_measure_waist:"Vita (cm)",body_measure_waist_ph:"es. 78",body_measure_thigh:"Coscia (cm)",body_measure_thigh_ph:"es. 52",body_measure_save:"Salva le misure di oggi",
     set_theme_title:"Tema grafico",set_bgphoto_title:"Foto di sfondo",set_praise_title:"Stile di incoraggiamento",praise_hype:"🔥 Carica",praise_carrotstick:"🍬 Bastone e carota",praise_calm:"❄️ Calmo",
     set_rest_title:"Timer di recupero",set_rest_desc:"Mostra un conto alla rovescia dopo aver registrato una serie e avvisa con un suono alla fine",set_rest_len:"Durata del recupero",sec_60:"60 s",sec_90:"90 s",min_2:"2 min",min_3:"3 min",set_alarm_title:"Suono allarme",alarm_bell:"Campana",alarm_pulse:"Bip ripetuto",alarm_siren:"Sirena",alarm_soft:"Suono soffuso",
-    plan_compare_title:"Confronta i piani",plan_free_title:"Cosa è incluso gratis",plan_free_body:"・Diario, valori precedenti precompilati, tag turno, timer di recupero, notifica per il record personale<br>・Registrazione peso/massa grassa + confronto con la volta precedente<br>・Esportazione/importazione dati<br>・Temi: Standard/Midnight/Wild",
+    plan_compare_title:"Confronta i piani",plan_free_title:"Cosa è incluso gratis",plan_free_body:"・Diario, valori precedenti precompilati, tag turno, timer di recupero, notifica per il record personale<br>・Registrazione peso/massa grassa + confronto con la volta precedente<br>・Esportazione/importazione dati<br>・Temi: Standard/Classico/Midnight",
     plan_standard_name:"Standard ¥200",plan_standard_tagline:"“Rivedi e goditi i dati che hai accumulato”",plan_toggle_label:"Vedi cosa è incluso ▾",plan_standard_body:"・Statistiche in tempo reale (1RM stimato/volume totale)<br>・Grafici per esercizio, calendario e serie consecutive, classifica dei record personali (tutto sull'intero storico)<br>・Calcolatore dischi / calcolatore di riscaldamento<br>・Temi: Neon/Minimal",plan_enter_code:"Inserisci codice di sblocco",
     plan_premium_name:"Premium ¥480",plan_premium_includes:"(include Standard ¥200)",plan_premium_tagline:"“Capisci e sii orgoglioso della tua costanza”",plan_premium_body:"・Andamento statistico turno × condizione fisica<br>・Grafici di peso/massa grassa sull'intero storico<br>・Registrazione e andamento delle misure corporee (braccio, vita, coscia, ecc.)<br>・Mappa di calore per zona<br>・Nascondi lo spazio dei consigliati<br>・Tema: Piastra dorata<br>*Se hai già acquistato la versione ¥200, puoi passare a Premium pagando la differenza di ¥280",
     unlock_title:"Acquisto / Sblocco",unlock_lead:"Aggiungi funzioni per goderti di più il tracciamento con un acquisto unico. Inserisci il codice di sblocco ricevuto dopo l'acquisto.",unlock_active_standard:"✅ Standard (¥200) sbloccato. Grazie!",unlock_active_premium:"✅ Premium (¥480) sbloccato. Grazie!",unlock_active_premium_note:"*Anche se elimini i dati o cambi dispositivo, inserendo di nuovo lo stesso codice di sblocco puoi ripristinare tutto.",unlock_input_label:"Codice di sblocco (valido sia per Standard che per Premium)",unlock_btn:"Sblocca",unlock_buy_link:"Acquista qui un codice di sblocco ↗",
@@ -1726,7 +1891,7 @@ const I18N={
     chart_empty:"Il grafico apparirà man mano che si accumulano i dati",
     sample_prefix:"es.) ",sample_calm_suffix:" (es. +2,5kg rispetto alla volta precedente)",
     tier_standard_label:"Standard (¥200)",tier_premium_label:"Premium (¥480)",unlock_success:"🎉 {tier} sbloccato! Grazie per il supporto!",unlock_code_wrong:"Il codice non sembra corretto. Controllalo con calma, inclusi i trattini, e riprova.",unlock_code_empty:"Inserisci un codice di sblocco.",upgrade_success:"🎉 Ora hai Premium!",upgrade_code_wrong:"Il codice non sembra corretto. Verifica che sia il codice di upgrade dedicato.",upgrade_code_empty:"Inserisci un codice di upgrade.",
-    theme_green_nm:"Standard",theme_green_ds:"Verde delicato",theme_midnight_nm:"Midnight",theme_midnight_ds:"Ciano notturno fresco",theme_wild_nm:"Wild",theme_wild_ds:"Spirito combattivo nero × rosso",theme_neon_nm:"Neon",theme_neon_ds:"Lime cyber",theme_minimal_nm:"Minimal",theme_minimal_ds:"Monocromatico raffinato",theme_gold_nm:"Piastra dorata",theme_gold_ds:"Acciaio × oro, l'attrezzatura vera",theme_in_use:"● In uso",
+    theme_green_nm:"Standard (nero × rosso)",theme_green_ds:"Come l'icona: una palestra buia e luci rosse",theme_classic_nm:"Classico (verde delicato)",theme_classic_ds:"Verde delicato",theme_midnight_nm:"Midnight",theme_midnight_ds:"Ciano notturno fresco",theme_neon_nm:"Neon",theme_neon_ds:"Lime cyber",theme_minimal_nm:"Minimal",theme_minimal_ds:"Monocromatico raffinato",theme_gold_nm:"Piastra dorata",theme_gold_ds:"Acciaio × oro, l'attrezzatura vera",theme_in_use:"● In uso",
     bg_empty:"Nessuna foto di sfondo impostata",bg_choose_btn:"🖼 Scegli foto di sfondo",bg_alt:"Foto di sfondo attuale",bg_desc:"Utilizzata come sfondo nelle schermate Diario e Riepilogo",bg_delete_btn:"Elimina foto di sfondo",bg_json_note:"Non incluso nel backup JSON",bg_delete_confirm:"Eliminare la foto di sfondo?",bg_processing:"Elaborazione…",bg_set_fail:"Impossibile impostare la foto di sfondo. Riprova.",
     plan_toggle_label_open:"Nascondi cosa è incluso ▴",
     import_fail:"Impossibile caricare il file.",reset_confirm:"Questo eliminerà tutti i dati. Confermi?",
@@ -1741,6 +1906,9 @@ const I18N={
     fo_title:"Sul periodo gratuito",fo_open:"Tutte le funzioni sono gratuite fino al 31 dicembre. Chi registra qualcosa in questo periodo avrà tutte le funzioni gratis per sempre, anche dopo l'uscita della versione a pagamento (inclusi i dispositivi ripristinati da un backup).",fo_open_note:"È prevista una versione a pagamento da gennaio 2027 (i prezzi saranno annunciati all'avvio delle vendite).",
     fo_ended_founding:"Il periodo gratuito è terminato. Questo dispositivo mantiene tutte le funzioni gratis per sempre.",fo_ended_other:"Il periodo gratuito è terminato. La versione a pagamento è in preparazione (fino ad allora puoi usare tutte le funzioni).",fo_sale_founding:"Utente pioniere: tutte le funzioni su questo dispositivo sono gratis per sempre. Grazie!",
     pd_pick:"Zona di oggi",pd_continue:"Continua a registrare",
+    hm_month_cap:"giorni / mese",hm_streak:"Serie",hm_week:"Questa settimana",hm_unit:"g",hm_weekdays:"dom,lun,mar,mer,gio,ven,sab",
+    part_short_chest:"Petto",part_short_shoulder:"Spalle",part_short_back:"Schiena",part_short_biceps:"Bicip.",part_short_triceps:"Tricip.",part_short_forearm:"Avambr.",part_short_abs:"Addome",part_short_legs:"Gambe",part_short_calf:"Polpacci",part_short_cardio:"Cardio",
+    pd_post_short:"Dopo N",pd_today:"Oggi",pd_ago:"{n}g fa",pd_never:"—",
     pd_last:"Ultima volta {md} ({n} g fa)",pd_no_record:"Ancora nessuna registrazione. Scegli un esercizio.",pd_start:"Inizia con questo",pd_target:"Riferimento {v}",
     fo_banner_open:"Tutto gratis fino al 31 dic (vedi Impostazioni)",fo_banner_ended_founding:"Questo dispositivo resta gratis per sempre",fo_banner_ended_other:"Il periodo gratuito è terminato (vedi Impostazioni)",fo_banner_sale_founding:"Utente pioniere: gratis per sempre"
   }
@@ -1784,7 +1952,8 @@ function load(){
   // 旧データの欠けている項目を補う（移行）
   s.records=s.records||[];s.cardio=s.cardio||[];s.body=s.body||[];s.bodyMeasure=s.bodyMeasure||[];s.cond=s.cond||{};
   s.routines=s.routines||[];s.settings=s.settings||{praiseStyle:"hype"};
-  s.settings.theme=s.settings.theme||"green"; // テーマ未設定の旧データは標準に
+  // テーマ未設定の旧データ・廃止した"wild"・未知のキーは標準("green"＝黒×レッド)に。THEMESはこの後で定義されるため（TDZ回避）キーを直接並べる
+  if(!["green","classic","midnight","neon","minimal","gold"].includes(s.settings.theme))s.settings.theme="green";
   if(!s.settings.lang||!I18N[s.settings.lang])s.settings.lang=detectInitialLang(); // 言語未設定の旧データはブラウザ言語から推定
   s.settings.restTimer=(s.settings.restTimer===undefined)?true:s.settings.restTimer; // 既定ON（明示OFFは保持）
   s.settings.restSec=s.settings.restSec||90; // 既定90秒
@@ -2191,10 +2360,14 @@ function praiseText(kind,info){
 }
 
 /* ---------- screens / nav ---------- */
+function syncOnLog(){ // 記録タブが開いている間だけ body.on-log を付ける（ヘッダーを隠す）。タブ切り替えと起動時に呼ぶ
+  document.body.classList.toggle("on-log",document.getElementById("s-log").classList.contains("active"));
+}
 document.getElementById("nav").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
   document.querySelectorAll(".navbar button").forEach(x=>x.classList.toggle("on",x===b));
   document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("active",s.id===b.dataset.t));
+  syncOnLog();
   if(b.dataset.t==="s-hist")renderHist();
   if(b.dataset.t==="s-set")renderGoal();
   if(b.dataset.t==="s-body")renderBody();
@@ -2211,10 +2384,10 @@ function renderHomeDashboard(){
     records:state.records,cardio:state.cardio
   });
   const isJa=state.settings.lang==="ja";
-  const selectedDate=new Date(logDate.value+"T00:00:00");
-  const dateText=isJa
-    ?(selectedDate.getMonth()+1+"月"+selectedDate.getDate()+"日")
-    :selectedDate.toLocaleDateString(undefined,{month:"short",day:"numeric"});
+  const selectedDate=new Date((logDate.value||today())+"T00:00:00"); // 日付欄が空のときは今日にする（NaN表示の防止）
+  // 看板の日付札：どの言語でも「10.31 SAT」の形（月.日＋曜日の英3文字）
+  const WD3=["SUN","MON","TUE","WED","THU","FRI","SAT"];
+  const dateText=String(selectedDate.getMonth()+1).padStart(2,"0")+"."+String(selectedDate.getDate()).padStart(2,"0")+" "+WD3[selectedDate.getDay()];
   document.getElementById("homeDate").textContent=dateText;
 
   const shift=document.getElementById("homeShift");
@@ -2228,9 +2401,15 @@ function renderHomeDashboard(){
   document.getElementById("homeWeekDays").textContent=dashboard.metrics.weekDays;
   document.getElementById("homeMonthDays").textContent=dashboard.metrics.monthDays;
   document.getElementById("homeStreakDays").textContent=dashboard.metrics.streakDays;
-  document.getElementById("homeWeekDaysLabel").textContent=isJa?"今週の日数":"This week";
-  document.getElementById("homeMonthDaysLabel").textContent=isJa?"今月の日数":"This month";
-  document.getElementById("homeStreakDaysLabel").textContent=isJa?"連続日数":"Streak";
+  document.getElementById("homeWeekDaysLabel").textContent=t("hm_week");
+  document.getElementById("homeMonthDaysLabel").textContent=t("hm_month_cap");
+  document.getElementById("homeStreakDaysLabel").textContent=t("hm_streak");
+  document.getElementById("homeStreakUnit").textContent=t("hm_unit");
+  document.getElementById("homeWeekUnit").textContent=t("hm_unit");
+  // 今週のバー：日曜始まり。weekFlags が true の日だけ赤（本数は metrics.weekDays と必ず一致）
+  document.querySelectorAll("#homeWeekBars i").forEach((bar,i)=>bar.classList.toggle("d",!!dashboard.metrics.weekFlags[i]));
+  const wdNames=t("hm_weekdays").split(",");
+  document.querySelectorAll("#homeWeekLabels span").forEach((el,i)=>{el.textContent=wdNames[i]||"";});
 
   const condition=state.cond[logDate.value]||{};
   const preparation=[];
@@ -2238,6 +2417,7 @@ function renderHomeDashboard(){
   if(condition.cond)preparation.push(isJa?"体調 "+condition.cond+"/5":"Condition "+condition.cond+"/5");
   if(dashboard.shift)preparation.push(shiftLabel(dashboard.shift));
   document.getElementById("homePreparationSummary").textContent=preparation.join(" ・ ")||(isJa?"未入力":"Not entered");
+  fillPlateAgo(); // 記録が増えたら、プレートの下の「N日前」も最新にする
 }
 document.getElementById("homePrimaryAction").onclick=()=>{
   document.getElementById("todayExercises").scrollIntoView({behavior:"smooth",block:"start"});
@@ -2275,25 +2455,48 @@ function renderShiftChips(){
 renderShiftChips();
 
 let pickedDayParts=[]; // 部位の日で選んだ部位キー（押した順・メモリだけ。保存しない）
-function renderDayParts(){ // 部位ボタン10個と、先頭の「明け」切り替えを描き直す
+// プレートの下の文字：今日 / N日前 / —（null=記録なし）
+function plateAgoText(n){return n===null?t("pd_never"):n===0?t("pd_today"):t("pd_ago").replace("{n}",n);}
+function fillPlateAgo(){ // 各プレートの下の日数を今の記録から描き直す（記録が変わったときは renderHomeDashboard からも呼ぶ）
+  const date=logDate.value||today();
+  document.querySelectorAll("#dayPartBtns .plate-ago[data-part]").forEach(el=>{
+    const n=PartDay.partDaysAgo({records:state.records,cardio:state.cardio,exercises:state.exercises,part:el.dataset.part,date});
+    el.textContent=plateAgoText(n);
+    el.classList.toggle("today",n===0);
+    el.classList.toggle("stale",n!==null&&n>=8); // 8日以上あいたら赤（--link）
+  });
+}
+function renderDayParts(){ // 部位のプレート10個と、先頭の「明け」切り替えを描き直す
   const wrap=document.getElementById("dayPartBtns");wrap.innerHTML="";
   const post=activeShift==="明け";
-  const mk=(cls,label,on,onclick)=>{
+  // cls=見た目の種類／label=円の中の短い名前／aria=読み上げ用の正式名／part=日数を出す部位（明けはnull→「—」）
+  const mk=(cls,label,aria,part,on,onclick)=>{
     const b=document.createElement("button");
     b.type="button";b.className="day-btn "+cls+(on?" on":"");
-    b.textContent=label;b.setAttribute("aria-pressed",on?"true":"false");b.onclick=onclick;
+    b.setAttribute("aria-label",aria);b.setAttribute("aria-pressed",on?"true":"false");b.onclick=onclick;
+    const face=document.createElement("span");
+    const len=[...label].length; // 文字数で文字の大きさを段階的に縮める
+    face.className="plate-face"+(len>=8?" l8":len===7?" l7":len>=5?" l5":"");
+    const nm=document.createElement("span");nm.className="plate-name";nm.textContent=label;face.appendChild(nm);
+    const ago=document.createElement("span");ago.className="plate-ago";
+    if(part){ago.dataset.part=part;ago.id="plateAgo_"+part;b.setAttribute("aria-describedby",ago.id);}
+    else ago.textContent=t("pd_never");
+    b.appendChild(face);b.appendChild(ago);
     wrap.appendChild(b);
   };
-  mk("amber",shiftLabel("明け"),post,()=>{
+  // 読み上げ名は見えている文字を含める（WCAG 2.5.3）。正式名に含まれていればそのまま、含まれなければ「短い名前, 正式名」
+  const postShort=t("pd_post_short"),postFull=shiftLabel("明け");
+  mk("amber",postShort,postFull.includes(postShort)?postFull:postShort+", "+postFull,null,post,()=>{
     activeShift=activeShift==="明け"?null:"明け";shiftAutoRestored=false;
     renderShiftChips();renderHomeDashboard();renderDayParts();renderExCards();
   });
   PARTS.forEach(p=>{
-    mk("",partLabel(p.k),pickedDayParts.includes(p.k),()=>{
+    mk("",t("part_short_"+p.k),partLabel(p.k),p.k,pickedDayParts.includes(p.k),()=>{
       pickedDayParts=pickedDayParts.includes(p.k)?pickedDayParts.filter(k=>k!==p.k):[...pickedDayParts,p.k];
       renderDayParts();
     });
   });
+  fillPlateAgo();
   renderPartDayBlocks();
 }
 function fmtTarget(target,ex){ // 目安の文字（例「目安 62.5kg×10」「目安 自重×16」）。参考表示なので指示口調にしない
@@ -3875,8 +4078,8 @@ function renderBody(){
   const arr=[...state.body].sort((a,b)=>a.date<b.date?-1:1);
   lineChart(document.getElementById("bodyCanvas"),arr.map(b=>b.weight),arr.map(b=>b.date));
   list.innerHTML="";
-  [...arr].reverse().forEach(b=>{const c=document.createElement("div");c.className="card";
-    c.innerHTML='<div class="between"><b>'+b.date+'</b><span>'+fmt(b.weight)+'kg'+(b.fat?' ・ '+fmt(b.fat)+'%':'')+'</span></div>';list.appendChild(c);});
+  [...arr].reverse().forEach((b,i)=>{const c=document.createElement("div");c.className="card";
+    c.innerHTML='<div class="between"><b>'+b.date+'</b><span class="bodyval'+(i===0?' latest':'')+'">'+fmt(b.weight)+'kg'+(b.fat?' ・ '+fmt(b.fat)+'%':'')+'</span></div>';list.appendChild(c);});
   renderMeasure();
 }
 
@@ -3958,8 +4161,8 @@ function themeColor(name,fallback){
 }
 function lineChart(cv,pts,dates){ // datesは任意。渡すとx軸に日付を出し、最新の点を強調して「今どこにいるか」を分かりやすくする
   const ctx=cv.getContext("2d");const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  const cLine=themeColor("--line","#e4e3dd"),cAcc2=themeColor("--accent2","#1d9e75"),
-        cAcc=themeColor("--accent","#0f6e56"),cSub=themeColor("--sub","#6b6b66");
+  const cLine=themeColor("--line","#262626"),cAcc2=themeColor("--accent2","#ff5a4f"),
+        cAcc=themeColor("--accent","#ff2d2d"),cSub=themeColor("--sub","#a3a3a3");
   if(pts.length<1){ctx.fillStyle=cSub;ctx.font="13px sans-serif";ctx.fillText(state.settings.lang==="ja"?"データがたまるとグラフが出ます":t("chart_empty"),12,H/2);return;}
   const padL=34,padR=14,padT=14,padB=dates&&dates.length?26:14;
   const min=Math.min(...pts),max=Math.max(...pts);const rng=(max-min)||1;
@@ -4132,10 +4335,11 @@ document.getElementById("upgradeBtn").onclick=()=>{
 };
 renderUnlock();
 /* ---------- テーマ ---------- */
+// 注意：load() はTDZを避けるため、ここのキーをリテラルでも持っている。THEMESのキーを増減したら load() 側も必ず同じにそろえる
 const THEMES=[
-  {k:"green",   nm:"標準",       ds:"やさしいグリーン",       sw:["#f5f5f2","#0f6e56","#1d9e75"],need:"free"},
+  {k:"green",   nm:"スタンダード（黒×レッド）",ds:"アイコンと同じ、暗いジムと赤いライト", sw:["#000000","#ff2d2d","#ff5a4f"],need:"free"},
+  {k:"classic", nm:"クラシック（やさしいグリーン）",ds:"やさしいグリーン", sw:["#f5f5f2","#0f6e56","#1d9e75"],need:"free"},
   {k:"midnight",nm:"ミッドナイト",ds:"クールな夜のシアン",     sw:["#0e1620","#22d3ee","#38bdf8"],need:"free"},
-  {k:"wild",    nm:"ワイルド",   ds:"黒×レッドの闘魂",        sw:["#141210","#ef3a24","#ff7a3c"],need:"free"},
   {k:"neon",    nm:"ネオン",     ds:"サイバーなライム",       sw:["#0a0a12","#c6f432","#f637ec"],need:"standard"},
   {k:"minimal", nm:"ミニマル",   ds:"モノクロで洗練",         sw:["#fafafa","#18181b","#52525b"],need:"standard"},
   {k:"gold",    nm:"ゴールドプレート",ds:"スチール×ゴールドの本格仕様", sw:["#e3e7ea","#835c0f","#d4a017"],need:"premium"}
@@ -4148,7 +4352,7 @@ function tierMet(need){
   return isPremium();
 }
 function applyTheme(k){
-  if(!THEMES.some(t=>t.k===k))k="green";
+  if(k==="wild"||!THEMES.some(t=>t.k===k))k="green"; // 廃止した"wild"と未知のキーは標準(黒×レッド)に読み替える
   if(k==="green")document.documentElement.removeAttribute("data-theme");
   else document.documentElement.setAttribute("data-theme",k);
   // iOSステータスバーの色を実際の背景に合わせる（外部通信なし）
@@ -4178,8 +4382,8 @@ function renderThemes(){
    ★データは一切改変しない：Phase3のヒートマップ強調は「表示上のハイライト」だけで、実測セット数は変えない。 */
 const GOALS=[
   {k:"general", nm:"一般",       en:"General",  emoji:"⚖️", rep:"",      drep:10, theme:null,      ds:"バランスよく記録する",             dsEn:"Track everything, evenly",         focus:[]},
-  {k:"power",   nm:"パワー系",   en:"Power",    emoji:"🏋️", rep:"1〜5",  drep:3,  theme:"wild",    ds:"高重量・低レップで最大筋力を狙う", dsEn:"Heavy, low reps for max strength", focus:[]},
-  {k:"builder", nm:"ビルダー系", en:"Builder",  emoji:"💪", rep:"8〜12", drep:10, theme:"green",   ds:"中重量・中レップで筋肥大を狙う",   dsEn:"Moderate reps for muscle size",    focus:[]},
+  {k:"power",   nm:"パワー系",   en:"Power",    emoji:"🏋️", rep:"1〜5",  drep:3,  theme:"green",    ds:"高重量・低レップで最大筋力を狙う", dsEn:"Heavy, low reps for max strength", focus:[]},
+  {k:"builder", nm:"ビルダー系", en:"Builder",  emoji:"💪", rep:"8〜12", drep:10, theme:"classic", ds:"中重量・中レップで筋肥大を狙う",   dsEn:"Moderate reps for muscle size",    focus:[]},
   {k:"physique",nm:"フィジーク系",en:"Physique", emoji:"🔻", rep:"10〜15",drep:12, theme:"minimal", ds:"上半身のVシルエットを磨く",         dsEn:"Sculpt the upper-body V-taper",    focus:["shoulder","back","biceps","triceps"]}
 ];
 function goalCfg(k){return GOALS.find(g=>g.k===k)||GOALS[0];}
@@ -4653,6 +4857,7 @@ try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().
 /* ---------- init ---------- */
 document.getElementById("langSelect").value=state.settings.lang||"ja";
 applyI18nStatic();
+syncOnLog(); // 起動時は記録タブが開いているのでヘッダーを隠す
 applyTheme(state.settings.theme);renderThemes();renderGoal();renderRestSec();renderAlarmSound();renderAiExportPeriod();
 loadCondFields();
 restoreShiftForDate(logDate.value); // 開き直したとき、今日すでに明けで記録していれば明けに戻す
