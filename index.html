@@ -110,7 +110,7 @@
     --glow:0 0 16px rgba(212,160,23,.55);
     --barOff:#cdd3d8; --barOn:#a06f0a;
   }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation} /* ダブルタップ拡大を止める（ピンチ拡大は残す） */
   html,body{margin:0;padding:0}
   body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
     background:var(--bg);color:var(--ink);font-size:16px;line-height:1.5;
