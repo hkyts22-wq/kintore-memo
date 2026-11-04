@@ -19,7 +19,7 @@
 <style>
   :root{
     /* ===== 標準（黒×レッド）= デフォルトテーマ（キーは"green"のまま。v59で旧グリーンから入れ替え） ===== */
-    --bg:#000000; --card:#141414; --cardGlass:rgba(20,20,20,.55); --ink:#ffffff; --sub:#a3a3a3; --line:#262626;
+    --bg:#000000; --card:#141414; --cardGlass:rgba(20,20,20,.45); --ink:#ffffff; --sub:#a3a3a3; --line:#262626;
     --accent:#ff2d2d; --accent2:#ff5a4f; --onAccent:#ffffff;
     --bg2:#0a0a0a; --navbg:#000000; --link:#ff6b5f;
     --pr:#3a0d0b; --prink:#ff8a80;
@@ -44,7 +44,7 @@
   :root:not([data-theme]){--accentFill:#e01b1b}
   /* ===== クラシック（やさしいグリーン）= 旧「標準」の色をそのまま移したもの ===== */
   :root[data-theme="classic"]{
-    --bg:#f5f5f2; --card:#ffffff; --cardGlass:rgba(255,255,255,.62); --ink:#1c1c1a; --sub:#6b6b66; --line:#e4e3dd;
+    --bg:#f5f5f2; --card:#ffffff; --cardGlass:rgba(255,255,255,.55); --ink:#1c1c1a; --sub:#6b6b66; --line:#e4e3dd;
     --accent:#0f6e56; --accent2:#1d9e75; --onAccent:#ffffff;
     --bg2:#fafaf8; --navbg:#ffffff; --link:#a32d2d;
     --pr:#e1f5ee; --prink:#04342c;
@@ -52,13 +52,13 @@
     --green:#eaf3de; --greenink:#3b6d11;
     --plateTint:#0f6e56;
     --plateLine:#aab1b8; --plateLineOn:#1d9e75;
-    --plateAmberInk:#ffc04d; /* 明け(琥珀)の文字：プレートは写真の黒い円なので、どのテーマも明るい琥珀にする */
+    --plateAmberInk:#7a4a00; /* 明け(琥珀)の文字：2026-11-04 明るいテーマの未選択プレートを銀にしたので、銀の上で読める濃い琥珀にする */
     --glow:0 0 16px rgba(15,110,86,.55);
     --barOff:#d9d8d2; --barOn:#0f6e56;
   }
   /* ===== ミッドナイト（クール・ダーク／シアン） ===== */
   :root[data-theme="midnight"]{
-    --bg:#0e1620; --card:#18222e; --cardGlass:rgba(24,34,46,.42); --ink:#e7eef6; --sub:#94a8bd; --line:#2a394b;
+    --bg:#0e1620; --card:#18222e; --cardGlass:rgba(24,34,46,.38); --ink:#e7eef6; --sub:#94a8bd; --line:#2a394b;
     --accent:#22d3ee; --accent2:#38bdf8; --onAccent:#06222b;
     --bg2:#131d28; --navbg:#131d28; --link:#ff9d8a;
     --pr:#0c3b39; --prink:#5eead4;
@@ -71,7 +71,7 @@
   }
   /* ===== ネオン（サイバー・ダーク／ライム×マゼンタ） ===== */
   :root[data-theme="neon"]{
-    --bg:#0a0a12; --card:#14141f; --cardGlass:rgba(20,20,31,.42); --ink:#eaeaf6; --sub:#9a9ab8; --line:#262638;
+    --bg:#0a0a12; --card:#14141f; --cardGlass:rgba(20,20,31,.38); --ink:#eaeaf6; --sub:#9a9ab8; --line:#262638;
     --accent:#c6f432; --accent2:#f637ec; --onAccent:#141f08;
     --bg2:#101019; --navbg:#101019; --link:#ff86d9;
     --pr:#20330a; --prink:#d7ff66;
@@ -84,21 +84,21 @@
   }
   /* ===== ミニマル（モノクロ） ===== */
   :root[data-theme="minimal"]{
-    --bg:#fafafa; --card:#ffffff; --cardGlass:rgba(255,255,255,.62); --ink:#18181b; --sub:#6b6b72; --line:#e4e4e7;
+    --bg:#fafafa; --card:#ffffff; --cardGlass:rgba(255,255,255,.55); --ink:#18181b; --sub:#6b6b72; --line:#e4e4e7;
     --accent:#18181b; --accent2:#52525b; --onAccent:#ffffff;
     --bg2:#f4f4f5; --navbg:#ffffff; --link:#b91c1c;
     --pr:#18181b; --prink:#ffffff;
     --amber:#f4f4f5; --amberink:#3f3f46; --blue:#f4f4f5; --blueink:#3f3f46;
     --green:#f4f4f5; --greenink:#27272a;
-    --plateTint:#d4d4d8; --plateInkOn:#18181b; --plateShadowOn:none; /* 銀に染まるので選択中の文字は黒 */
+    --plateTint:#2a2a2e; --plateInkOn:#ffffff; /* 2026-11-04 未選択が銀になったので、選択中は黒に近い墨色にして差を出す（文字は白） */
     --plateLine:#a1a1aa; --plateLineOn:#52525b;
-    --plateAmberInk:#ffc04d; /* 明け(琥珀)の文字：プレートは写真の黒い円なので、どのテーマも明るい琥珀にする */
+    --plateAmberInk:#7a4a00; /* 明け(琥珀)の文字：2026-11-04 明るいテーマの未選択プレートを銀にしたので、銀の上で読める濃い琥珀にする */
     --glow:0 0 16px rgba(24,24,27,.45);
     --barOff:#e4e4e7; --barOn:#18181b;
   }
   /* ===== ゴールドプレート（スチール×ゴールド・本格仕様／明所での視認性優先） ===== */
   :root[data-theme="gold"]{
-    --bg:#e3e7ea; --card:#f9fafb; --cardGlass:rgba(249,250,251,.64); --ink:#1b2024; --sub:#5b6470; --line:#cdd3d8;
+    --bg:#e3e7ea; --card:#f9fafb; --cardGlass:rgba(249,250,251,.56); --ink:#1b2024; --sub:#5b6470; --line:#cdd3d8;
     --accent:#835c0f; --accent2:#d4a017; --onAccent:#ffffff;
     --bg2:#edf0f2; --navbg:#f9fafb; --link:#8a3812;
     --pr:#f7ecd2; --prink:#6b4a08;
@@ -106,7 +106,7 @@
     --green:#e9f1de; --greenink:#3c6b16;
     --plateTint:#8a640c;
     --plateLine:#aab1b8; --plateLineOn:#d4a017;
-    --plateAmberInk:#ffc04d; /* 明け(琥珀)の文字：プレートは写真の黒い円なので、どのテーマも明るい琥珀にする */
+    --plateAmberInk:#7a4a00; /* 明け(琥珀)の文字：2026-11-04 明るいテーマの未選択プレートを銀にしたので、銀の上で読める濃い琥珀にする */
     --glow:0 0 16px rgba(212,160,23,.55);
     --barOff:#cdd3d8; --barOn:#a06f0a;
   }
@@ -177,7 +177,9 @@
   .toast.calm{background:var(--bg2);color:var(--ink)}
   .muted{color:var(--sub);font-size:13px}
   .vlink{color:var(--link);text-decoration:none;font-size:13px;display:inline-flex;align-items:center;gap:4px}
-  .navbar{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:var(--navbg);
+  /* z-index:20：部位プレート・選択中のテーマカードなど z-index:1 の部品より必ず手前（スクロールで下のボタンに重ならない）。
+     休憩タイマー(30)・下から出るシート(40)よりは奥 */
+  .navbar{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:var(--navbg);z-index:20;
     border-top:1px solid var(--line);display:flex;height:64px;padding-bottom:env(safe-area-inset-bottom)}
   .navbar button{flex:1;border:none;background:none;font-size:11px;color:var(--sub);cursor:pointer;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
@@ -501,12 +503,22 @@
      body.hasBgPhotoはrenderBgPhotoLayers内でJSが付け外しする（写真未設定時は付与せず、ぼかし負荷を払わない）。
      s-log/s-histの2画面に限定（写真レイヤーが存在しない他画面のカードまでぼかすと無意味な負荷になるため）。 */
   .bgPhotoLayer{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:-2}
-  .bgPhotoScrim{position:fixed;inset:0;background:rgba(0,0,0,.50);z-index:-1}
+  /* 2026-11-04 暗幕を .50→.32 に薄くした（写真がほとんど見えないとの声）。写真に直接乗る文字は全部に影を付けてあるので読める */
+  .bgPhotoScrim{position:fixed;inset:0;background:rgba(0,0,0,.32);z-index:-1}
   body.hasBgPhoto #s-log .card,body.hasBgPhoto #s-hist .card{
     background:var(--cardGlass);backdrop-filter:blur(10px) saturate(1.15);-webkit-backdrop-filter:blur(10px) saturate(1.15);margin:14px 0;
   }
+  /* 写真の上で不透明のまま写真を隠していた3か所（部位の前回・折りたたみ・下のボタン帯）も同じすりガラスにする。
+     下のボタン帯は写真が出ている記録・振り返りの画面にいるときだけ */
+  body.hasBgPhoto #s-log :is(.pd-block,.home-detail),
+  body.hasBgPhoto:has(#s-log.active,#s-hist.active) .navbar{
+    background:var(--cardGlass);backdrop-filter:blur(10px) saturate(1.15);-webkit-backdrop-filter:blur(10px) saturate(1.15);
+  }
+  /* 下のボタン帯の灰色の文字は小さいので、カードほど透かさない（真っ黒・真っ白の写真でも文字のコントラスト約4.5:1を保つ濃さ） */
+  body.hasBgPhoto:has(#s-log.active,#s-hist.active) .navbar{background:color-mix(in srgb,var(--navbg) 92%,transparent)}
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-    body.hasBgPhoto #s-log .card,body.hasBgPhoto #s-hist .card{background:var(--card)}
+    body.hasBgPhoto #s-log .card,body.hasBgPhoto #s-hist .card,body.hasBgPhoto #s-log :is(.pd-block,.home-detail){background:var(--card)}
+    body.hasBgPhoto .navbar{background:var(--navbg)}
   }
   /* 写真表示時のみラベル色（--sub）を上書き。通常時のテーマ配色には影響させない。
      2026-06-26 QA差し戻し対応：--subが本文より先に読めなくなるため専用に上書きする。
@@ -654,6 +666,38 @@
   .pd-head + .pd-item{border-top:0}
   .pd-name{font-weight:600;font-size:15px}
   .pd-sets{font-size:14px;line-height:1.7}
+  /* ===== テーマの仕上げ（2026-11-04）：色を差し替えるだけで標準（黒×レッド）用の画面のままだったので、テーマごとに「らしさ」を足す。
+     標準は基準なので触らない（:root[data-theme] は標準以外の5テーマだけに当たる） ===== */
+  /* 全5テーマ：背景の上下にテーマ色をうっすら敷く（color-mix 非対応の端末は1行目の単色のまま） */
+  :root[data-theme] body{background:var(--bg);
+    background:radial-gradient(120% 40% at 50% 0%,color-mix(in srgb,var(--accent) 10%,transparent),transparent 70%) no-repeat,
+      radial-gradient(130% 50% at 50% 100%,color-mix(in srgb,var(--accent) 9%,transparent),transparent 70%) fixed no-repeat,var(--bg)}
+  /* 明るい3テーマ（クラシック・ミニマル・ゴールド） */
+  /* 看板：暗い写真を明るい地へぼかすと灰色にくすむので、ぼかさず下の角を丸めて影で浮かせる */
+  :root:is([data-theme="classic"],[data-theme="minimal"],[data-theme="gold"]) .home-hero{border-radius:0 0 22px 22px;box-shadow:0 8px 20px rgba(16,24,40,.16)}
+  :root:is([data-theme="classic"],[data-theme="minimal"],[data-theme="gold"]) .home-hero-photo{background:url(./icon-512.png?v=53) center 38%/cover no-repeat}
+  :root:is([data-theme="classic"],[data-theme="minimal"],[data-theme="gold"]) .home-stats{margin-top:14px}
+  /* 部位プレート：黒いプレート写真に明るい銀を screen で重ねて、金属の質感を残したまま銀色にする。文字は濃い色。
+     選んだプレートだけはテーマ色（ミニマルは黒）に染まるので、銀との差で選択がひと目で分かる */
+  :root:is([data-theme="classic"],[data-theme="minimal"],[data-theme="gold"]) .day-btn:not(.on) .plate-face{
+    background-color:#c9ced5;background-blend-mode:screen;text-shadow:0 1px 0 rgba(255,255,255,.6);
+    box-shadow:0 3px 8px rgba(16,24,40,.18),inset 0 1px 0 rgba(255,255,255,.7)}
+  :root:is([data-theme="classic"],[data-theme="minimal"],[data-theme="gold"]) .day-btn:not(.on):not(.amber) .plate-face{color:var(--ink)}
+  /* カード類：白い地に白いカードで平たく見えるので、薄い影で一段浮かせる */
+  :root:is([data-theme="classic"],[data-theme="minimal"],[data-theme="gold"]) :is(.card,.home-detail,.pd-block){
+    box-shadow:0 1px 2px rgba(16,24,40,.06),0 6px 16px rgba(16,24,40,.07)}
+  /* 暗い2テーマ（ミッドナイト・ネオン）：大きな数字・今週のバー・選んでいる下のボタンにもテーマ色を使う */
+  :root:is([data-theme="midnight"],[data-theme="neon"]) .home-stat-num{color:var(--accent);text-shadow:0 0 22px color-mix(in srgb,var(--accent) 45%,transparent)}
+  :root:is([data-theme="midnight"],[data-theme="neon"]) .home-week-bars i.d{box-shadow:0 0 8px color-mix(in srgb,var(--accent) 60%,transparent)}
+  :root:is([data-theme="midnight"],[data-theme="neon"]) .navbar button.on{color:var(--accent)}
+  /* 「トレーニング終了」後の完了の札：左にテーマ色の帯、見出しは大きめ */
+  .workout-done{border-left:5px solid var(--accent);padding:14px 16px;display:grid;gap:6px;justify-items:start}
+  .workout-done[hidden]{display:none}
+  .workout-done .wd-title{font-size:19px;font-weight:800;letter-spacing:.02em}
+  .workout-done .wd-body{font-size:15px;color:var(--sub)}
+  .workout-done .btn{margin-top:4px;min-height:44px}
+  :root:is([data-theme="midnight"],[data-theme="neon"]) :is(.card,.home-detail,.pd-block){
+    border-color:color-mix(in srgb,var(--accent) 16%,var(--line));box-shadow:0 8px 24px rgba(0,0,0,.35)}
   /* 体組成の一覧：数字は斜体の太字。いちばん新しい行だけ大きく */
   .bodyval{font-weight:900;font-style:italic;font-variant-numeric:tabular-nums;font-size:17px;color:var(--ink);padding-right:.08em}
   .bodyval.latest{font-size:24px;color:var(--head)}
@@ -696,6 +740,12 @@
   <div class="card between" id="freeOpenBanner" style="display:none;gap:8px">
     <button class="fo-banner-text" id="freeOpenBannerText" type="button"></button>
     <button class="btn sm" id="freeOpenBannerClose" type="button" aria-label="閉じる" data-i18n-aria="common_close">✕</button>
+  </div>
+  <!-- 2026-11-04 「トレーニング終了」を押した後に出す完了の札。種目を足し直すと自動で消える -->
+  <div class="card workout-done" id="workoutDone" role="status" hidden>
+    <div class="wd-title" data-i18n="wd_title">🏁 今日のトレーニング完了</div>
+    <div class="wd-body" data-i18n="wd_body">お疲れさまでした。記録は保存されています。</div>
+    <button class="btn sm ghost" id="workoutDoneSummary" type="button" data-i18n="wd_summary">まとめを見る</button>
   </div>
   <div class="home-dashboard" id="homeDashboard">
     <!-- v59 看板＋今月の数字＋今週のバー。看板の写真は飾り（aria-hidden）。日付札とシフト札は写真の上の文字なので読み上げ対象のまま -->
@@ -1482,7 +1532,7 @@ const I18N={
     import_fail:"Couldn't load the file.",reset_confirm:"This will erase all data. Are you sure?",
     rest_done:"Rest over 💪",
     sw_active:"Offline support: active (works without signal)",sw_failed:"Offline support: couldn't register",sw_addtohome:"Offline support: enabled once added to home screen",
-    summary_day_empty:"No records for this day yet.",pb_updated_label:"🎉 New PB: ",routine_empty:"Not yet. Build today's exercises, then save with the button below.",total_label:"Total",
+    summary_day_empty:"No records for this day yet.",wd_title:"🏁 Workout complete",wd_body:"Great work today. Your records are saved.",wd_summary:"View summary",pb_updated_label:"🎉 New PB: ",routine_empty:"Not yet. Build today's exercises, then save with the button below.",total_label:"Total",
     cal_week_days:"Days this week",cal_month_days:"Days this month",cal_streak_days:"Current streak",
     praise_sample_hype:"e.g. 🔥 New PB! Amazing!",praise_sample_carrotstick:"e.g. Nice work, you've got this!",praise_sample_calm:"e.g. New PB. +2.5 kg vs last time",
     prev_value_strength:"Previous: {w}kg × {r}",prev_value_cardio:"Previous: {d}km / {m} min",
@@ -1565,7 +1615,7 @@ const I18N={
     import_fail:"无法读取文件。",reset_confirm:"将清除所有数据。确定吗？",
     rest_done:"休息结束 💪",
     sw_active:"离线支持：已启用（无信号也能启动）",sw_failed:"离线支持：注册失败",sw_addtohome:"离线支持：添加到主屏幕后即可启用",
-    summary_day_empty:"这一天还没有记录。",pb_updated_label:"🎉 创造新纪录：",routine_empty:"还没有。先组好今天的动作，再用下面的按钮保存。",total_label:"合计",
+    summary_day_empty:"这一天还没有记录。",wd_title:"🏁 今天的训练完成了",wd_body:"辛苦了。记录已保存。",wd_summary:"查看总结",pb_updated_label:"🎉 创造新纪录：",routine_empty:"还没有。先组好今天的动作，再用下面的按钮保存。",total_label:"合计",
     cal_week_days:"本周天数",cal_month_days:"本月天数",cal_streak_days:"连续天数",
     praise_sample_hype:"例）🔥 创造新纪录！太棒了！",praise_sample_carrotstick:"例）做得好，你能行！",praise_sample_calm:"例）创造新纪录。比上次 +2.5kg",
     prev_value_strength:"上次：{w}kg × {r}次",prev_value_cardio:"上次：{d}km / {m}分钟",
@@ -1648,7 +1698,7 @@ const I18N={
     import_fail:"No se pudo cargar el archivo.",reset_confirm:"Esto borrará todos los datos. ¿Confirmas?",
     rest_done:"Descanso terminado 💪",
     sw_active:"Soporte sin conexión: activo (funciona sin señal)",sw_failed:"Soporte sin conexión: no se pudo registrar",sw_addtohome:"Soporte sin conexión: se activa al añadir a la pantalla de inicio",
-    summary_day_empty:"Aún no hay registros para este día.",pb_updated_label:"🎉 ¡Nueva marca personal: ",routine_empty:"Aún no hay ninguno. Crea los ejercicios de hoy y guárdalos con el botón de abajo.",total_label:"Total",
+    summary_day_empty:"Aún no hay registros para este día.",wd_title:"🏁 Entrenamiento terminado",wd_body:"¡Buen trabajo! Tus registros están guardados.",wd_summary:"Ver resumen",pb_updated_label:"🎉 ¡Nueva marca personal: ",routine_empty:"Aún no hay ninguno. Crea los ejercicios de hoy y guárdalos con el botón de abajo.",total_label:"Total",
     cal_week_days:"Días esta semana",cal_month_days:"Días este mes",cal_streak_days:"Racha actual",
     praise_sample_hype:"ej. 🔥 ¡Nueva marca personal! ¡Increíble!",praise_sample_carrotstick:"ej. ¡Bien hecho, tú puedes!",praise_sample_calm:"ej. Nueva marca personal. +2,5 kg respecto a la vez anterior",
     prev_value_strength:"Anterior: {w}kg × {r}",prev_value_cardio:"Anterior: {d}km / {m} min",
@@ -1731,7 +1781,7 @@ const I18N={
     import_fail:"Impossible de charger le fichier.",reset_confirm:"Cela effacera toutes les données. Confirmer ?",
     rest_done:"Repos terminé 💪",
     sw_active:"Support hors ligne : actif (fonctionne sans réseau)",sw_failed:"Support hors ligne : échec de l'enregistrement",sw_addtohome:"Support hors ligne : activé une fois ajouté à l'écran d'accueil",
-    summary_day_empty:"Pas encore de données pour ce jour.",pb_updated_label:"🎉 Nouveau record : ",routine_empty:"Pas encore. Composez les exercices du jour, puis enregistrez avec le bouton ci-dessous.",total_label:"Total",
+    summary_day_empty:"Pas encore de données pour ce jour.",wd_title:"🏁 Séance terminée",wd_body:"Bravo pour aujourd'hui. Vos données sont enregistrées.",wd_summary:"Voir le résumé",pb_updated_label:"🎉 Nouveau record : ",routine_empty:"Pas encore. Composez les exercices du jour, puis enregistrez avec le bouton ci-dessous.",total_label:"Total",
     cal_week_days:"Jours cette semaine",cal_month_days:"Jours ce mois",cal_streak_days:"Série actuelle",
     praise_sample_hype:"ex. 🔥 Nouveau record personnel ! Incroyable !",praise_sample_carrotstick:"ex. Bien joué, tu peux le faire !",praise_sample_calm:"ex. Nouveau record personnel. +2,5 kg par rapport à la dernière fois",
     prev_value_strength:"Dernière fois : {w}kg × {r}",prev_value_cardio:"Dernière fois : {d}km / {m} min",
@@ -1814,7 +1864,7 @@ const I18N={
     import_fail:"Datei konnte nicht geladen werden.",reset_confirm:"Dadurch werden alle Daten gelöscht. Bist du sicher?",
     rest_done:"Pause vorbei 💪",
     sw_active:"Offline-Unterstützung: aktiv (funktioniert ohne Empfang)",sw_failed:"Offline-Unterstützung: Registrierung fehlgeschlagen",sw_addtohome:"Offline-Unterstützung: aktiviert, wenn zum Startbildschirm hinzugefügt",
-    summary_day_empty:"Für diesen Tag liegen noch keine Einträge vor.",pb_updated_label:"🎉 Neue Bestleistung: ",routine_empty:"Noch keine. Stelle zuerst die heutigen Übungen zusammen und speichere sie dann über den Button unten.",total_label:"Gesamt",
+    summary_day_empty:"Für diesen Tag liegen noch keine Einträge vor.",wd_title:"🏁 Training abgeschlossen",wd_body:"Gut gemacht! Deine Einträge sind gespeichert.",wd_summary:"Zusammenfassung ansehen",pb_updated_label:"🎉 Neue Bestleistung: ",routine_empty:"Noch keine. Stelle zuerst die heutigen Übungen zusammen und speichere sie dann über den Button unten.",total_label:"Gesamt",
     cal_week_days:"Tage diese Woche",cal_month_days:"Tage diesen Monat",cal_streak_days:"Aktuelle Serie",
     praise_sample_hype:"z. B. 🔥 Neue Bestleistung! Fantastisch!",praise_sample_carrotstick:"z. B. Gut gemacht, du schaffst das!",praise_sample_calm:"z. B. Neue Bestleistung. +2,5 kg im Vergleich zum letzten Mal",
     prev_value_strength:"Letztes Mal: {w}kg × {r}",prev_value_cardio:"Letztes Mal: {d}km / {m} Min.",
@@ -1897,7 +1947,7 @@ const I18N={
     import_fail:"Impossibile caricare il file.",reset_confirm:"Questo eliminerà tutti i dati. Confermi?",
     rest_done:"Riposo finito 💪",
     sw_active:"Supporto offline: attivo (funziona senza segnale)",sw_failed:"Supporto offline: registrazione non riuscita",sw_addtohome:"Supporto offline: attivato una volta aggiunto alla schermata Home",
-    summary_day_empty:"Ancora nessun dato per questo giorno.",pb_updated_label:"🎉 Nuovo record: ",routine_empty:"Ancora nessuno. Componi prima gli esercizi di oggi, poi salva con il pulsante qui sotto.",total_label:"Totale",
+    summary_day_empty:"Ancora nessun dato per questo giorno.",wd_title:"🏁 Allenamento completato",wd_body:"Ottimo lavoro! I tuoi dati sono salvati.",wd_summary:"Vedi riepilogo",pb_updated_label:"🎉 Nuovo record: ",routine_empty:"Ancora nessuno. Componi prima gli esercizi di oggi, poi salva con il pulsante qui sotto.",total_label:"Totale",
     cal_week_days:"Giorni questa settimana",cal_month_days:"Giorni questo mese",cal_streak_days:"Serie attuale",
     praise_sample_hype:"es. 🔥 Nuovo record personale! Fantastico!",praise_sample_carrotstick:"es. Ben fatto, puoi farcela!",praise_sample_calm:"es. Nuovo record personale. +2,5 kg rispetto alla volta precedente",
     prev_value_strength:"Volta precedente: {w}kg × {r}",prev_value_cardio:"Volta precedente: {d}km / {m} min",
@@ -2881,6 +2931,7 @@ function finishCardioExercise(exId,date){
 }
 
 function renderExCards(){
+  renderWorkoutDone();
   const isJa=state.settings.lang==="ja";
   const wrap=document.getElementById("exCards");wrap.innerHTML="";
   const date=logDate.value;
@@ -3280,7 +3331,28 @@ document.getElementById("warmupBackBtn").onclick=()=>{
   }
 };
 
-document.getElementById("endWorkoutBtn").onclick=()=>{openSummarySheet();};
+// 2026-11-04 終了ボタン：今日の記録があれば、先に画面を「終わった状態」に片付けてからサマリを出す
+// （サマリを閉じる経路が複数あるので、閉じたときではなく押したときに片付ける）。記録そのものは消さない
+function finishWorkout(){
+  document.querySelectorAll("#s-log details[open]").forEach(d=>{d.open=false;});
+  document.getElementById("pickerCard").style.display="none";
+  pickedDayParts=[];activeExIds=[];
+  state.settings.workoutEndedOn=logDate.value;save();
+  renderDayParts();renderExCards();renderHomeDashboard();
+  window.scrollTo(0,0); // すぐ上にサマリが重なるので、なめらかに動かさず一瞬で先頭へ（なめらか指定は途中で止まることがあった）
+}
+function renderWorkoutDone(){ // 終了した日を表示中で、種目カードが空のときだけ完了の札を出す
+  const el=document.getElementById("workoutDone");if(!el)return;
+  const ended=state.settings.workoutEndedOn===logDate.value;
+  if(ended&&activeExIds.length){delete state.settings.workoutEndedOn;save();} // 種目を足し直した＝再開
+  el.hidden=!(ended&&!activeExIds.length);
+}
+document.getElementById("endWorkoutBtn").onclick=()=>{
+  const date=logDate.value;
+  if(state.records.some(r=>r.date===date)||state.cardio.some(r=>r.date===date))finishWorkout();
+  openSummarySheet();
+};
+document.getElementById("workoutDoneSummary").onclick=()=>{openSummarySheet();};
 document.getElementById("summarySheetClose").onclick=()=>{document.getElementById("summarySheetBg").hidden=true;};
 function flashToast(exId,p){
   // place toast under the matching card by re-finding it
@@ -4862,9 +4934,10 @@ applyTheme(state.settings.theme);renderThemes();renderGoal();renderRestSec();ren
 loadCondFields();
 restoreShiftForDate(logDate.value); // 開き直したとき、今日すでに明けで記録していれば明けに戻す
 renderShiftChips();renderDayParts();
-idsWithDataForDate(logDate.value).forEach(id=>{if(exById(id)&&!activeExIds.includes(id))activeExIds.push(id);}); // 起動時：今日すでに記録済みの種目をセッション表示に復元（ページ再読み込みで「今日のトレーニング」が消えて見える不具合の対策）
+const endedToday=state.settings.workoutEndedOn===logDate.value; // 2026-11-04 終了済みの日は、開き直しても片付けた状態（完了の札）のまま
+if(!endedToday)idsWithDataForDate(logDate.value).forEach(id=>{if(exById(id)&&!activeExIds.includes(id))activeExIds.push(id);}); // 起動時：今日すでに記録済みの種目をセッション表示に復元（ページ再読み込みで「今日のトレーニング」が消えて見える不具合の対策）
 renderExCards();renderPraiseSeg();renderRoutines();renderBackupInfo();
-document.getElementById("routineCard").open=state.routines.length>0;
+document.getElementById("routineCard").open=state.routines.length>0&&!endedToday;
 renderBgPhotoSettings();renderBgPhotoLayers(); // 初期表示はs-log（記録画面）がactiveなので背景レイヤーも初回反映が必要
 
 /* ---------- PWA: オフライン対応（同一オリジンのみ・外部通信なし） ---------- */
