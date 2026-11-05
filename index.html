@@ -1989,6 +1989,7 @@ let activeShift=null;
 let shiftAutoRestored=false; // 明けを「その日の記録から自動で選んだ」ときだけtrue（保存しない）。手動で選んだシフトを日付変更で消さないための旗
 let shiftBeforeAuto=null; // 自動で明けにする直前のシフト。自動の明けを外すときにこれへ戻す（保存しない）
 let activeExIds=[]; // exIds added to today's session view
+let collapsedExKeys=new Set(); // 「この種目を終える」で畳んだカード（"exId|日付"）。記録は消さず、要約だけ表示
 
 function defaultState(){
   return {exercises:[],records:[],cardio:[],body:[],bodyMeasure:[],cond:{},routines:[],
@@ -2947,8 +2948,26 @@ function renderExCards(){
     closeExBtn.style.cssText="padding:4px 9px;margin-left:8px;color:var(--sub)";
     const closeTitle=isJa?"この種目を閉じる":"Close this exercise";
     closeExBtn.title=closeTitle;closeExBtn.setAttribute("aria-label",closeTitle);
-    closeExBtn.onclick=()=>{activeExIds=activeExIds.filter(id=>id!==exId);renderExCards();};
+    closeExBtn.onclick=()=>{activeExIds=activeExIds.filter(id=>id!==exId);renderExCards();renderPartExs();};
     card.querySelector(".between .between").appendChild(closeExBtn);
+
+    // 「この種目を終える」で畳んだ状態：入力欄とセット一覧は隠し、何をどれだけやったかの要約だけ残す
+    if(collapsedExKeys.has(exId+"|"+date)){
+      const isCardio=ex.type==="cardio";
+      const rows=isCardio?state.cardio.filter(r=>r.exId===exId&&r.date===date):state.records.filter(r=>r.exId===exId&&r.date===date);
+      const sum=document.createElement("div");sum.className="statline";sum.style.marginTop="6px";
+      let parts;
+      if(isCardio)parts=rows.map(r=>fmt(r.distance)+"km "+fmt(r.durSec/60)+(isJa?"分":"min"));
+      else parts=rows.map(r=>(r.weight?fmt(r.weight)+"kg":(isJa?"自重":"BW"))+"×"+r.reps);
+      sum.textContent="✓ "+rows.length+(isJa?"セット　":" sets　")+parts.join(" / ");
+      card.appendChild(sum);
+      const openBtn=document.createElement("button");openBtn.type="button";openBtn.className="btn sm";openBtn.style.marginTop="8px";
+      openBtn.textContent=isJa?"開いて続きを記録":"Reopen";
+      openBtn.onclick=()=>{collapsedExKeys.delete(exId+"|"+date);renderExCards();};
+      card.appendChild(openBtn);
+      wrap.appendChild(card);
+      return;
+    }
 
     // existing sets today
     if(ex.type==="cardio"){
@@ -2958,7 +2977,7 @@ function renderExCards(){
       if(todaysCardio.length){
         const finishBtn=document.createElement("button");finishBtn.type="button";finishBtn.className="btn sm";finishBtn.style.marginTop="10px";
         finishBtn.textContent=isJa?"✓ この種目を終える":t("finish_exercise_btn");
-        finishBtn.onclick=()=>finishCardioExercise(exId,date);
+        finishBtn.onclick=()=>{collapsedExKeys.add(exId+"|"+date);renderExCards();finishCardioExercise(exId,date);}; // 終えたら詳細を畳み、要約と褒めは残す
         card.appendChild(finishBtn);
       }
     }else{
@@ -2991,7 +3010,7 @@ function renderExCards(){
       if(todays.length){
         const finishBtn=document.createElement("button");finishBtn.type="button";finishBtn.className="btn sm";finishBtn.style.marginTop="10px";
         finishBtn.textContent=isJa?"✓ この種目を終える":t("finish_exercise_btn");
-        finishBtn.onclick=()=>finishStrengthExercise(exId,date);
+        finishBtn.onclick=()=>{collapsedExKeys.add(exId+"|"+date);renderExCards();finishStrengthExercise(exId,date);}; // 終えたら詳細を畳み、要約と褒めは残す
         card.appendChild(finishBtn);
       }
     }
@@ -3357,6 +3376,13 @@ document.getElementById("summarySheetClose").onclick=()=>{document.getElementByI
 function flashToast(exId,p){
   // place toast under the matching card by re-finding it
   const cards=document.querySelectorAll("#exCards .card");
+  if(!cards.length||![...cards].some(c=>{const t0=c.querySelector('div[style*="font-weight:600"]');return t0&&exById(exId)&&t0.textContent===exDisplayName(exById(exId));})){
+    // 種目カードが閉じている（終えた直後）ときは、一覧の場所に褒めだけ出す
+    const host=document.getElementById("exCards");
+    const tt=document.createElement("div");tt.className="toast "+p.cls;tt.textContent=p.txt;
+    host.appendChild(tt);setTimeout(()=>{tt.style.transition="opacity .5s";tt.style.opacity="0";setTimeout(()=>tt.remove(),600);},3500);
+    return;
+  }
   cards.forEach(c=>{
     const title=c.querySelector('div[style*="font-weight:600"]');
     if(title&&exById(exId)&&title.textContent===exDisplayName(exById(exId))){
