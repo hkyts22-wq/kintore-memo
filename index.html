@@ -389,6 +389,14 @@
     padding:14px 14px calc(18px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
   .sheet .between{margin-bottom:6px}
   .sheet h3{font-size:16px;font-weight:600;margin:0}
+  #summarySheetClose{min-width:44px;min-height:44px}
+  .summary-character{margin:8px 0 18px;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:#090909;color:#fff}
+  .summary-character-media{width:100%;aspect-ratio:4/3;max-height:280px;background-image:url("./summary-characters.png");background-size:300% auto;background-position:50% top;background-repeat:no-repeat}
+  .summary-character[data-reaction="pr"] .summary-character-media{background-position:0% top}
+  .summary-character[data-reaction="down"] .summary-character-media{background-position:100% top}
+  .summary-character figcaption{padding:12px 14px 14px}
+  .summary-character h4{margin:0;font-size:22px;font-weight:800;line-height:1.3}
+  .summary-character p{margin:6px 0 0;color:#d4d4d4;font-size:14px;line-height:1.5}
   .platecalc-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
   .platecalc-row:last-child{border-bottom:none}
   .platecalc-row .pl{font-weight:600;font-variant-numeric:tabular-nums}
@@ -1192,7 +1200,7 @@
   </div>
   <div class="card">
     <div class="muted" id="swState" data-i18n="sw_checking">オフライン対応：確認中…</div>
-    <div class="muted" style="margin-top:4px;font-size:12px">あけトレ v59</div><!-- sw.jsのCACHE番号と必ず同時に上げる -->
+    <div class="muted" style="margin-top:4px;font-size:12px">あけトレ v66</div><!-- sw.jsのCACHE番号と必ず同時に上げる -->
   </div>
 </section>
 
@@ -1236,7 +1244,7 @@
   <div class="sheet">
     <div class="between">
       <h3 data-i18n="summary_title">今日のサマリ</h3>
-      <button id="summarySheetClose" class="btn sm ghost" type="button">×</button>
+      <button id="summarySheetClose" class="btn sm ghost" type="button" data-i18n-aria="common_close" aria-label="閉じる">×</button>
     </div>
     <div id="summaryBody"></div>
   </div>
@@ -1299,6 +1307,7 @@
 <script src="./history-edit.js"></script>
 <script src="./home-dashboard.js"></script>
 <script src="./part-day.js"></script>
+<script src="./summary-reaction.js"></script>
 <script>
 "use strict";
 const KEY="kintoreMemo_v1";
@@ -2238,8 +2247,9 @@ function openSummarySheet(){
   const isJa=state.settings.lang==="ja";
   if(!strengthToday.length&&!cardioToday.length){
     body.innerHTML='<div class="muted">'+(isJa?"この日はまだ記録がありません。":t("summary_day_empty"))+'</div>';
-    document.getElementById("summarySheetBg").hidden=false;return;
+    document.getElementById("summarySheetBg").hidden=false;body.parentElement.scrollTop=0;return;
   }
+  const reaction=getSummaryReaction({date,records:state.records,cardio:state.cardio,exercises:state.exercises});
   const setsUnit=isJa?"セット":(" "+t("sets_unit"));
   const minUnit=isJa?"分":((state.settings.lang==="zh")?"分":" min");
   const byEx={};
@@ -2270,13 +2280,23 @@ function openSummarySheet(){
         '<div class="locked-mosaic lm-grid" style="height:40px;border-radius:9px"></div></div>';
     }
   }
-  const pbToday=personalBests().filter(pb=>pb.date===date);
+  const pbToday=reaction.personalBestIds.map(exId=>({exId}));
   if(pbToday.length){
     const names=pbToday.map(pb=>{const ex=exById(pb.exId);return ex?exDisplayName(ex):"?";}).join("・");
     html+='<div style="margin-top:10px;color:var(--accent);font-weight:600">'+(isJa?"🎉 自己ベスト更新：":t("pb_updated_label"))+names+'</div>';
   }
   body.innerHTML=html;
+  if(reaction.kind!=="empty"){
+    const copy=getSummaryReactionCopy(reaction.kind,state.settings.lang);
+    const figure=document.createElement("figure");figure.className="summary-character";figure.dataset.reaction=reaction.kind;
+    const media=document.createElement("div");media.className="summary-character-media";media.setAttribute("aria-hidden","true");
+    const caption=document.createElement("figcaption");
+    const title=document.createElement("h4");title.textContent=copy.title;
+    const message=document.createElement("p");message.textContent=copy.message;
+    caption.append(title,message);figure.append(media,caption);body.prepend(figure);
+  }
   document.getElementById("summarySheetBg").hidden=false;
+  body.parentElement.scrollTop=0;
 }
 
 /* ---------- シフト×コンディション傾向（¥480・最優先の差別化機能） ----------
@@ -2574,8 +2594,8 @@ function renderPartDayBlocks(){ // 選んだ部位ごとに、前回の日付・
     if(!ses){ // 前回なし：種目の一覧を出して、その場で今日の種目に選べる
       const none=document.createElement("span");none.className="muted";none.textContent=t("pd_no_record");head.appendChild(none);
       state.exercises.filter(e=>e.part===part).forEach(e=>{
-        const row=exRow(e,{scroll:false}); // 部位の日の一覧から選んだときは種目カードへ飛ばない
-        row.querySelector("button").addEventListener("click",renderPartDayBlocks); // 「追加済み」表示に描き直す
+        const row=exRow(e,{scroll:false}); // 一覧の再描画が終わってから、選んだ種目の記録欄へ移動する
+        row.querySelector("button").addEventListener("click",()=>{renderPartDayBlocks();scrollToLastExCard();});
         block.appendChild(row);
       });
       wrap.appendChild(block);return;
